@@ -9,7 +9,7 @@ import openai
 #Hide all unneeded parts of streamlit:
 st.set_page_config(
     page_title="Shaped-AI, free personal tutor.",
-    page_icon=r"C:\Users\flatd\Downloads\Anka (4).png"
+    page_icon=r"shaped-logo.png"
 )
 hide_streamlit_style = """
 <style>
