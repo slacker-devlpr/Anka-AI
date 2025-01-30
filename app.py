@@ -3,7 +3,6 @@ import streamlit as st
 from openai import OpenAI
 import shelve
 from PIL import Image
-from dotenv import load_dotenv
 import openai
 
 #Hide all unneeded parts of streamlit:
@@ -66,6 +65,7 @@ enable_scroll = """
 """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
+#main:
 
 st.markdown("""
     <style>
