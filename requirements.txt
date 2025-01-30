@@ -1,2 +1,9 @@
-dash
-gunicorn
+streamlit
+openai
+markdown-it-py
+mdit-py-plugins
+markdown
+uuid
+matplotlib
+numpy 
+sympy
