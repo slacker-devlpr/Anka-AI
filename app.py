@@ -3,7 +3,7 @@ import streamlit as st
 from openai import OpenAI
 import shelve
 from PIL import Image
-import openai
+from openai import OpenAI
 
 #Hide all unneeded parts of streamlit:
 st.set_page_config(
