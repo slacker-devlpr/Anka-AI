@@ -161,6 +161,21 @@ MODE = st.sidebar.radio(
     help="Izberi način inštrukcije, ki ti najbolj ustreza"
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+# Add slightly visible text under the last line in the sidebar
+st.sidebar.markdown(
+    """
+    <style>
+    .subtle-text {
+        color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
+        font-size: 12px;
+        text-align: center;
+        margin-top: 20px; /* Adjust spacing as needed */
+    }
+    </style>
+    <div class="subtle-text">Shaped AI © 2024</div>
+    """,
+    unsafe_allow_html=True
+)
     
 # Define avatars and OpenAI client
 USER_AVATAR = "👤"
