@@ -104,7 +104,7 @@ st.sidebar.image("shaped-ai.png", use_container_width=True)
 
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
-client = OpenAI(api_key='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')
+client = OpenAI(api_key='YOUR_API_KEY')
 
 # Set up the session state
 if "openai_model" not in st.session_state:
@@ -190,6 +190,60 @@ def display_messages(messages):
 # Show existing messages
 display_messages(st.session_state.messages)
 
+# Function to provide direct answer
+def provide_answer():
+    system_message = {
+        "role": "system",
+        "content": "You are Shaped AI, providing direct answers to mathematical problems in Slovenian."
+    }
+    prompt = st.session_state.messages[-1]["content"]
+    response = client.chat.completions.create(
+        model=st.session_state["openai_model"],
+        messages=[system_message, {"role": "user", "content": prompt}]
+    ).choices[0].message.content
+    return response
+
+# Function to tutor step-by-step
+def tutor_answer():
+    system_message = {
+        "role": "system",
+        "content": "You are Shaped AI, tutoring users through mathematical problems in Slovenian with explanations step-by-step."
+    }
+    prompt = st.session_state.messages[-1]["content"]
+    response = client.chat.completions.create(
+        model=st.session_state["openai_model"],
+        messages=[system_message, {"role": "user", "content": prompt}]
+    ).choices[0].message.content
+    return response
+
+# Function to explain in slang
+def explain_slang():
+    system_message = {
+        "role": "system",
+        "content": "You are Shaped AI, explaining mathematical problems in Slovenian using casual slang."
+    }
+    prompt = st.session_state.messages[-1]["content"]
+    response = client.chat.completions.create(
+        model=st.session_state["openai_model"],
+        messages=[system_message, {"role": "user", "content": prompt}]
+    ).choices[0].message.content
+    return response
+
+# Add buttons in the sidebar
+with st.sidebar:
+    if st.button("Provide Answer"):
+        response = provide_answer()
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        display_messages(st.session_state.messages)
+    if st.button("Tutor Me"):
+        response = tutor_answer()
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        display_messages(st.session_state.messages)
+    if st.button("Explain in Slang"):
+        response = explain_slang()
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        display_messages(st.session_state.messages)
+
 # Main chat interface
 if prompt := st.chat_input("How can I help?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -203,10 +257,10 @@ if prompt := st.chat_input("How can I help?"):
     system_message = {
         "role": "system",
         "content": (
-            "You are Shaped AI, a slovenian specialized artificial intelligence for assisting with tutoring mathematics. You were created by slacker. "
+            "You are Shaped AI, a Slovenian specialized artificial intelligence for assisting with tutoring mathematics. You were created by slacker. "
             "Your primary goal is to help users understand and solve math problems. Try to make them solve the problem first and help if needed."
             "For every math symbol, equation, or expression, no matter how simple it is, use LaTeX and surround it by $$."
-            "Be concise and helpful. Use clear and simple terms to help the user learn math as easily as possible. You should speak slovene only change languages if asked"
+            "Be concise and helpful. Use clear and simple terms to help the user learn math as easily as possible. You should speak Slovene only, change languages if asked."
         )
     }
 
