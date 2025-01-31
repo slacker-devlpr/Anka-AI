@@ -110,7 +110,7 @@ client = OpenAI(api_key='YOUR_API_KEY')
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini"
 
-# Initialize chat history in session state
+# Initialize chat history in session state if not already initialized
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -201,6 +201,8 @@ def provide_answer():
         model=st.session_state["openai_model"],
         messages=[system_message, {"role": "user", "content": prompt}]
     ).choices[0].message.content
+    # Append the answer to the same chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
     return response
 
 # Function to tutor step-by-step
@@ -214,6 +216,8 @@ def tutor_answer():
         model=st.session_state["openai_model"],
         messages=[system_message, {"role": "user", "content": prompt}]
     ).choices[0].message.content
+    # Append the answer to the same chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
     return response
 
 # Function to explain in slang
@@ -227,21 +231,20 @@ def explain_slang():
         model=st.session_state["openai_model"],
         messages=[system_message, {"role": "user", "content": prompt}]
     ).choices[0].message.content
+    # Append the answer to the same chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
     return response
 
 # Add buttons in the sidebar
 with st.sidebar:
     if st.button("Provide Answer"):
         response = provide_answer()
-        st.session_state.messages.append({"role": "assistant", "content": response})
         display_messages(st.session_state.messages)
     if st.button("Tutor Me"):
         response = tutor_answer()
-        st.session_state.messages.append({"role": "assistant", "content": response})
         display_messages(st.session_state.messages)
     if st.button("Explain in Slang"):
         response = explain_slang()
-        st.session_state.messages.append({"role": "assistant", "content": response})
         display_messages(st.session_state.messages)
 
 # Main chat interface
