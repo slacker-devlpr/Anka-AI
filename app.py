@@ -75,3 +75,4 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 #main:
+st.button("click me!", key="pulse")
