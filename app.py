@@ -169,7 +169,7 @@ st.sidebar.markdown(
         color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
         font-size: 12px;
         text-align: center;
-        margin-top: 10px; /* Adjust spacing as needed */
+        margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
     <div class="subtle-text">We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties. We appreciate your patience and understanding, and we’ll be back to full speed soon!</div>
@@ -184,7 +184,7 @@ st.sidebar.markdown(
         color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
         font-size: 12px;
         text-align: center;
-        margin-top: 10px; /* Adjust spacing as needed */
+        margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
     <div class="subtle-text">You are currently running Shaped AI 1.3 powered by OpenAI and Streamlit, Shaped AI © 2024</div>
