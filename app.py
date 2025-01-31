@@ -84,8 +84,7 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
-
-    # Sidebar styling
+# Sidebar styling
 st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -140,9 +139,8 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_container_width=True)
+st.sidebar.image("shaped-ai.png", use_column_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-# Centered About button
 
 # Add mode selection radio buttons to sidebar with working header
 MODE = st.sidebar.radio(
@@ -163,14 +161,14 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-
+# Define avatars and OpenAI client
 USER_AVATAR = "👤"
-BOT_AVATAR = r"top-logo.png"
-client = OpenAI(api_key='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')
+BOT_AVATAR = "top-logo.png"
+client = OpenAI(api_key='your-api-key-here')  # Replace with your OpenAI API key
 
 # Set up the session state
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-4o-mini"
+    st.session_state["openai_model"] = "gpt-4"
 
 # Initialize chat history in session state
 if "messages" not in st.session_state:
@@ -218,9 +216,23 @@ st.markdown(f"""
             opacity: 0;
         }}
     }}
+    
+    .mode-display {{
+        font-size: 20px;
+        font-weight: bold;
+        font-family: 'Raleway', sans-serif;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        color: #FF5733; /* Custom color for the mode text */
+    }}
     </style>
     <div class="custom-greeting">{greeting}</div>
 """, unsafe_allow_html=True)
+
+# Display the selected mode under the greeting
+mode_display = MODE.replace("**", "")  # Remove bold formatting for cleaner display
+st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
 # Typing animation function
 def type_response(content):
@@ -260,7 +272,7 @@ def get_system_message():
             "role": "system",
             "content": (
                 "You are Shaped AI, a Slovenian math expert. Provide direct solutions using LaTeX for all math. "
-                "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise." "Every math symbol, equation, letter, number has to be incased in $$. For example $$a$$ or $$x + 2$$ Thats how the program knows it has to show it as latex!"
+                "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise."
             )
         }
     elif mode == "**📚 Filozofski način**":
@@ -268,15 +280,15 @@ def get_system_message():
             "role": "system",
             "content": (
                 "You are a patient math tutor named Shaped AI. Guide users step-by-step using Socratic questioning. "
-                "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise.""Every math symbol, equation, letter, number has to be incased in $$. For example $$a$$ or $$x + 2$$ Thats how the program knows it has to show it as latex!"
+                "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise."
             )
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
             "content": (
-                "You are a slovenian sleng tutor ai named Shaped AI. Use skibidi, aura, cap, fr, low taper fade at random part of your sentences. Keep it casual but accurate."
-                "Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms." "Every math symbol, equation, letter, number has to be incased in $$. For example $$a$$ or $$x + 2$$ Thats how the program knows it has to show it as latex!"
+                "You are a Slovenian slang tutor AI named Shaped AI. Use skibidi, aura, cap, fr, low taper fade at random parts of your sentences. "
+                "Keep it casual but accurate. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms."
             )
         }
 
