@@ -163,6 +163,7 @@ MODE = st.sidebar.radio(
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add a reset chat button at the bottom of the sidebar
+# Add a reset chat button at the bottom of the sidebar
 st.sidebar.markdown(
     """
     <style>
@@ -185,28 +186,23 @@ st.sidebar.markdown(
         background-color: #0f1116;
     }
     </style>
-    <button class="reset-button" onclick="resetChat()">NOV KLEPET</button>
-    <script>
-    function resetChat() {
-        fetch('/reset_chat', {
-            method: 'POST'
-        }).then(() => {
-            window.location.reload();
-        });
-    }
-    </script>
     """,
     unsafe_allow_html=True
 )
 
-# Handle the reset chat functionality
-if st.sidebar.button("Reset Chat (Hidden)", key="reset_chat_hidden", help="Klikni za začetek novega klepeta"):
-    st.session_state.messages = []  # Clear chat history
+# Use a custom HTML button to trigger the reset functionality
+if st.sidebar.markdown(
+    """
+    <button class="reset-button" onclick="window.location.reload();">NOV KLEPET</button>
+    """,
+    unsafe_allow_html=True
+):
+    # Reset the chat history when the button is clicked
+    st.session_state.messages = []
     st.session_state.messages.append({
         "role": "assistant",
         "content": "Dobrodošel! Kako želiš, da te kličem?"
     })
-    st.rerun()  # Rerun the app to reflect the changes
 
 # Define avatars and OpenAI client
 USER_AVATAR = "👤"
