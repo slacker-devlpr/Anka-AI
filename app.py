@@ -1,109 +1,106 @@
 import streamlit as st
 import openai
-from PIL import Image
 
-# Set page config
+# Set OpenAI API key (store securely in production)
+openai.api_key = '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'
+
+# Page config:
 st.set_page_config(
-    page_title="Shaped AI",
-    page_icon="🤖",
-    layout="centered"
+    page_title="Shaped AI, Personal AI Tutor",
+    page_icon=r"shaped-logo.png"
 )
 
 # Custom CSS for styling
-def local_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-# Inject custom CSS
-st.markdown("""
+st.markdown(f"""
     <style>
-        .stApp {
+        .stApp {{
             background-color: #191919;
-            color: white;
-        }
-        .stChatInput textarea {
-            background-color: #2d2d2d !important;
-            color: white !important;
-        }
-        .st-bq {
-            background-color: #2d2d2d !important;
-            border-radius: 15px !important;
-        }
-        .stChatMessage {
-            padding: 10px;
+        }}
+        .css-1d391kg {{
+            background-color: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
-            margin: 10px 0;
-        }
-        .user-message {
-            background-color: #2d2d2d !important;
-        }
-        .assistant-message {
-            background-color: #404040 !important;
-        }
-        .logo {
+            padding: 2rem;
+        }}
+        .stChatInput {{
+            background-color: #2d2d2d;
+            border-radius: 10px;
+        }}
+        .stTextInput input {{
+            color: white !important;
+        }}
+        .message {{
+            padding: 1rem;
+            border-radius: 15px;
+            margin: 0.5rem 0;
+            color: white;
+            max-width: 80%;
+        }}
+        .user {{
+            background-color: #2d2d2d;
+            margin-left: auto;
+        }}
+        .assistant {{
+            background-color: #404040;
+            margin-right: auto;
+        }}
+        .logo {{
             text-align: center;
             margin-bottom: 2rem;
-        }
+        }}
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state for messages
+# Add logo
+col1, col2, col3 = st.columns([1,2,1])
+with col2:
+    st.image("shaped-ai.png", width=200)
+
+# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Sidebar for API key input
-with st.sidebar:
-    st.title("Settings")
-    openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
-    st.markdown("[Get OpenAI API Key](https://platform.openai.com/account/api-keys)")
-
-# Logo and header
-col1, col2, col3 = st.columns([1,2,1])
-with col2:
-    logo = Image.open("shaped-ai.png")
-    st.image(logo, width=150)
-    st.title("Shaped AI")
-
-# Chat container
-chat_container = st.container()
-
-# Function to generate AI response
-def generate_response(prompt):
-    openai.api_key = openai_api_key
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.choices[0].message.content.strip()
-
 # Display chat messages
-with chat_container:
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+for message in st.session_state.messages:
+    role = message["role"]
+    content = message["content"]
+    css_class = "user" if role == "user" else "assistant"
+    alignment = "right" if role == "user" else "left"
+    
+    st.markdown(f"""
+        <div class="message {css_class}" style="text-align: {alignment};">
+            {content}
+        </div>
+    """, unsafe_allow_html=True)
 
 # Chat input
 if prompt := st.chat_input("Message Shaped AI..."):
-    if not openai_api_key:
-        st.error("Please enter your OpenAI API key in the sidebar")
-        st.stop()
-    
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
     
     # Display user message
-    with chat_container:
-        with st.chat_message("user"):
-            st.markdown(prompt)
+    st.markdown(f"""
+        <div class="message user" style="text-align: right;">
+            {prompt}
+        </div>
+    """, unsafe_allow_html=True)
     
-    # Generate AI response
-    with st.spinner("Thinking..."):
-        response = generate_response(prompt)
+    # Generate assistant response
+    with st.spinner(''):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state.messages
+            ]
+        )
+        msg = response.choices[0].message.content
     
     # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    st.session_state.messages.append({"role": "assistant", "content": msg})
     
     # Display assistant response
-    with chat_container:
-        with st.chat_message("assistant"):
-            st.markdown(response)
+    st.markdown(f"""
+        <div class="message assistant" style="text-align: left;">
+            {msg}
+        </div>
+    """, unsafe_allow_html=True)
