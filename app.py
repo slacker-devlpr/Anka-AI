@@ -101,23 +101,34 @@ st.markdown("""
 # Add image to sidebar with use_container_width instead of use_column_width
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 
-import streamlit as st
-import time
-from openai import OpenAI
-import re
-from datetime import datetime
-import pytz
-
+# Define emoji constants
 USER_AVATAR = "👤"
 BOT_AVATAR = r"shaped-logo.png"
 client = OpenAI(api_key='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')
 
+# Set up the session state
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini"
 
 # Initialize chat history in session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# Function to determine Slovenian time and greet
+def get_slovene_greeting():
+    slovenia_tz = pytz.timezone('Europe/Ljubljana')
+    local_time = datetime.datetime.now(slovenia_tz)
+    
+    if 5 <= local_time.hour < 12:
+        return "🌅 Dobro jutro"
+    elif 12 <= local_time.hour < 18:
+        return "🌞 Dober dan"
+    else:
+        return "🌙 Dober večer"
+
+# Display the greeting
+greeting = get_slovene_greeting()
+st.markdown(f"<h1 style='text-align: center; color: #4CAF50;'>{greeting}</h1>", unsafe_allow_html=True)
 
 # Typing animation function
 def type_response(content):
@@ -131,7 +142,7 @@ def type_response(content):
 
 # Function to find and render LaTeX using st.markdown
 def render_latex(text):
-    parts = re.split(r'(\$\$[^\$]+\$\$)', text) # Split at $$...$$ delimiters
+    parts = re.split(r'(\$\$[^\$]+\$\$)', text)  # Split at $$...$$ delimiters
     rendered_parts = []
     for i, part in enumerate(parts):
         if part.startswith("$$") and part.endswith("$$"):
@@ -145,27 +156,6 @@ def display_messages(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
-
-# Function to display a time-based greeting emoji
-def display_greeting_emoji():
-    slovenia_timezone = pytz.timezone('Europe/Ljubljana')
-    current_time = datetime.now(slovenia_timezone).time()
-    
-    morning_start = time.time(6,0,0)
-    morning_end = time.time(12,0,0)
-
-    afternoon_start = time.time(12,0,0)
-    afternoon_end = time.time(18,0,0)
-
-    if morning_start <= current_time <= morning_end:
-        st.markdown("<h1 style='text-align: center;'>☀️ Dobro jutro</h1>", unsafe_allow_html=True)
-    elif afternoon_start <= current_time <= afternoon_end:
-        st.markdown("<h1 style='text-align: center;'>☀️ Dober dan</h1>", unsafe_allow_html=True)
-    else:
-        st.markdown("<h1 style='text-align: center;'>🌙 Dober večer</h1>", unsafe_allow_html=True)
-
-# Display greeting emoji
-display_greeting_emoji()
 
 # Add initial hello message if first visit
 if not st.session_state.messages:
@@ -189,9 +179,9 @@ if prompt := st.chat_input("How can I help?"):
         "role": "system",
         "content": (
             "You are Shaped AI, a specialized artificial intelligence for assisting with tutoring mathematics. You were created by slacker. "
-            "Your primary goal is to help users understand and solve math problems. Try to make them solve the problem first and help if needed"
-            "For every math symbol, equation, or expression, no matter how simple it is use latex and surrond it by $$. For example $$a$$ is a part of the equation $$( 2x^3 - 4x^2 + 3x - 5 )$$. Every number, variable also has to be incased in $$, example: $$a$$"
-            "Be concise and helpful. Use clear and simple terms to help the user learn math as easily as possible(use the most simple formulas possable for the problem)."
+            "Your primary goal is to help users understand and solve math problems. Try to make them solve the problem first and help if needed."
+            "For every math symbol, equation, or expression, no matter how simple it is, use LaTeX and surround it by $$."
+            "Be concise and helpful. Use clear and simple terms to help the user learn math as easily as possible."
         )
     }
 
@@ -202,4 +192,4 @@ if prompt := st.chat_input("How can I help?"):
 
     st.session_state.messages.append({"role": "assistant", "content": response})
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        type_response(render_latex(response))
+        type_response(response)
