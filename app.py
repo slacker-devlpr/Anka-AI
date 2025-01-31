@@ -101,7 +101,7 @@ st.markdown("""
         /* Divider styling */
         .sidebar-divider {
             border: 1px solid #FF5733;
-            margin: 10px 0;
+            margin: -30px 0;
         }
         
         /* Header styling */
