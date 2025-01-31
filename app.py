@@ -10,7 +10,7 @@ import pathlib
 def load_css(file_path):
     with open(file_path) as f:
         st.html(f"<style>{f.read()}</style>")
-css_path = pathlib.Path("")
+css_path = pathlib.Path("assets.css")
 load_css(css_path)
     
 #Hide all unneeded parts of streamlit:
