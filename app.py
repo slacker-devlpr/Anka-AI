@@ -154,6 +154,85 @@ MODE = st.sidebar.radio(
     help="Izberi način učenja, ki ti najbolj ustreza", # This was missing for header rendering
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+# Add About Project button
+if st.sidebar.button("📝 O projektu", key="about_project"):
+    st.session_state.show_modal = True
+
+# Modal window handling
+if st.session_state.get('show_modal', False):
+    st.markdown("""
+    <style>
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #1a2431;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            color: white;
+        }
+        .modal-textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #0f1116;
+            color: white;
+            border: 1px solid #FF5733;
+            border-radius: 4px;
+        }
+        .modal-close {
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+    
+    <div class="modal">
+        <div class="modal-content">
+            <h2 style="text-align: center; margin-bottom: 15px;">O projektu</h2>
+            <textarea class="modal-textarea" placeholder="Vnesite svoje pripombe ali komentarje..."></textarea>
+            <div style="text-align: center;">
+                <button class="modal-close" onclick="window.parent.postMessage({'type': 'setShowModal', 'data': false}, '*')">Zapri</button>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# Add this JavaScript handler at the bottom of your code
+st.components.v1.html("""
+<script>
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'setShowModal') {
+        if (event.data.data === false) {
+            window.parent.document.querySelectorAll('iframe')[0].contentWindow.postMessage({
+                'type': 'setShowModal',
+                'data': false
+            }, '*');
+        }
+    }
+});
+</script>
+""")
+
+# Add to your existing session state initialization
+if "show_modal" not in st.session_state:
+    st.session_state.show_modal = False
+
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
 client = OpenAI(api_key='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')
