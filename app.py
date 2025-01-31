@@ -84,17 +84,6 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
-# Add about dialog
-@st.dialog
-def about_dialog():
-    st.markdown("## 📚 O Aplikaciji")
-    st.markdown("""
-    **Shaped AI Inštruktor** je revolucionaren učni pripomoček, ki:
-    - Omogoča personaliziran pristop učenja
-    - Prilagaja razlago tvojim potrebam
-    - Kombinira najnovejše tehnike AI s pedagoškimi principi
-    """)
-    st.markdown("👨💻 Razvijalec: [Shaped AI](https://shaped.ai)")
     
 # Sidebar styling
 st.markdown("""
@@ -154,10 +143,6 @@ st.markdown("""
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # Centered About button
-col1, col2, col3 = st.sidebar.columns([1, 2, 1])
-with col2:
-    if st.button("ℹ️ O Aplikaciji", key="about"):
-        about_dialog()
 
 # Add mode selection radio buttons to sidebar with working header
 MODE = st.sidebar.radio(
