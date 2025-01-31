@@ -89,7 +89,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.sidebar.image(r"C:\Users\flatd\Downloads\shaped-ai.png", use_column_width=True)
+st.sidebar.image(r"shaped-ai.png", use_column_width=True)
 st.markdown("""
     <style>
         .stApp {
