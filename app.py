@@ -4,7 +4,15 @@ from openai import OpenAI
 import shelve
 from PIL import Image
 from openai import OpenAI
+import pathlib
 
+#Load css from assets
+def load_css(file_path):
+    with open(file_path) as f:
+        st.html(f"<style>{f.read()}</style>")
+css_path = pathlib.Path("")
+load_css(css_path)
+    
 #Hide all unneeded parts of streamlit:
 st.set_page_config(
     page_title="Shaped AI, Personal Math Tutor",
