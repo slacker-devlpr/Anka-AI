@@ -110,7 +110,6 @@ st.sidebar.markdown("""
             font-size: 12px;
             letter-spacing: 2px;
             margin: 20px 0;
-            font-weight: bold;
         }
     </style>
     
