@@ -123,17 +123,3 @@ st.sidebar.markdown("""
     <div class="mode-text">AI TUTOR</div>
 """, unsafe_allow_html=True)
 
-# Add three buttons next to each other in the sidebar
-col1, col2, col3 = st.sidebar.columns(3)
-
-with col1:
-    if st.button("🧮", key="math-button"):
-        st.write("Button 1 clicked")
-
-with col2:
-    if st.button("Button 2",key="chemistry-button"):
-        st.write("Button 2 clicked")
-
-with col3:
-    if st.button("Button 3", key="physics-button"):
-        st.write("Button 3 clicked")
