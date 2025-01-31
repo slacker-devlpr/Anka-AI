@@ -170,15 +170,6 @@ def display_messages(messages):
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-# Add initial hello message if first visit
-if not st.session_state.messages:
-    initial_message = {
-        "role": "assistant",
-        "content": "Dobrodošli v Shaped AI! Tukaj sem, da vam pomagam razumeti in rešiti matematične izzive na preprost in pregleden način. Moj cilj je, da vas korak za korakom popeljem skozi vsak problem, tako da boste tako rešili nalogo kot tudi pridobili nova znanja."
-    }
-    st.toast("Shaped AI is still in Beta. Expect mistakes!", icon="👨‍💻")
-    st.toast("You are currently running Shaped AI 3.2.4.", icon="⚙️")
-    st.session_state.messages.append(initial_message)
 
 display_messages(st.session_state.messages)
 
