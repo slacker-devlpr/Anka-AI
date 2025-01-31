@@ -18,7 +18,7 @@ import pytz
 # Page config:
 st.set_page_config(
     page_title="Shaped AI, Personal AI Tutor",
-    page_icon=r"shaped-logo.png"
+    page_icon=r"top-logo.png"
 )
 
 # Load css from assets
@@ -103,7 +103,7 @@ st.markdown("""
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 
 USER_AVATAR = "👤"
-BOT_AVATAR = r"shaped-logo.png"
+BOT_AVATAR = r"top-logo.png"
 client = OpenAI(api_key='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')
 
 # Set up the session state
