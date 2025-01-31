@@ -225,7 +225,7 @@ st.markdown(f"""
         text-align: center;
         margin-top: -15px;
         margin-bottom: 40px;
-        margin-left: -10px;
+        margin-left: -14px;
         color: #f5f5f5; /* Custom color for the mode text */
     }}
     </style>
@@ -266,10 +266,8 @@ def display_messages(messages):
 if not st.session_state.messages:
     initial_message = {
         "role": "assistant",
-        "content": "Welcome to Anka-AI! I'm your dedicated math assistant created by slacker-devlpr, ready to help with a wide range of mathematical concepts. Let's work together to make math clear and engaging! What can I help you with today?"
+        "content": "Dobrodošel! Kako želiš, da te kličem?"
     }
-    st.toast("Anka-AI is still in Beta. Expect mistakes!", icon="👨‍💻")
-    st.toast("You are currently running Anka-AI 2.1.4.", icon="⚙️")
     st.session_state.messages.append(initial_message)
 
 display_messages(st.session_state.messages)
