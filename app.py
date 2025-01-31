@@ -329,14 +329,15 @@ def get_system_message():
                 "Use a ton of slang like insane amount. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$"
             )
         }
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
-# Display chat messages
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+# Add CSS to position the button at the bottom left of the screen
+if st.button("NOV KLEPET", help="Klikni za začetek novega klepeta", key="button"):
+    st.session_state.messages = []  # Clear chat history
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": "Dobrodošel! Kako želiš, da te kličem?"
+    })
+    st.rerun()  # Rerun the app to reflect the changes
 
 # Main chat interface
 if prompt := st.chat_input("Kako lahko pomagam?"):
