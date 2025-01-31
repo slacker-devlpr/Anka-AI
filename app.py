@@ -302,7 +302,7 @@ def get_system_message():
 
 
 # Main chat interface
-if prompt := st.chat_input("How can I help?"):
+if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(prompt)
