@@ -101,7 +101,7 @@ st.markdown("""
         /* Divider styling */
         .sidebar-divider {
             border: 1px solid #FF5733;
-            margin: -30px 0;
+            margin: -30px -30px;
         }
         
         /* Header styling */
@@ -147,7 +147,7 @@ MODE = st.sidebar.radio(
      "**😎 Gen Alpha način**: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."],
     index=0,
     key="mode",
-    help="Izberi način učenja, ki ti najbolj ustreza"
+    help="Izberi način inštrukcije, ki ti najbolj ustreza."
 )
 
 USER_AVATAR = "👤"
