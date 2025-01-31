@@ -1,1 +1,10 @@
-.st-key-math-button button
+.st-key-math-button button {
+  border-radius: 50%; /* Makes the button round */
+  padding: 10px 20px; /* Adjusts the size of the button */
+  transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for color change */
+}
+
+.st-key-math-button button:active {
+  background-color: green; /* Changes background to green when clicked */
+  box-shadow: 0 0 10px 2px green; /* Adds a glowing green effect around the button */
+}
