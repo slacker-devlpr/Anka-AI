@@ -163,6 +163,7 @@ MODE = st.sidebar.radio(
         else f"{x}: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."
     )
 )
+st.write(f"Izbrali ste: {MODE}")
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 
