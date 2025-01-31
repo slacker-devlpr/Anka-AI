@@ -236,7 +236,7 @@ def get_system_message():
             "role": "system",
             "content": (
                 "You are Shaped AI, a Slovenian math expert. Provide direct solutions using LaTeX for all math. "
-                "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise."
+                "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise." "Every math symbol, equation, letter, number has to be incased in $$. For example $$a$$ or $$x + 2$$ Thats how the program knows it has to show it as latex!"
             )
         }
     elif mode == "**⚡ Način takojšnjih odgovorov** Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.":
@@ -244,7 +244,7 @@ def get_system_message():
             "role": "system",
             "content": (
                 "You are a patient math tutor. Guide users step-by-step using Socratic questioning. "
-                "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise."
+                "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise.""Every math symbol, equation, letter, number has to be incased in $$. For example $$a$$ or $$x + 2$$ Thats how the program knows it has to show it as latex!"
             )
         }
     elif mode == "**😎 Gen Alpha način**: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap.":
@@ -252,7 +252,7 @@ def get_system_message():
             "role": "system",
             "content": (
                 "Explain math like a Slovenian friend using slang (skibidi toilet, aura, cap, fr, slovenian slang etc.). Keep it casual but accurate. "
-                "Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms."
+                "Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms." "Every math symbol, equation, letter, number has to be incased in $$. For example $$a$$ or $$x + 2$$ Thats how the program knows it has to show it as latex!"
             )
         }
 
