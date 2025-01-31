@@ -1,1 +1,6 @@
-
+.st-key-about {
+  background-color: #0f1116;
+  display: flex;
+  justify-content: center;  /* Centers horizontally */
+  align-items: center;      /* Centers vertically */     /* Ensures full viewport height */
+}
