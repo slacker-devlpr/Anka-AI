@@ -127,7 +127,7 @@ st.markdown("""
         /* Poudari obrobo ob hover efektu z manj svetlim ozadjem */
         div[role="radiogroup"] label:hover {
             border-color: #FF5733;       /* Poudari obrobo z isto barvo kot predhodno */
-            background-color: #e0e0e0;   /* Spremeni ozadje na svetlo sivo, namesto svetle rumene */
+            background-color: #616161;   /* Spremeni ozadje na svetlo sivo, namesto svetle rumene */
         }
 
         /* Poudari obrobo ob izbrani možnosti */
