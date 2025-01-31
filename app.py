@@ -75,6 +75,7 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 #main:
+# Sidebar styling
 st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -89,14 +90,19 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# Add image to sidebar
 st.sidebar.image("shaped-ai.png", use_container_width=True)
+
+# Main app background color
 st.markdown("""
     <style>
         .stApp {
             background-color: #2b2b2b;
         }
     </style>
-    """, unsafe_allow_html=True) 
+    """, unsafe_allow_html=True)
+
+# Sidebar divider and text
 st.sidebar.markdown("""
     <style>
         .divider {
@@ -114,4 +120,38 @@ st.sidebar.markdown("""
     
     <div class="divider"></div>
     <div class="mode-text">AI TUTOR</div>
-""", unsafe_allow_html=True)  
+""", unsafe_allow_html=True)
+
+# Initialize session state for selected button
+if "selected_button" not in st.session_state:
+    st.session_state.selected_button = None
+
+# Function to handle button clicks
+def handle_button_click(button_id):
+    st.session_state.selected_button = button_id
+
+# Button container
+st.sidebar.markdown('<div class="button-container">', unsafe_allow_html=True)
+
+# Math button
+math_selected = "selected" if st.session_state.selected_button == "math" else ""
+st.sidebar.button("➕", key="math", on_click=handle_button_click, args=("math",))
+st.sidebar.markdown(f'<div class="button-label">Math</div>', unsafe_allow_html=True)
+
+# Chemistry button
+chemistry_selected = "selected" if st.session_state.selected_button == "chemistry" else ""
+st.sidebar.button("⚗️", key="chemistry", on_click=handle_button_click, args=("chemistry",))
+st.sidebar.markdown(f'<div class="button-label">Chemistry</div>', unsafe_allow_html=True)
+
+# Physics button
+physics_selected = "selected" if st.session_state.selected_button == "physics" else ""
+st.sidebar.button("⚛️", key="physics", on_click=handle_button_click, args=("physics",))
+st.sidebar.markdown(f'<div class="button-label">Physics</div>', unsafe_allow_html=True)
+
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
+
+# Display selected button
+if st.session_state.selected_button:
+    st.sidebar.text(f"Selected: {st.session_state.selected_button.capitalize()}")
+else:
+    st.sidebar.text("No selection yet")
