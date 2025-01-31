@@ -172,7 +172,7 @@ st.sidebar.markdown(
         margin-top: 20px; /* Adjust spacing as needed */
     }
     </style>
-    <div class="subtle-text">We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties. Their team is actively working to resolve the issue as quickly as possible. We appreciate your patience and understanding, and we’ll be back to full speed soon! Thank you for sticking with us.</div>
+    <div class="subtle-text">We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties. Their team is actively working to resolve the issue as quickly as possible. We appreciate your patience and understanding, and we’ll be back to full speed soon!</div>
     """,
     unsafe_allow_html=True
 )
