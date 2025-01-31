@@ -1,5 +1,5 @@
 /* Custom styling for radio button with key "mode" */
-.st-radio[data-testid="stRadio"] {
+.st-key-mode[data-testid="stRadio"] {
     display: flex;
     flex-direction: column;
     margin: 20px 0;
@@ -10,7 +10,7 @@
 }
 
 /* Custom styling for each radio button label */
-.st-radio[data-testid="stRadio"] label {
+.st-key-mode[data-testid="stRadio"] label {
     font-size: 18px;
     color: #ffffff; /* White color for text */
     font-weight: 500;
@@ -20,13 +20,13 @@
 }
 
 /* Hover effect for radio buttons */
-.st-key-radio[data-testid="stRadio"] label:hover {
+.st-key-mode[data-testid="stRadio"] label:hover {
     color: #34c9f2; /* Light blue on hover */
     font-weight: bold;
 }
 
 /* Styling for selected radio button */
-.st-key-radio[data-testid="stRadio"] input[type="radio"]:checked + label {
+.st-key-mode[data-testid="stRadio"] input[type="radio"]:checked + label {
     color: #34c9f2; /* Light blue for the checked option */
     font-weight: bold;
     border-radius: 5px;
@@ -35,11 +35,11 @@
 }
 
 /* Styling for radio button circle itself */
-.st-key-radio[data-testid="stRadio"] input[type="radio"] {
+.st-key-mode[data-testid="stRadio"] input[type="radio"] {
     display: none;
 }
 
-.st-key-radio[data-testid="stRadio"] input[type="radio"] + label::before {
+.st-key-mode[data-testid="stRadio"] input[type="radio"] + label::before {
     content: "";
     width: 20px;
     height: 20px;
@@ -51,7 +51,7 @@
 }
 
 /* On checked, change the circle to blue */
-.st-key-radio[data-testid="stRadio"] input[type="radio"]:checked + label::before {
+.st-key-mode[data-testid="stRadio"] input[type="radio"]:checked + label::before {
     background-color: #34c9f2; /* Blue background when selected */
     border-color: #34c9f2; /* Blue border */
 }
