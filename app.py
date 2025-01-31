@@ -7,7 +7,7 @@ from openai import OpenAI
 import pathlib
 #page config:
 st.set_page_config(
-    page_title="Shaped AI, Personal Math Tutor",
+    page_title="Shaped AI, Personal AI Tutor",
     page_icon=r"shaped-logo.png"
 )
 
