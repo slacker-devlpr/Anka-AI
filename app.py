@@ -101,7 +101,7 @@ st.markdown("""
         # Sidebar divider and text
         .sidebar.divider {
             border-bottom: 1px solid #4a4a4a;
-            margin: 0px 0;
+            margin: 100px 0;
         }
         /* Header styling */
         .sidebar-header {
