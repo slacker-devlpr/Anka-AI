@@ -85,7 +85,7 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 st.markdown("""
     <style>
         [data-testid="stSidebar"] {
-            background-color: ##0f1116;
+            background-color: #0f1116;
         }
         [data-testid="stSidebar"] > div:first-child {
             padding-top: 0;
