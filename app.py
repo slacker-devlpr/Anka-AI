@@ -122,7 +122,7 @@ def get_slovene_greeting():
     if 5 <= local_time.hour < 12:
         return "Dobro jutro🌅"
     elif 12 <= local_time.hour < 18:
-        return "Dober dan🌞"
+        return "Dober dan☀️"
     else:
         return "Dober večer🌙"
 
