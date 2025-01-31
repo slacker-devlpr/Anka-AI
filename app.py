@@ -186,7 +186,7 @@ st.sidebar.markdown(
 )
 
 # Button to reset the chat
-if st.sidebar.button("NOV KLEPET", key="reset_chat", help="Klikni za začetek novega klepeta"):
+if st.sidebar.button("NOV KLEPET", key="reset-button", help="Klikni za začetek novega klepeta"):
     st.session_state.messages = []  # Clear chat history
     st.session_state.messages.append({
         "role": "assistant",
