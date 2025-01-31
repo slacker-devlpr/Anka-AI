@@ -114,5 +114,5 @@ st.sidebar.markdown("""
     </style>
     
     <div class="divider"></div>
-    <div class="mode-text">AI TUTOR MODE</div>
+    <div class="mode-text">AI TUTOR</div>
 """, unsafe_allow_html=True)  
