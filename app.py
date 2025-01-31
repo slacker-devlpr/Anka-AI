@@ -127,16 +127,18 @@ st.markdown("""
         /* Poudari obrobo ob hover efektu z manj svetlim ozadjem */
         div[role="radiogroup"] label:hover {
             border-color: #FF5733;       /* Poudari obrobo z isto barvo kot predhodno */
-            background-color: #616161;   /* Spremeni ozadje na svetlo sivo, namesto svetle rumene */
+            background-color: #e0e0e0;   /* Spremeni ozadje na svetlo sivo */
         }
 
-        /* Poudari obrobo ob izbrani možnosti */
+        /* Poudari obrobo ob izbrani možnosti z večjim kontrastom */
         div[role="radiogroup"] input:checked + label {
-            border-color: #28a745;       /* Barva obrobe ob izbrani možnosti */
-            background-color: #e2f9e1;   /* Ozadje ob izbrani možnosti */
+            border-color: #28a745;       /* Temnejša barva obrobe ob izbrani možnosti */
+            background-color: #d4f8e1;   /* Svetlo zelena barva ozadja za izbrano možnost */
+            font-weight: bold;           /* Poudari besedilo, da izbrana možnost izstopa */
         }
     </style>
 """, unsafe_allow_html=True)
+
 
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
