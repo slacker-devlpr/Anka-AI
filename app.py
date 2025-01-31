@@ -161,17 +161,6 @@ MODE = st.sidebar.radio(
     help="Izberi način inštrukcije, ki ti najbolj ustreza"
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-
-# Add CSS to center the button
-
-# Add the reset chat button
-if st.sidebar.button("NOV KLEPET", key="reset_chat", help="Klikni za začetek novega klepeta"):
-    st.session_state.messages = []  # Clear chat history
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": "Dobrodošel! Kako želiš, da te kličem?"
-    })
-    st.rerun()  # Rerun the app to reflect the changes
     
 # Define avatars and OpenAI client
 USER_AVATAR = "👤"
