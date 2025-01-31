@@ -159,8 +159,22 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # Add About button
-if st.sidebar.button("About", key = "about"):
+st.markdown(
+    """
+    <style>
+    .stButton>button {
+        display: block;
+        margin: 0 auto;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Centered button in the sidebar
+if st.sidebar.button("About", key="about"):
     vote()
+
 
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
