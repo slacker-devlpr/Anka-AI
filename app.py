@@ -222,7 +222,7 @@ st.markdown(f"""
         font-weight: bold;
         font-family: 'Raleway', sans-serif;
         text-align: center;
-        margin-top: -30px;
+        margin-top: -15px;
         margin-bottom: 40px;
         color: #f5f5f5; /* Custom color for the mode text */
     }}
