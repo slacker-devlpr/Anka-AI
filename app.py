@@ -25,8 +25,10 @@ if not st.session_state.messages:
     initial_message = {
         "role": "assistant",
         "content": "Dobrodošel, kako želiš da te kličem?"
+        st.session_state.messages.append(initial_message)
     }
-st.session_state.messages.append(initial_message)
+
+display_messages(st.session_state.messages)
 
 
 # Load css from assets
