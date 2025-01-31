@@ -141,7 +141,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar
 MODE = st.sidebar.radio(
-    "<strong class='sidebar-header'>Način Inštrukcije</strong>",
+    "Način Inštrukcije:",
     ["**📚 Filozofski način**: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
      "**⚡ Takojšnji odgovor**: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
      "**😎 Gen Alpha način**: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."],
