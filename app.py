@@ -147,12 +147,21 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # Add mode selection radio buttons to sidebar with working header
 MODE = st.sidebar.radio(
     "‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ **Način Inštrukcije**",
-    ["**📚 Filozofski način**: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.", 
-     "**⚡ Takojšnji odgovor**: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
-     "**😎 Gen Alpha način**: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."],
+    options=[
+        "**📚 Filozofski način**",
+        "**⚡ Takojšnji odgovor**",
+        "**😎 Gen Alpha način**"
+    ],
     index=0,
     key="mode",
-    help="Izberi način učenja, ki ti najbolj ustreza", 
+    help="Izberi način učenja, ki ti najbolj ustreza",
+    format_func=lambda x: (
+        f"{x}: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov."
+        if x == "**📚 Filozofski način**"
+        else f"{x}: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage."
+        if x == "**⚡ Takojšnji odgovor**"
+        else f"{x}: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."
+    )
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
