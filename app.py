@@ -127,7 +127,7 @@ st.sidebar.markdown("""
 col1, col2, col3 = st.sidebar.columns(3)
 
 with col1:
-    if st.button("Button 1", key="math-button"):
+    if st.button("🧮", key="math-button"):
         st.write("Button 1 clicked")
 
 with col2:
