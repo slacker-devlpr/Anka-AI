@@ -96,25 +96,30 @@ st.markdown("""
         }
         .sidebar .image-container img {
             margin-top: 0;
+            margin-bottom: 0 !important;
         }
         
-        # Sidebar divider and text
-        .sidebar.divider {
-            border-bottom: 1px solid #4a4a4a;
-            margin: 100px 0;
+        /* Tight divider styling */
+        .sidebar-divider {
+            border: 1px solid #FF5733;
+            margin: 0 0 5px 0 !important;
         }
+        
         /* Header styling */
         .sidebar-header {
             font-size: 1.5rem !important;
             text-align: center !important;
+            color: white !important;
+            margin: 10px 0 15px 0 !important;
+            font-weight: 700 !important;
             display: block !important;
             width: 100% !important;
-            color: white !important;
-            margin: 15px 0 !important;
-            font-weight: bold !important;
         }
         
         /* Radio button styling */
+        div[role="radiogroup"] {
+            margin-top: 15px !important;
+        }
         div[role="radiogroup"] label {
             border: 2px solid #FF5733;
             border-radius: 8px;
@@ -134,19 +139,20 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Add image to sidebar with divider
+# Add image to sidebar with tight divider
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-# Add mode selection radio buttons to sidebar
+# Add mode selection radio buttons to sidebar with working header
 MODE = st.sidebar.radio(
-    "**Način Inštrukcije:**",
+    "<span class='sidebar-header'>Način Inštrukcije</span>",
     ["**📚 Filozofski način**: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
      "**⚡ Takojšnji odgovor**: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
      "**😎 Gen Alpha način**: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."],
     index=0,
     key="mode",
-    help="Izberi način inštrukcije, ki ti najbolj ustreza."
+    help="Izberi način učenja, ki ti najbolj ustreza",
+    unsafe_allow_html=True  # This was missing for header rendering
 )
 
 USER_AVATAR = "👤"
