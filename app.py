@@ -141,7 +141,7 @@ def display_messages(messages):
 if not st.session_state.messages:
     initial_message = {
         "role": "assistant",
-        "content": "Testing 2.1"
+        "content": "Welcome to Shaped AI! I'm here to help you understand and solve math problems in a simple and clear way. My main goal is to guide you through each problem, helping you learn and solve it step by step."
     }
     st.toast("Shaped AI is still in Beta. Expect mistakes!", icon="👨‍💻")
     st.toast("You are currently running Shaped AI 3.2.4.", icon="⚙️")
