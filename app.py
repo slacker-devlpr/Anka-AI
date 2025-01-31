@@ -20,7 +20,7 @@ st.set_page_config(
     page_title="Shaped AI, Osebni Matematični Inštruktor",
     page_icon=r"top-logo.png"
 )
-
+@st.dialog("Hello")
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
