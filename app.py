@@ -126,9 +126,17 @@ def get_slovene_greeting():
     else:
         return "🌙 Dober večer"
 
-# Display the greeting
+# Display the greeting with updated style
 greeting = get_slovene_greeting()
-st.markdown(f"<h1 style='text-align: center; color: #4CAF50;'>{greeting}</h1>", unsafe_allow_html=True)
+st.markdown(f"""
+    <h1 style='
+        text-align: center; 
+        color: white; 
+        font-family: "Roboto", sans-serif; 
+        margin-top: 50px; 
+        font-size: 40px;
+    '>{greeting}</h1>
+""", unsafe_allow_html=True)
 
 # Typing animation function
 def type_response(content):
