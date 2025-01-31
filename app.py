@@ -198,7 +198,7 @@ st.markdown(f"""
         font-family: 'Raleway', sans-serif;
         text-align: center;
         margin-top: -20px; 
-        margin-left: 5px;
+        margin-left: -20px;
         margin-bottom: 10px;
     }}
     
