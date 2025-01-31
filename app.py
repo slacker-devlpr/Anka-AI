@@ -132,8 +132,8 @@ st.markdown(f"""
     <h1 style='
         text-align: center; 
         color: white; 
-        font-family: "Roboto", sans-serif; 
-        margin-top: 50px; 
+        font-family: "Ariel", sans-serif; 
+        margin-top: 10px; 
         font-size: 40px;
     '>{greeting}</h1>
 """, unsafe_allow_html=True)
