@@ -331,43 +331,14 @@ def get_system_message():
         }
 
 # Add CSS to position the button at the bottom left of the screen
-st.markdown(
-    """
-    <style>
-    .fixed-button {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        background-color: #1E90FF; /* Blue color */
-        color: white;
-        font-weight: bold;
-        padding: 10px 20px;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        z-index: 1000; /* Ensure it's above other elements */
-    }
-    .fixed-button:hover {
-        background-color: #0077B6; /* Darker blue on hover */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Add the blue "NOV KLEPET" button
-if st.markdown(
-    """
-    <button class="fixed-button" onclick="window.location.reload();">NOV KLEPET</button>
-    """,
-    unsafe_allow_html=True
-):
-    # Reset the chat history when the button is clicked
-    st.session_state.messages = []
+if st.button("NOV KLEPET", help="Klikni za začetek novega klepeta", key="button"):
+    st.session_state.messages = []  # Clear chat history
     st.session_state.messages.append({
         "role": "assistant",
         "content": "Dobrodošel! Kako želiš, da te kličem?"
     })
+    st.rerun()  # Rerun the app to reflect the changes
+
 # Main chat interface
 if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
