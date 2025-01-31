@@ -14,6 +14,7 @@ import io
 import base64
 import datetime
 import pytz
+
 # Page config:
 st.set_page_config(
     page_title="Shaped AI, Personal AI Tutor",
@@ -133,7 +134,7 @@ st.markdown(f"""
         text-align: center; 
         color: white; 
         font-family: "Ariel", sans-serif; 
-        margin-top: 10px; 
+        margin-top: 0px; 
         font-size: 40px;
     '>{greeting}</h1>
 """, unsafe_allow_html=True)
