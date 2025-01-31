@@ -112,7 +112,30 @@ MODE = st.sidebar.radio(
     index=0,
     key="mode"
 )
+st.markdown("""
+    <style>
+        /* Stiliziraj vsak radio gumb v sidebaru */
+        div[role="radiogroup"] label {
+            border: 2px solid #FF5733;  /* Barva obrobe */
+            border-radius: 8px;          /* Okrogle robove */
+            padding: 8px 16px;           /* Notranje robove */
+            margin-bottom: 10px;         /* Razmak med možnostmi */
+            transition: all 0.3s ease;   /* Gladek prehod ob spremembi */
+        }
 
+        /* Poudari obrobo ob hover efektu */
+        div[role="radiogroup"] label:hover {
+            border-color: #FFC300;       /* Poudari obrobo ob hoverju */
+            background-color: #f1f1f1;   /* Spremeni ozadje ob hoverju */
+        }
+
+        /* Poudari obrobo ob izbrani možnosti */
+        div[role="radiogroup"] input:checked + label {
+            border-color: #28a745;       /* Barva obrobe ob izbrani možnosti */
+            background-color: #e2f9e1;   /* Ozadje ob izbrani možnosti */
+        }
+    </style>
+""", unsafe_allow_html=True)
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
 client = OpenAI(api_key='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')
