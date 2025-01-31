@@ -84,198 +84,53 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
-# Sidebar styling
-st.markdown("""
-    <style>
-        [data-testid="stSidebar"] {
-            background-color: #1a2431;
-        }
-        [data-testid="stSidebar"] > div:first-child {
-            padding-top: 0;
-        }
-        .sidebar .image-container img {
-            margin-top: 0;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
-# Add image to sidebar with use_container_width instead of use_column_width
-st.sidebar.image("shaped-ai.png", use_container_width=True)
-
-USER_AVATAR = "👤"
-BOT_AVATAR = r"top-logo.png"
-client = OpenAI(api_key='YOUR_API_KEY')
-
-# Set up the session state
-if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-4o-mini"
-
-# Initialize chat history in session state if not already initialized
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Function to determine Slovenian time and greet
-def get_slovene_greeting():
-    slovenia_tz = pytz.timezone('Europe/Ljubljana')
-    local_time = datetime.datetime.now(slovenia_tz)
-    
-    if 5 <= local_time.hour < 12:
-        return "Dobro jutro🌅"
-    elif 12 <= local_time.hour < 18:
-        return "Dober dan☀️"
-    else:
-        return "Dober večer🌙"
-
-# Display the greeting with updated style
-greeting = get_slovene_greeting()
-
-st.markdown(f"""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
-    .custom-greeting {{
-        font-size: 40px;
-        font-weight: bold;
-        font-family: 'Raleway', sans-serif;
-        text-align: center;
-        margin-top: -20px; 
-        margin-bottom: 10px;
-    }}
-    
-    .fade-in-out {{
-        animation: fadeInOut 1.5s ease-in-out infinite;
-    }}
-    
-    @keyframes fadeInOut {{
-        0% {{
-            opacity: 0;
-        }}
-        50% {{
-            opacity: 0.9;
-        }}
-        100% {{
-            opacity: 0;
-        }}
-    }}
-    </style>
-    <div class="custom-greeting">{greeting}</div>
-""", unsafe_allow_html=True)
-
-# Typing animation function
-def type_response(content):
-    message_placeholder = st.empty()
-    full_response = ""
-    for char in content:
-        full_response += char
-        message_placeholder.markdown(full_response + "▌")
-        time.sleep(0.005)
-    message_placeholder.markdown(full_response)
-
-# Function to find and render LaTeX using st.markdown
-def render_latex(text):
-    parts = re.split(r'(\$\$[^\$]+\$\$)', text)  # Split at $$...$$ delimiters
-    rendered_parts = []
-    for i, part in enumerate(parts):
-        if part.startswith("$$") and part.endswith("$$"):
-            rendered_parts.append(f"<div style='text-align:left;'>{part[2:-2]}</div>")
-        else:
-            rendered_parts.append(part)
-    return "".join(rendered_parts)
-
-def display_messages(messages):
-    for message in messages:
-        avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
-        with st.chat_message(message["role"], avatar=avatar):
-            st.markdown(message["content"])
-
-# Show existing messages
-display_messages(st.session_state.messages)
-
 # Function to provide direct answer
 def provide_answer():
+    # Check if there is at least one message
+    if not st.session_state.messages:
+        return "Please ask a question first!"
+
+    prompt = st.session_state.messages[-1]["content"]
     system_message = {
         "role": "system",
         "content": "You are Shaped AI, providing direct answers to mathematical problems in Slovenian."
     }
-    prompt = st.session_state.messages[-1]["content"]
     response = client.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[system_message, {"role": "user", "content": prompt}]
     ).choices[0].message.content
-    # Append the answer to the same chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
     return response
 
 # Function to tutor step-by-step
 def tutor_answer():
+    # Check if there is at least one message
+    if not st.session_state.messages:
+        return "Please ask a question first!"
+
+    prompt = st.session_state.messages[-1]["content"]
     system_message = {
         "role": "system",
         "content": "You are Shaped AI, tutoring users through mathematical problems in Slovenian with explanations step-by-step."
     }
-    prompt = st.session_state.messages[-1]["content"]
     response = client.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[system_message, {"role": "user", "content": prompt}]
     ).choices[0].message.content
-    # Append the answer to the same chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
     return response
 
 # Function to explain in slang
 def explain_slang():
+    # Check if there is at least one message
+    if not st.session_state.messages:
+        return "Please ask a question first!"
+
+    prompt = st.session_state.messages[-1]["content"]
     system_message = {
         "role": "system",
         "content": "You are Shaped AI, explaining mathematical problems in Slovenian using casual slang."
     }
-    prompt = st.session_state.messages[-1]["content"]
     response = client.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[system_message, {"role": "user", "content": prompt}]
     ).choices[0].message.content
-    # Append the answer to the same chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
     return response
-
-# Add buttons in the sidebar
-with st.sidebar:
-    if st.button("Provide Answer"):
-        response = provide_answer()
-        display_messages(st.session_state.messages)
-    if st.button("Tutor Me"):
-        response = tutor_answer()
-        display_messages(st.session_state.messages)
-    if st.button("Explain in Slang"):
-        response = explain_slang()
-        display_messages(st.session_state.messages)
-
-# Main chat interface
-if prompt := st.chat_input("How can I help?"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar=USER_AVATAR):
-        st.markdown(prompt)
-
-    # Show "thinking" animation with fade in and out
-    thinking_message = st.empty()
-    thinking_message.markdown('<div class="fade-in-out">‎Razmišljam...</div>', unsafe_allow_html=True)
-
-    system_message = {
-        "role": "system",
-        "content": (
-            "You are Shaped AI, a Slovenian specialized artificial intelligence for assisting with tutoring mathematics. You were created by slacker. "
-            "Your primary goal is to help users understand and solve math problems. Try to make them solve the problem first and help if needed."
-            "For every math symbol, equation, or expression, no matter how simple it is, use LaTeX and surround it by $$."
-            "Be concise and helpful. Use clear and simple terms to help the user learn math as easily as possible. You should speak Slovene only, change languages if asked."
-        )
-    }
-
-    # Get response from the AI model
-    response = client.chat.completions.create(
-        model=st.session_state["openai_model"],
-        messages=[system_message] + st.session_state.messages
-    ).choices[0].message.content
-
-    # Update the chat with the response and remove thinking message
-    thinking_message.empty()
-
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    with st.chat_message("assistant", avatar=BOT_AVATAR):
-        type_response(response)
