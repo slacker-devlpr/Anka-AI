@@ -5,58 +5,58 @@ import shelve
 from PIL import Image
 from openai import OpenAI
 import pathlib
-#page config:
+
+# Page config:
 st.set_page_config(
     page_title="Shaped AI, Personal AI Tutor",
     page_icon=r"shaped-logo.png"
 )
 
-#Load css from assets
+# Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
         st.html(f"<style>{f.read()}</style>")
 css_path = pathlib.Path("assets.css")
 load_css(css_path)
-    
-#Hide all unneeded parts of streamlit:
+
+# Hide all unneeded parts of streamlit:
 hide_streamlit_style = """
 <style>
 .css-hi6a2p {padding-top: 0rem;}
 </style>
-
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 hide_streamlit_style = """
-                <style>
-                div[data-testid="stToolbar"] {
-                visibility: hidden;
-                height: 0%;
-                position: fixed;
-                }
-                div[data-testid="stDecoration"] {
-                visibility: hidden;
-                height: 0%;
-                position: fixed;
-                }
-                div[data-testid="stStatusWidget"] {
-                visibility: hidden;
-                height: 0%;
-                position: fixed;
-                }
-                #MainMenu {
-                visibility: hidden;
-                height: 0%;
-                }
-                header {
-                visibility: hidden;
-                height: 0%;
-                }
-                footer {
-                visibility: hidden;
-                height: 0%;
-                }
-                </style>
-                """
+<style>
+div[data-testid="stToolbar"] {
+visibility: hidden;
+height: 0%;
+position: fixed;
+}
+div[data-testid="stDecoration"] {
+visibility: hidden;
+height: 0%;
+position: fixed;
+}
+div[data-testid="stStatusWidget"] {
+visibility: hidden;
+height: 0%;
+position: fixed;
+}
+#MainMenu {
+visibility: hidden;
+height: 0%;
+}
+header {
+visibility: hidden;
+height: 0%;
+}
+footer {
+visibility: hidden;
+height: 0%;
+}
+</style>
+"""
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 st.markdown('''
 <style>
@@ -74,7 +74,7 @@ enable_scroll = """
 """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
-#MAIN---------------------------------------------------------------------------------------------------------------------------:
+# MAIN---------------------------------------------------------------------------------------------------------------------------:
 # Sidebar styling
 st.markdown("""
     <style>
@@ -122,3 +122,18 @@ st.sidebar.markdown("""
     <div class="divider"></div>
     <div class="mode-text">AI TUTOR</div>
 """, unsafe_allow_html=True)
+
+# Add three buttons next to each other in the sidebar
+col1, col2, col3 = st.sidebar.columns(3)
+
+with col1:
+    if st.button("Button 1"):
+        st.write("Button 1 clicked")
+
+with col2:
+    if st.button("Button 2"):
+        st.write("Button 2 clicked")
+
+with col3:
+    if st.button("Button 3"):
+        st.write("Button 3 clicked")
