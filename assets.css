@@ -11,7 +11,7 @@
   justify-content: center;
   align-items: center;
   background-color: #191919; /* Dark interior color */
-  border: 2px solid lightgrey; /* Light grey border */
+  border: 1px solid lightgrey; /* Thinner light grey border */
   transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s; /* Smooth transition */
 }
 
@@ -26,4 +26,10 @@
   font-size: 14px; /* Adjust the size of the label */
   margin-top: 5px; /* Adds space between the button and label */
   color: black; /* Text color */
+}
+
+.st-key-math-button .label::after {
+  content: "Math"; /* The label text under the button */
+  font-size: 12px; /* Smaller font size for the label */
+  color: black; /* Text color for the label */
 }
