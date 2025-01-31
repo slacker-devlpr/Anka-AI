@@ -20,6 +20,14 @@ st.set_page_config(
     page_title="Shaped AI, Osebni Matematični Inštruktor",
     page_icon=r"top-logo.png"
 )
+#initial message:
+if not st.session_state.messages:
+    initial_message = {
+        "role": "assistant",
+        "content": "Dobrodošel, kako želiš da te kličem?"
+    }
+st.session_state.messages.append(initial_message)
+
 
 # Load css from assets
 def load_css(file_path):
