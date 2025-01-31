@@ -152,18 +152,15 @@ MODE = st.sidebar.radio(
         "**⚡ Takojšnji odgovor**",
         "**😎 Gen Alpha način**"
     ],
+    captions=[
+        "Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
+        "Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
+        "Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."
+    ],
     index=0,
     key="mode",
-    help="Izberi način učenja, ki ti najbolj ustreza",
-    format_func=lambda x: (
-        f"{x}: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov."
-        if x == "**📚 Filozofski način**"
-        else f"{x}: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage."
-        if x == "**⚡ Takojšnji odgovor**"
-        else f"{x}: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."
-    )
+    help="Izberi način inštrukcije, ki ti najbolj ustreza"
 )
-st.write(f"Izbrali ste: {MODE}")
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 
