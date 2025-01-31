@@ -138,6 +138,7 @@ st.markdown(f"""
         font-family: 'Raleway', sans-serif;
         text-align: center;
         margin-top: -20px; 
+        margin-bottom: 10px;
     }}
     </style>
     <div class="custom-greeting">{greeting}</div>
