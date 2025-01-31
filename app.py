@@ -98,11 +98,12 @@ st.markdown("""
             margin-top: 0;
         }
         
-        /* Divider styling */
-        .sidebar-divider {
-            border: 1px solid #FF5733;
-            margin: -30px -30px;
+        # Sidebar divider and text
+        .divider {
+            border-bottom: 1px solid #4a4a4a;
+            margin: 15px 0;
         }
+        
         
         /* Header styling */
         .sidebar-header {
