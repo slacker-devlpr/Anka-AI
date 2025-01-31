@@ -5,6 +5,11 @@ import shelve
 from PIL import Image
 from openai import OpenAI
 import pathlib
+#page config:
+st.set_page_config(
+    page_title="Shaped AI, Personal Math Tutor",
+    page_icon=r"shaped-logo.png"
+)
 
 #Load css from assets
 def load_css(file_path):
@@ -14,10 +19,6 @@ css_path = pathlib.Path("assets.css")
 load_css(css_path)
     
 #Hide all unneeded parts of streamlit:
-st.set_page_config(
-    page_title="Shaped AI, Personal Math Tutor",
-    page_icon=r"shaped-logo.png"
-)
 hide_streamlit_style = """
 <style>
 .css-hi6a2p {padding-top: 0rem;}
@@ -73,3 +74,4 @@ enable_scroll = """
 """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
+#main:
