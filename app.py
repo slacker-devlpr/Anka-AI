@@ -163,17 +163,6 @@ MODE = st.sidebar.radio(
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add CSS to center the button
-st.sidebar.markdown(
-    """
-    <style>
-    .stButton button {
-        display: block;
-        margin: 0 auto;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 # Add the reset chat button
 if st.sidebar.button("NOV KLEPET", key="reset_chat", help="Klikni za začetek novega klepeta"):
