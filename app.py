@@ -166,7 +166,7 @@ st.sidebar.markdown(
     """
     <style>
     .reset-button {
-        background-color: #1a2431;
+        background-color: #f5f5f5;
         color: white;
         font-weight: bold;
         padding: 10px 20px;
