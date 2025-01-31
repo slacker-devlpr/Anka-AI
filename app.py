@@ -153,7 +153,7 @@ MODE = st.sidebar.radio(
     key="mode",
     help="Izberi način učenja, ki ti najbolj ustreza", # This was missing for header rendering
 )
-
+st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
 client = OpenAI(api_key='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')
