@@ -338,31 +338,6 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Create a layout with two columns
-col1, col2 = st.columns([1, 5])  # Adjust the ratio as needed
-
-# Add the "NOV KLEPET" button in the first column
-with col1:
-    if st.button("NOV KLEPET", help="Klikni za začetek novega klepeta"):
-        st.session_state.messages = []  # Clear chat history
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": "Dobrodošel! Kako želiš, da te kličem?"
-        })
-        st.rerun()  # Rerun the app to reflect the changes
-
-# Add the chat input in the second column
-with col2:
-    if prompt := st.chat_input("Kako ti lahko pomagam?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Simulate a bot response
-        with st.chat_message("assistant"):
-            st.markdown("This is a placeholder response.")
-        st.session_state.messages.append({"role": "assistant", "content": "This is a placeholder response."})
-
 # Main chat interface
 if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
