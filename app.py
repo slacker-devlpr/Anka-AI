@@ -84,6 +84,9 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
+@st.dialog("Cast your vote")
+def vote():
+    st.write(f"Why is your favorite?")
     
 # Sidebar styling
 st.markdown("""
@@ -157,8 +160,7 @@ MODE = st.sidebar.radio(
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # Add About button
 if st.sidebar.button("About", key = "about"):
-    @st.dialog("i")
-    return
+    vote()
 
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
