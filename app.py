@@ -102,13 +102,6 @@ st.markdown("""
 # Add image to sidebar with use_container_width instead of use_column_width
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 
-import time
-import streamlit as st
-import datetime
-import pytz
-import re
-from openai import OpenAI
-
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
 client = OpenAI(api_key='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')
@@ -146,6 +139,22 @@ st.markdown(f"""
         text-align: center;
         margin-top: -20px; 
         margin-bottom: 10px;
+    }}
+    
+    .fade-in-out {{
+        animation: fadeInOut 1.5s ease-in-out infinite;
+    }}
+    
+    @keyframes fadeInOut {{
+        0% {{
+            opacity: 0;
+        }}
+        50% {{
+            opacity: 1;
+        }}
+        100% {{
+            opacity: 0;
+        }}
     }}
     </style>
     <div class="custom-greeting">{greeting}</div>
@@ -187,9 +196,9 @@ if prompt := st.chat_input("How can I help?"):
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(prompt)
 
-    # Show "thinking" animation
+    # Show "thinking" animation with fade in and out
     thinking_message = st.empty()
-    thinking_message.markdown("Bot is thinking...")
+    thinking_message.markdown('<div class="fade-in-out">Bot is thinking...</div>', unsafe_allow_html=True)
 
     system_message = {
         "role": "system",
