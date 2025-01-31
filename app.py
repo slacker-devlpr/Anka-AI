@@ -105,8 +105,10 @@ st.sidebar.image("shaped-ai.png", use_container_width=True)
 
 # Add mode selection radio buttons to sidebar
 MODE = st.sidebar.radio(
-    "**Select Response Mode:**",
-    ["🎯 Direct Answer", "👨🏫 Tutor Mode", "😎 Slang Explanation"],
+    "**Način razlaganja:**",
+    ["📚 Filozofski način **(PRIPOROČENO)** Tvoj AI tutor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
+     "⚡ Način takojšnjih odgovorov Tvoj AI tutor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
+     "😎 Gen Alpha način **(NI PRIPOROČENO)** Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematični aura. Postani legenda matematike z memi in sodobno energijo interneta, no cap."],
     index=0,
     key="mode"
 )
