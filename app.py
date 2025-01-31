@@ -224,7 +224,7 @@ st.markdown(f"""
         text-align: center;
         margin-top: 0px;
         margin-bottom: 20px;
-        color: #1a2431; /* Custom color for the mode text */
+        color: #f5f5f5; /* Custom color for the mode text */
     }}
     </style>
     <div class="custom-greeting">{greeting}</div>
