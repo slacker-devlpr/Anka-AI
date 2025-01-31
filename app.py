@@ -162,6 +162,39 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
+st.sidebar.markdown(
+    """
+    <style>
+    .reset-button {
+        background-color: #1a2431;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .reset-button:hover {
+        background-color: #0f1116;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Button to reset the chat
+if st.sidebar.button("NOV KLEPET", key="reset_chat", help="Klikni za začetek novega klepeta"):
+    st.session_state.messages = []  # Clear chat history
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": "Dobrodošel! Kako želiš, da te kličem?"
+    })
+    st.rerun()  # Rerun the app to reflect the changes
+
+
 # Define avatars and OpenAI client
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
