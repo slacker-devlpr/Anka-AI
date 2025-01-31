@@ -102,6 +102,13 @@ st.markdown("""
 # Add image to sidebar with use_container_width instead of use_column_width
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 
+import time
+import streamlit as st
+import datetime
+import pytz
+import re
+from openai import OpenAI
+
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
 client = OpenAI(api_key='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')
@@ -171,7 +178,7 @@ def display_messages(messages):
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-
+# Show existing messages
 display_messages(st.session_state.messages)
 
 # Main chat interface
@@ -179,6 +186,10 @@ if prompt := st.chat_input("How can I help?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(prompt)
+
+    # Show "thinking" animation
+    thinking_message = st.empty()
+    thinking_message.markdown("Bot is thinking...")
 
     system_message = {
         "role": "system",
@@ -190,10 +201,14 @@ if prompt := st.chat_input("How can I help?"):
         )
     }
 
+    # Get response from the AI model
     response = client.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[system_message] + st.session_state.messages
     ).choices[0].message.content
+
+    # Update the chat with the response and remove thinking message
+    thinking_message.empty()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
     with st.chat_message("assistant", avatar=BOT_AVATAR):
