@@ -99,6 +99,13 @@ st.markdown("""
 # Add image to sidebar with use_container_width instead of use_column_width
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 
+import streamlit as st
+import time
+from openai import OpenAI
+import re
+from datetime import datetime
+import pytz
+
 USER_AVATAR = "👤"
 BOT_AVATAR = r"shaped-logo.png"
 client = OpenAI(api_key='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')
@@ -122,7 +129,7 @@ def type_response(content):
 
 # Function to find and render LaTeX using st.markdown
 def render_latex(text):
-    parts = re.split(r'(\$\$[^\$]+\$\$)', text)  # Split at $$...$$ delimiters
+    parts = re.split(r'(\$\$[^\$]+\$\$)', text) # Split at $$...$$ delimiters
     rendered_parts = []
     for i, part in enumerate(parts):
         if part.startswith("$$") and part.endswith("$$"):
@@ -136,6 +143,27 @@ def display_messages(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
+
+# Function to display a time-based greeting emoji
+def display_greeting_emoji():
+    slovenia_timezone = pytz.timezone('Europe/Ljubljana')
+    current_time = datetime.now(slovenia_timezone).time()
+    
+    morning_start = time.time(6,0,0)
+    morning_end = time.time(12,0,0)
+
+    afternoon_start = time.time(12,0,0)
+    afternoon_end = time.time(18,0,0)
+
+    if morning_start <= current_time <= morning_end:
+        st.markdown("<h1 style='text-align: center;'>☀️ Dobro jutro</h1>", unsafe_allow_html=True)
+    elif afternoon_start <= current_time <= afternoon_end:
+        st.markdown("<h1 style='text-align: center;'>☀️ Dober dan</h1>", unsafe_allow_html=True)
+    else:
+        st.markdown("<h1 style='text-align: center;'>🌙 Dober večer</h1>", unsafe_allow_html=True)
+
+# Display greeting emoji
+display_greeting_emoji()
 
 # Add initial hello message if first visit
 if not st.session_state.messages:
@@ -172,4 +200,4 @@ if prompt := st.chat_input("How can I help?"):
 
     st.session_state.messages.append({"role": "assistant", "content": response})
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        type_response(response)
+        type_response(render_latex(response))
