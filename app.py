@@ -329,15 +329,39 @@ def get_system_message():
                 "Use a ton of slang like insane amount. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$"
             )
         }
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-# Add CSS to position the button at the bottom left of the screen
-if st.button("NOV KLEPET", help="Klikni za začetek novega klepeta", key="button"):
-    st.session_state.messages = []  # Clear chat history
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": "Dobrodošel! Kako želiš, da te kličem?"
-    })
-    st.rerun()  # Rerun the app to reflect the changes
+# Display chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Create a layout with two columns
+col1, col2 = st.columns([1, 5])  # Adjust the ratio as needed
+
+# Add the "NOV KLEPET" button in the first column
+with col1:
+    if st.button("NOV KLEPET", help="Klikni za začetek novega klepeta"):
+        st.session_state.messages = []  # Clear chat history
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": "Dobrodošel! Kako želiš, da te kličem?"
+        })
+        st.rerun()  # Rerun the app to reflect the changes
+
+# Add the chat input in the second column
+with col2:
+    if prompt := st.chat_input("Kako ti lahko pomagam?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Simulate a bot response
+        with st.chat_message("assistant"):
+            st.markdown("This is a placeholder response.")
+        st.session_state.messages.append({"role": "assistant", "content": "This is a placeholder response."})
 
 # Main chat interface
 if prompt := st.chat_input("Kako lahko pomagam?"):
