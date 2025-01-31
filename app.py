@@ -102,7 +102,6 @@ st.markdown("""
 # Add image to sidebar with use_container_width instead of use_column_width
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 
-# Define emoji constants
 USER_AVATAR = "👤"
 BOT_AVATAR = r"shaped-logo.png"
 client = OpenAI(api_key='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')
@@ -129,14 +128,22 @@ def get_slovene_greeting():
 
 # Display the greeting with updated style
 greeting = get_slovene_greeting()
+
 st.markdown(f"""
-    <h1 style='
-        text-align: center; 
-        color: white; 
-        font-family: "Ariel", sans-serif; 
-        margin-top: 0px; 
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+    .custom-greeting {{
         font-size: 40px;
-    '>{greeting}</h1>
+        font-weight: bold;
+        font-family: 'Raleway', sans-serif;
+        background: linear-gradient(45deg, #ffffff, #000000);
+        background-size: 100% 150%;
+        -webkit-background-clip: text;
+        color: transparent;
+        text-align: center;
+    }}
+    </style>
+    <div class="custom-greeting">{greeting}</div>
 """, unsafe_allow_html=True)
 
 # Typing animation function
