@@ -245,7 +245,7 @@ display_messages(st.session_state.messages)
 # Response mode functions
 def get_system_message():
     mode = st.session_state.mode
-    if mode == "**📚 Filozofski način**: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.":
+    if mode == "⚡ Takojšnji odgovor**: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.":
         return {
             "role": "system",
             "content": (
@@ -253,7 +253,7 @@ def get_system_message():
                 "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise." "Every math symbol, equation, letter, number has to be incased in $$. For example $$a$$ or $$x + 2$$ Thats how the program knows it has to show it as latex!"
             )
         }
-    elif mode == "**⚡ Takojšnji odgovor**: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.":
+    elif mode == "**📚 Filozofski način**: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.":
         return {
             "role": "system",
             "content": (
