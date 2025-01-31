@@ -10,10 +10,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for color change */
+  background-color: #191919; /* Dark interior color */
+  border: 2px solid lightgrey; /* Light grey border */
+  transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s; /* Smooth transition */
 }
 
-.st-key-math-button button:active {
+.st-key-math-button button.clicked {
   background-color: green; /* Changes background to green when clicked */
   box-shadow: 0 0 10px 2px green; /* Adds a glowing green effect around the button */
 }
