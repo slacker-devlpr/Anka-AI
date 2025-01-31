@@ -105,10 +105,10 @@ st.sidebar.image("shaped-ai.png", use_container_width=True)
 
 # Add mode selection radio buttons to sidebar
 MODE = st.sidebar.radio(
-    "**Način razlaganja:**",
-    ["**📚 Filozofski način** *(PRIPOROČENO)*: Tvoj AI tutor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
-     "**⚡ Način takojšnjih odgovorov** Tvoj AI tutor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
-     "**😎 Gen Alpha način** *(NI PRIPOROČENO)* Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematični aura. Postani legenda matematike z memi in sodobno energijo interneta, no cap."],
+    "**Način Inštrukcije:**",
+    ["**📚 Filozofski način**: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
+     "**⚡ Način takojšnjih odgovorov** Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
+     "**😎 Gen Alpha način**: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."],
     index=0,
     key="mode"
 )
@@ -231,7 +231,7 @@ display_messages(st.session_state.messages)
 # Response mode functions
 def get_system_message():
     mode = st.session_state.mode
-    if mode == "🎯 Direct Answer":
+    if mode == "**📚 Filozofski način**: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.":
         return {
             "role": "system",
             "content": (
@@ -239,7 +239,7 @@ def get_system_message():
                 "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise."
             )
         }
-    elif mode == "👨🏫 Tutor Mode":
+    elif mode == "**⚡ Način takojšnjih odgovorov** Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.":
         return {
             "role": "system",
             "content": (
@@ -247,11 +247,11 @@ def get_system_message():
                 "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise."
             )
         }
-    elif mode == "😎 Slang Explanation":
+    elif mode == "**😎 Gen Alpha način**: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap.":
         return {
             "role": "system",
             "content": (
-                "Explain math like a Slovenian friend using slang. Keep it casual but accurate. "
+                "Explain math like a Slovenian friend using slang (skibidi toilet, aura, cap, fr, slovenian slang etc.). Keep it casual but accurate. "
                 "Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms."
             )
         }
