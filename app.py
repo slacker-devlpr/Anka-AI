@@ -136,10 +136,6 @@ st.markdown(f"""
         font-size: 40px;
         font-weight: bold;
         font-family: 'Raleway', sans-serif;
-        background: linear-gradient(45deg, #ffffff, #000000);
-        background-size: 100% 150%;
-        -webkit-background-clip: text;
-        color: transparent;
         text-align: center;
     }}
     </style>
