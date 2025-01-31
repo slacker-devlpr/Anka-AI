@@ -1,139 +1,109 @@
-# Libraries:
 import streamlit as st
-from openai import OpenAI
-import shelve
+import openai
 from PIL import Image
-from openai import OpenAI
-import pathlib
 
-# Page config:
+# Set page config
 st.set_page_config(
-    page_title="Shaped AI, Personal AI Tutor",
-    page_icon=r"shaped-logo.png"
+    page_title="Shaped AI",
+    page_icon="🤖",
+    layout="centered"
 )
 
-# Load css from assets
-def load_css(file_path):
-    with open(file_path) as f:
-        st.html(f"<style>{f.read()}</style>")
-css_path = pathlib.Path("assets.css")
-load_css(css_path)
+# Custom CSS for styling
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Hide all unneeded parts of streamlit:
-hide_streamlit_style = """
-<style>
-.css-hi6a2p {padding-top: 0rem;}
-</style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-hide_streamlit_style = """
-<style>
-div[data-testid="stToolbar"] {
-visibility: hidden;
-height: 0%;
-position: fixed;
-}
-div[data-testid="stDecoration"] {
-visibility: hidden;
-height: 0%;
-position: fixed;
-}
-div[data-testid="stStatusWidget"] {
-visibility: hidden;
-height: 0%;
-position: fixed;
-}
-#MainMenu {
-visibility: hidden;
-height: 0%;
-}
-header {
-visibility: hidden;
-height: 0%;
-}
-footer {
-visibility: hidden;
-height: 0%;
-}
-</style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
-st.markdown('''
-<style>
-.stApp [data-testid="stToolbar"]{
-    display:none;
-}
-</style>
-''', unsafe_allow_html=True)
-enable_scroll = """
-<style>
-.main {
-    overflow: auto;
-}
-</style>
-"""
-st.markdown(enable_scroll, unsafe_allow_html=True)
-
-# MAIN---------------------------------------------------------------------------------------------------------------------------:
-# Sidebar styling
-st.markdown("""
-    <style>
-        [data-testid="stSidebar"] {
-            background-color: #191919;
-        }
-        [data-testid="stSidebar"] > div:first-child {
-            padding-top: 0;
-        }
-        .sidebar .image-container img {
-            margin-top: 0;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
-# Add image to sidebar with use_container_width instead of use_column_width
-st.sidebar.image("shaped-ai.png", use_container_width=True)
-
-# Main app background color
+# Inject custom CSS
 st.markdown("""
     <style>
         .stApp {
-            background-color: #2b2b2b;
+            background-color: #191919;
+            color: white;
         }
-    </style>
-    """, unsafe_allow_html=True)
-
-# Sidebar divider and text
-st.sidebar.markdown("""
-    <style>
-        .divider {
-            border-bottom: 1px solid #4a4a4a;
-            margin: 15px 0;
+        .stChatInput textarea {
+            background-color: #2d2d2d !important;
+            color: white !important;
         }
-        .mode-text {
-            color: #666666;
+        .st-bq {
+            background-color: #2d2d2d !important;
+            border-radius: 15px !important;
+        }
+        .stChatMessage {
+            padding: 10px;
+            border-radius: 15px;
+            margin: 10px 0;
+        }
+        .user-message {
+            background-color: #2d2d2d !important;
+        }
+        .assistant-message {
+            background-color: #404040 !important;
+        }
+        .logo {
             text-align: center;
-            font-family: Arial;
-            font-size: 12px;
-            letter-spacing: 2px;
-            margin: 20px 0;
+            margin-bottom: 2rem;
         }
     </style>
-    
-    <div class="divider"></div>
-    <div class="mode-text">AI TUTOR</div>
 """, unsafe_allow_html=True)
 
-# Add three buttons next to each other in the sidebar
-col1, col2, col3 = st.sidebar.columns(3)
+# Initialize session state for messages
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-with col1:
-    if st.button("🧮", key="math-button"):
-        st.write("Button 1 clicked")
+# Sidebar for API key input
+with st.sidebar:
+    st.title("Settings")
+    openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
+    st.markdown("[Get OpenAI API Key](https://platform.openai.com/account/api-keys)")
 
+# Logo and header
+col1, col2, col3 = st.columns([1,2,1])
 with col2:
-    if st.button("Button 2",key="chemistry-button"):
-        st.write("Button 2 clicked")
+    logo = Image.open("shaped-ai.png")
+    st.image(logo, width=150)
+    st.title("Shaped AI")
 
-with col3:
-    if st.button("Button 3", key="physics-button"):
-        st.write("Button 3 clicked")
+# Chat container
+chat_container = st.container()
+
+# Function to generate AI response
+def generate_response(prompt):
+    openai.api_key = openai_api_key
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content.strip()
+
+# Display chat messages
+with chat_container:
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+# Chat input
+if prompt := st.chat_input("Message Shaped AI..."):
+    if not openai_api_key:
+        st.error("Please enter your OpenAI API key in the sidebar")
+        st.stop()
+    
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    # Display user message
+    with chat_container:
+        with st.chat_message("user"):
+            st.markdown(prompt)
+    
+    # Generate AI response
+    with st.spinner("Thinking..."):
+        response = generate_response(prompt)
+    
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
+    
+    # Display assistant response
+    with chat_container:
+        with st.chat_message("assistant"):
+            st.markdown(response)
