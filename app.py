@@ -112,16 +112,6 @@ MODE = st.sidebar.radio(
     index=0,
     key="mode"
 )
-st.markdown("""
-    <style>
-    .sidebar .sidebar-content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-    </style>
-""", unsafe_allow_html=True)
 
 st.markdown("""
     <style>
