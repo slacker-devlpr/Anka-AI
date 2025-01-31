@@ -85,8 +85,7 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 @st.dialog("Cast your vote")
-def vote():
-    st.write(f"Why is your favorite?")
+
     
 # Sidebar styling
 st.markdown("""
@@ -158,22 +157,6 @@ MODE = st.sidebar.radio(
     help="Izberi način učenja, ki ti najbolj ustreza", # This was missing for header rendering
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-# Add About button
-st.markdown(
-    """
-    <style>
-    .stButton>button {
-        display: block;
-        margin: 0 auto;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Centered button in the sidebar
-if st.sidebar.button("About", key="about"):
-    vote()
 
 
 USER_AVATAR = "👤"
