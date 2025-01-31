@@ -86,7 +86,7 @@ if prompt := st.chat_input("Message Shaped AI..."):
     
     # Generate assistant response
     with st.spinner(''):
-        response = openai.ChatCompletion.create(
+        response = openai.chat.compleations.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": m["role"], "content": m["content"]}
