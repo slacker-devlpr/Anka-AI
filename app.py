@@ -271,7 +271,7 @@ def get_system_message():
                 "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise.""Every math symbol, equation, letter, number has to be incased in $$. For example $$a$$ or $$x + 2$$ Thats how the program knows it has to show it as latex!"
             )
         }
-    elif mode == "**😎 Gen Alpha način**:
+    elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
             "content": (
