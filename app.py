@@ -97,48 +97,58 @@ st.markdown("""
         .sidebar .image-container img {
             margin-top: 0;
         }
+        
+        /* Divider styling */
+        .sidebar-divider {
+            border: 1px solid #FF5733;
+            margin: 10px 0;
+        }
+        
+        /* Header styling */
+        .sidebar-header {
+            font-size: 1.5rem !important;
+            text-align: center !important;
+            display: block !important;
+            width: 100% !important;
+            color: white !important;
+            margin: 15px 0 !important;
+            font-weight: bold !important;
+        }
+        
+        /* Radio button styling */
+        div[role="radiogroup"] label {
+            border: 2px solid #FF5733;
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        div[role="radiogroup"] label:hover {
+            border-color: #FF5733;
+            background-color: #e0e0e0;
+        }
+        div[role="radiogroup"] input:checked + label {
+            border-color: #28a745;
+            background-color: #d4f8e1;
+            font-weight: bold;
+        }
     </style>
     """, unsafe_allow_html=True)
 
-# Add image to sidebar with use_container_width instead of use_column_width
+# Add image to sidebar with divider
 st.sidebar.image("shaped-ai.png", use_container_width=True)
+st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar
 MODE = st.sidebar.radio(
-    "**Način Inštrukcije:**",
+    "<strong class='sidebar-header'>Način Inštrukcije</strong>",
     ["**📚 Filozofski način**: Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
      "**⚡ Takojšnji odgovor**: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
      "**😎 Gen Alpha način**: Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."],
     index=0,
-    key="mode"
+    key="mode",
+    help="Izberi način učenja, ki ti najbolj ustreza"
 )
-
-st.markdown("""
-    <style>
-        /* Stiliziraj vsak radio gumb v sidebaru */
-        div[role="radiogroup"] label {
-            border: 2px solid #FF5733;  /* Barva obrobe */
-            border-radius: 8px;          /* Okrogle robove */
-            padding: 8px 16px;           /* Notranje robove */
-            margin-bottom: 10px;         /* Razmak med možnostmi */
-            transition: all 0.3s ease;   /* Gladek prehod ob spremembi */
-        }
-
-        /* Poudari obrobo ob hover efektu z manj svetlim ozadjem */
-        div[role="radiogroup"] label:hover {
-            border-color: #FF5733;       /* Poudari obrobo z isto barvo kot predhodno */
-            background-color: #e0e0e0;   /* Spremeni ozadje na svetlo sivo */
-        }
-
-        /* Poudari obrobo ob izbrani možnosti z večjim kontrastom */
-        div[role="radiogroup"] input:checked + label {
-            border-color: #28a745;       /* Temnejša barva obrobe ob izbrani možnosti */
-            background-color: #d4f8e1;   /* Svetlo zelena barva ozadja za izbrano možnost */
-            font-weight: bold;           /* Poudari besedilo, da izbrana možnost izstopa */
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
