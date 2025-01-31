@@ -143,8 +143,8 @@ if not st.session_state.messages:
         "role": "assistant",
         "content": "Testing 2.1"
     }
-    st.toast("Anka-AI is still in Beta. Expect mistakes!", icon="👨‍💻")
-    st.toast("You are currently running Anka-AI 2.1.4.", icon="⚙️")
+    st.toast("Shaped AI is still in Beta. Expect mistakes!", icon="👨‍💻")
+    st.toast("You are currently running Shaped AI 3.2.4.", icon="⚙️")
     st.session_state.messages.append(initial_message)
 
 display_messages(st.session_state.messages)
@@ -158,8 +158,8 @@ if prompt := st.chat_input("How can I help?"):
     system_message = {
         "role": "system",
         "content": (
-            "You are Anka-AI, a specialized artificial intelligence for assisting with mathematics. You were created by Gal Kokalj. "
-            "Your primary goal is to help users understand and solve math problems."
+            "You are Shaped AI, a specialized artificial intelligence for assisting with tutoring mathematics. You were created by slacker. "
+            "Your primary goal is to help users understand and solve math problems. Try to make them solve the problem first and help if needed"
             "For every math symbol, equation, or expression, no matter how simple it is use latex and surrond it by $$. For example $$a$$ is a part of the equation $$( 2x^3 - 4x^2 + 3x - 5 )$$. Every number, variable also has to be incased in $$, example: $$a$$"
             "Be concise and helpful. Use clear and simple terms to help the user learn math as easily as possible(use the most simple formulas possable for the problem)."
         )
