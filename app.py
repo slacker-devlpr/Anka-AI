@@ -150,7 +150,7 @@ st.markdown(f"""
             opacity: 0;
         }}
         50% {{
-            opacity: 1;
+            opacity: 0.9;
         }}
         100% {{
             opacity: 0;
@@ -198,7 +198,7 @@ if prompt := st.chat_input("How can I help?"):
 
     # Show "thinking" animation with fade in and out
     thinking_message = st.empty()
-    thinking_message.markdown('<div class="fade-in-out">‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ Razmišljam...</div>', unsafe_allow_html=True)
+    thinking_message.markdown('<div class="fade-in-out">‎Razmišljam...</div>', unsafe_allow_html=True)
 
     system_message = {
         "role": "system",
