@@ -245,7 +245,7 @@ display_messages(st.session_state.messages)
 # Response mode functions
 def get_system_message():
     mode = st.session_state.mode
-    if mode == "⚡ Takojšnji odgovor**: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.":
+    if mode == "**⚡ Takojšnji odgovor**: Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.":
         return {
             "role": "system",
             "content": (
