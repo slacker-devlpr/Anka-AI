@@ -263,7 +263,15 @@ def display_messages(messages):
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-# Show existing messages
+if not st.session_state.messages:
+    initial_message = {
+        "role": "assistant",
+        "content": "Welcome to Anka-AI! I'm your dedicated math assistant created by slacker-devlpr, ready to help with a wide range of mathematical concepts. Let's work together to make math clear and engaging! What can I help you with today?"
+    }
+    st.toast("Anka-AI is still in Beta. Expect mistakes!", icon="👨‍💻")
+    st.toast("You are currently running Anka-AI 2.1.4.", icon="⚙️")
+    st.session_state.messages.append(initial_message)
+
 display_messages(st.session_state.messages)
 
 # Response mode functions
