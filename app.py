@@ -106,7 +106,7 @@ st.sidebar.markdown("""
         .mode-text {
             color: #666666;
             text-align: center;
-            font-family: Ariel;
+            font-family: Arial;
             font-size: 14px;
             margin: 10px 0;
         }
