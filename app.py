@@ -99,14 +99,6 @@ st.markdown("""
 # Add image to sidebar with use_container_width instead of use_column_width
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 
-# Main app background color
-st.markdown("""
-    <style>
-        .stApp {
-            background-color: #2b2b2b;
-        }
-    </style>
-    """, unsafe_allow_html=True)
 
 # Sidebar divider and text
 st.sidebar.markdown("""
