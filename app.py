@@ -175,15 +175,6 @@ if "openai_model" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-if not st.session_state.messages:
-    initial_message = {
-        "role": "assistant",
-        "content": "Dobrodošel, kako želiš da te kličem?"
-    }
-    st.session_state.messages.append(initial_message)
-
-display_messages(st.session_state.messages)
-
 # Function to determine Slovenian time and greet
 def get_slovene_greeting():
     slovenia_tz = pytz.timezone('Europe/Ljubljana')
@@ -302,6 +293,15 @@ def get_system_message():
                 "Keep it casual but accurate. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms."
             )
         }
+
+if not st.session_state.messages:
+    initial_message = {
+        "role": "assistant",
+        "content": "Dobrodošel, kako želiš da te kličem?"
+    }
+    st.session_state.messages.append(initial_message)
+
+display_messages(st.session_state.messages)
 
 # Main chat interface
 if prompt := st.chat_input("How can I help?"):
