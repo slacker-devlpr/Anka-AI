@@ -20,7 +20,7 @@ st.set_page_config(
     page_title="Shaped AI, Osebni Matematični Inštruktor",
     page_icon=r"top-logo.png"
 )
-@st.dialog("Hello")
+
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
@@ -156,9 +156,8 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # Add About button
-if st.sidebar.button("About"):
-    with st.dialog("About"):
-        st.write("hello")
+if st.sidebar.button("About", key = "about"):
+    @st.dialog("i")
 USER_AVATAR = "👤"
 BOT_AVATAR = r"top-logo.png"
 client = OpenAI(api_key='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')
