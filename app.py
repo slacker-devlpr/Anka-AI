@@ -164,7 +164,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # Define avatars and OpenAI client
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='your-api-key-here')  # Replace with your OpenAI API key
+client = OpenAI(api_key='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')  # Replace with your OpenAI API key
 
 # Set up the session state
 if "openai_model" not in st.session_state:
@@ -222,9 +222,9 @@ st.markdown(f"""
         font-weight: bold;
         font-family: 'Raleway', sans-serif;
         text-align: center;
-        margin-top: 10px;
+        margin-top: 0px;
         margin-bottom: 20px;
-        color: #FF5733; /* Custom color for the mode text */
+        color: #1a2431; /* Custom color for the mode text */
     }}
     </style>
     <div class="custom-greeting">{greeting}</div>
