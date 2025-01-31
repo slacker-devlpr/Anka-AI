@@ -330,15 +330,6 @@ def get_system_message():
             )
         }
 
-# Add CSS to position the button at the bottom left of the screen
-if st.button("NOV KLEPET", help="Klikni za začetek novega klepeta", key="button"):
-    st.session_state.messages = []  # Clear chat history
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": "Dobrodošel! Kako želiš, da te kličem?"
-    })
-    st.rerun()  # Rerun the app to reflect the changes
-
 # Main chat interface
 if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
