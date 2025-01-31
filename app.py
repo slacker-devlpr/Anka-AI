@@ -129,7 +129,7 @@ st.markdown("""
         }
         div[role="radiogroup"] label:hover {
             border-color: #FF5733;
-            background-color: #e0e0e0;
+            background-color: #0f1116;
         }
         div[role="radiogroup"] input:checked + label {
             border-color: #28a745;
