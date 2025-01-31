@@ -20,15 +20,6 @@ st.set_page_config(
     page_title="Shaped AI, Osebni Matematični Inštruktor",
     page_icon=r"top-logo.png"
 )
-#initial message:
-if not st.session_state.messages:
-    initial_message = {
-        "role": "assistant",
-        "content": "Dobrodošel, kako želiš da te kličem?"
-    }
-    st.session_state.messages.append(initial_message)
-
-display_messages(st.session_state.messages)
 
 
 # Load css from assets
@@ -183,6 +174,15 @@ if "openai_model" not in st.session_state:
 # Initialize chat history in session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+if not st.session_state.messages:
+    initial_message = {
+        "role": "assistant",
+        "content": "Dobrodošel, kako želiš da te kličem?"
+    }
+    st.session_state.messages.append(initial_message)
+
+display_messages(st.session_state.messages)
 
 # Function to determine Slovenian time and greet
 def get_slovene_greeting():
