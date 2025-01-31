@@ -84,10 +84,8 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
-@st.dialog("Cast your vote")
 
-    
-# Sidebar styling
+    # Sidebar styling
 st.markdown("""
     <style>
         [data-testid="stSidebar"] {
