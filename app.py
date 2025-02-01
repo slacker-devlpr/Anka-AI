@@ -198,7 +198,7 @@ client = OpenAI(api_key='sk-proj-3oJ6ujP-VhUPy4n1ax0AdcnudRH4WZdktLqi-93wFNfwlwp
 
 # Set up the session state
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-o3-mini"
+    st.session_state["openai_model"] = "gpt-4o-mini"
 
 # Initialize chat history in session state
 if "messages" not in st.session_state:
