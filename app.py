@@ -86,17 +86,9 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 
-# ----- Imports -----
-import streamlit as st
-import time
-import re
-from urllib.parse import quote
-import pytz
-import datetime
-from openai import OpenAI
 
 # ----- OpenAI API Key -----
-client = OpenAI(api_key='your-api-key-here')  # Replace with your OpenAI API key
+client = OpenAI(api_key='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')  # Replace with your OpenAI API key
 
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
@@ -354,16 +346,18 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message to history
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Show thinking animation
-    with st.spinner('‎‎‎‎Razmišljam...'):  # This automatically handles the spinner
-        # Get AI response
+    # Show thinking animation only during API call
+    with st.spinner('‎‎‎‎Razmišljam...'):
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
             messages=[get_system_message()] + st.session_state.messages
         ).choices[0].message.content
-        
+
     # Add assistant response to history
     st.session_state.messages.append({"role": "assistant", "content": response})
     
     # Rerun to update the display
     st.rerun()
+
+# ----- Final Rendering Pass -----
+display_messages()
