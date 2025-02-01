@@ -86,14 +86,6 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 
-import streamlit as st
-import datetime
-import pytz
-import time
-import re
-from urllib.parse import quote
-from openai import OpenAI  # Make sure you have the proper openai package imported
-
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
@@ -266,14 +258,14 @@ mode_display = MODE.replace("**", "")  # Remove bold formatting for cleaner disp
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
 # ----- Typing Animation Function -----
-def type_response(content):
-    message_placeholder = st.empty()
+def type_response(content, container):
     full_response = ""
     for char in content:
         full_response += char
-        message_placeholder.markdown(full_response + "▌")
+        container.markdown(full_response + "▌")
         time.sleep(0.005)
-    message_placeholder.markdown(full_response)
+    # Finalize without the cursor
+    container.markdown(full_response)
 
 # ----- LaTeX Rendering Function -----
 def render_latex(text):
@@ -289,11 +281,10 @@ def render_latex(text):
 # ----- Function to Process and Display GeoGebra Commands -----
 def display_response_with_geogebra(response_text):
     """
-    This function processes the response text from the AI.
-    It looks for any GeoGebra commands enclosed in double hashes (## ... ##)
-    and embeds the corresponding GeoGebra applet. Other text is displayed as markdown.
+    Processes the response text from the AI. It searches for any GeoGebra commands
+    enclosed in double hashes (## ... ##) and embeds the corresponding GeoGebra applet.
+    Other text is displayed as markdown.
     """
-    # Split the response using regex to find patterns like ##...##
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
         if part.startswith("##") and part.endswith("##"):
@@ -321,8 +312,8 @@ def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
-            # For assistant messages, process the response text for GeoGebra commands.
             if message["role"] == "assistant":
+                # For assistant messages, process GeoGebra commands in the final output.
                 display_response_with_geogebra(message["content"])
             else:
                 st.markdown(message["content"])
@@ -390,11 +381,18 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
         messages=[get_system_message()] + st.session_state.messages
     ).choices[0].message.content
 
-    # Update chat history and remove the "thinking" message
+    # Append the new assistant message to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
-    thinking_message.empty()
-
+    
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        # Instead of using type_response (which animated the response),
-        # we now immediately display the processed response (with GeoGebra commands replaced)
+        # Create a placeholder for typing animation
+        animation_placeholder = st.empty()
+        # Animate the raw response text (GeoGebra commands will appear as raw text here)
+        type_response(response, animation_placeholder)
+        # Clear the animation placeholder
+        animation_placeholder.empty()
+        # Now render the final processed message with GeoGebra commands replaced
         display_response_with_geogebra(response)
+    
+    # Remove the "thinking" animation
+    thinking_message.empty()
