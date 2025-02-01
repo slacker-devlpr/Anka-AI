@@ -85,6 +85,15 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
+import streamlit as st
+import time
+import datetime
+import pytz
+import re
+import hashlib
+import streamlit.components.v1 as components
+from openai_client import OpenAI  # Assuming this is how you import your OpenAI client
+
 # Sidebar styling
     
 st.markdown("""
@@ -164,7 +173,7 @@ MODE = st.sidebar.radio(
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add "NOV KLEPET" button to reset the chat
-if st.sidebar.button("‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ **NOV KLEPET** ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎  ", key="pulse", help="Klikni za začetek novega klepeta"):
+if st.sidebar.button("‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ **NOV KLEPET** ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎  ", key="pulse", help="Klikni za začetek novega klepeta"):
     st.session_state.messages = []  # Clear chat history
     st.rerun()  # Rerun the app to reflect the changes
 
@@ -277,6 +286,40 @@ def render_latex(text):
             rendered_parts.append(part)
     return "".join(rendered_parts)
 
+# New function: display message parts and embed GeoGebra graphs when encountering ##...##
+def display_message_with_graphs(message):
+    # Split the message into parts: text and graph expressions enclosed in ##
+    parts = re.split(r'(##[^#]+##)', message)
+    for part in parts:
+        if part.startswith("##") and part.endswith("##"):
+            expr = part[2:-2].strip()
+            # Create a unique id based on the expression (to avoid conflicts if multiple graphs are rendered)
+            unique_id = abs(hash(expr)) % (10 ** 8)
+            # Build the GeoGebra embed code with JavaScript. The evalCommand injects the given expression.
+            html_code = f"""
+            <div id="ggb-element-{unique_id}"></div>
+            <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+            <script>
+              var params = {{
+                "appName": "graphing",
+                "width": 600,
+                "height": 400,
+                "showToolBar": false,
+                "showAlgebraInput": false,
+                "showMenuBar": false
+              }};
+              var ggbApp = new GGBApplet(params, true);
+              window.addEventListener('load', function() {{
+                  ggbApp.inject('ggb-element-{unique_id}');
+                  ggbApp.evalCommand("{expr}");
+              }});
+            </script>
+            """
+            components.html(html_code, height=420)
+        else:
+            if part.strip():
+                st.markdown(part)
+
 def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
@@ -316,7 +359,7 @@ def get_system_message():
         return {
             "role": "system",
             "content": (
-                "You are a Slovenian slang math tutor AI named Shaped AI. You are only for math. Every response has to contain skibidi, aura, cap, fr, low taper fade. Always at the start ask what topic the user wants tutoring on."
+                "You are a Slovenian slang math tutor AI named Shaped AI. You are only for math. Use skibidi, aura, cap, fr, low taper fade in every response. Always at the start ask what topic the user wants tutoring on."
                 "Use a ton of slang. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$ Dont forget to incase variables! Example izračunamo dolžino hipotenuze $$'c'$$"
             )
         }
@@ -341,4 +384,9 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     thinking_message.empty()
     st.session_state.messages.append({"role": "assistant", "content": response})
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        type_response(response)
+        # If the response contains a graph command marker, render it with GeoGebra embed;
+        # otherwise use the standard typing animation.
+        if "##" in response:
+            display_message_with_graphs(response)
+        else:
+            type_response(response)
