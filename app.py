@@ -17,7 +17,7 @@ import pytz
 
 # Page config:
 st.set_page_config(
-    page_title="Shaped AI, Osebni Matematični Inštruktor",
+    page_title="Shaped AI, Osebni Inštruktor Matematike",
     page_icon=r"top-logo.png"
 )
 
