@@ -23,6 +23,25 @@ st.set_page_config(
     page_icon=r"top-logo.png"
 )
 
+def display_function_in_geogebra(function_expression):
+    # Initialize a GeoGebra instance
+    gg = GeoGebra()
+
+    # Create a new GeoGebra applet
+    gg.new()
+
+    # Input the function expression into GeoGebra
+    gg.eval(f"f(x) = {function_expression}")
+
+    # Display the function in the GeoGebra applet
+    gg.eval("Show(f)")
+
+    # Keep the GeoGebra applet open
+    gg.keep_open()
+
+# Example usage
+function_expression = "x^2 + 3*x + 2"
+display_function_in_geogebra(function_expression)
 
 # Load css from assets
 def load_css(file_path):
