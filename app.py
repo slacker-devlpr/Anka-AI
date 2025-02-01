@@ -15,6 +15,7 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
+from geogebra import GeoGebra
 
 # Page config:
 st.set_page_config(
