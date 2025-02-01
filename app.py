@@ -369,4 +369,4 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
 
 # ----- Final Rendering Pass -----
 display_messages()
-    thinking_message.empty()
+thinking_message.empty()
