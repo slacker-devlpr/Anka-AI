@@ -14,6 +14,7 @@ import io
 import base64
 import datetime
 import pytz
+from urllib.parse import quote
 
 # Page config:
 st.set_page_config(
