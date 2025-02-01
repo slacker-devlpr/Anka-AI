@@ -165,7 +165,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎   ‎ ‎ ‎ ‎‎‎  ‎ ‎‎‎ ‎ ‎ ‎‎ **NOV KLEPET** ‎ ‎  ‎ ‎ ‎ ‎ ‎  ‎‎‎ ‎ ‎ ‎  ‎ ‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎   ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ", key="pulse", help="Klikni za začetek novega klepeta"):
     st.session_state.messages = []  # Clear chat history
-    st.experimental_rerun()  # Rerun the app to reflect the changes
+    st.rerun()  # Rerun the app to reflect the changes
 st.markdown('</div>', unsafe_allow_html=True)
 
 st.sidebar.markdown(
