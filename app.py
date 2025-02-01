@@ -87,6 +87,19 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 
 # Sidebar styling
+st.markdown(
+    """
+    <style>
+    .sidebar .sidebar-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -164,7 +177,7 @@ MODE = st.sidebar.radio(
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add "NOV KLEPET" button to reset the chat
-if st.sidebar.button("‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ **NOV KLEPET** ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎  ", key="pulse", help="Klikni za začetek novega klepeta"):
+if st.sidebar.button("‎ **NOV KLEPET** ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎  ", key="pulse", help="Klikni za začetek novega klepeta"):
     st.session_state.messages = []  # Clear chat history
     st.rerun()  # Rerun the app to reflect the changes
 
