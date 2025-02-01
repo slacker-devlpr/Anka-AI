@@ -85,14 +85,6 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
-import streamlit as st
-import time
-import datetime
-import pytz
-import re
-import hashlib
-import streamlit.components.v1 as components
-from openai_client import OpenAI  # Assuming this is how you import your OpenAI client
 
 # Sidebar styling
     
