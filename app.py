@@ -305,9 +305,10 @@ def display_response_with_geogebra(response_text):
             """
             st.components.v1.html(geogebra_html, height=600)
         else:
-            st.markdown(part)
+            with st.chat_message("user", avatar=USER_AVATAR):
+                st.markdown(part)
 
-# ----- Function to Display Chat Messages Permanently -----
+ ----- Function to Display Chat Messages Permanently -----
 def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
