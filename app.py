@@ -86,7 +86,6 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 # Sidebar styling
-    
 st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -182,6 +181,7 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
+
 # Define avatars and OpenAI client
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
@@ -256,33 +256,76 @@ st.markdown(f"""
 mode_display = MODE.replace("**", "")  # Remove bold formatting for cleaner display
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
-# Typing animation function
-def type_response(content):
-    message_placeholder = st.empty()
-    full_response = ""
-    for char in content:
-        full_response += char
-        message_placeholder.markdown(full_response + "▌")
-        time.sleep(0.005)
-    message_placeholder.markdown(full_response)
-
-# Function to find and render LaTeX using st.markdown
-def render_latex(text):
-    parts = re.split(r'(\$\$[^\$]+\$\$)', text)
-    rendered_parts = []
+# Function to process GeoGebra embeds
+def process_geogebra_embeds(text):
+    """Detect ## notation and replace with GeoGebra iframes"""
+    parts = re.split(r'##(.*?)##', text)
+    processed = []
+    graphs = []
+    
     for i, part in enumerate(parts):
-        if part.startswith("$$") and part.endswith("$$"):
-            rendered_parts.append(f"<div style='text-align:left;'>{part[2:-2]}</div>")
+        if i % 2 == 1:  # Odd elements are the graph expressions
+            safe_expr = quote(part.strip())
+            iframe = f"""
+            <div style="margin: 15px 0; border-radius: 8px; overflow: hidden;">
+                <iframe src="https://www.geogebra.org/graphing?input={safe_expr}" 
+                        width="100%" 
+                        height="400" 
+                        style="border: 1px solid #2d4059;"
+                        allowfullscreen>
+                </iframe>
+            </div>
+            """
+            graphs.append(iframe)
+            processed.append(f"{{GRAPH_{len(graphs)-1}}}")
         else:
-            rendered_parts.append(part)
-    return "".join(rendered_parts)
+            processed.append(part)
+    
+    return "".join(processed), graphs
 
+# Function to display messages with GeoGebra embeds
 def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
-            st.markdown(message["content"])
+            processed_text, graphs = process_geogebra_embeds(message["content"])
+            
+            # Split text by graph placeholders
+            text_parts = re.split(r'\{GRAPH_(\d+)\}', processed_text)
+            
+            for i, part in enumerate(text_parts):
+                if i % 2 == 0:  # Regular text
+                    st.markdown(part, unsafe_allow_html=True)
+                else:  # Graph index
+                    graph_index = int(part)
+                    if graph_index < len(graphs):
+                        st.markdown(graphs[graph_index], unsafe_allow_html=True)
 
+# Typing animation function
+def type_response(content):
+    message_placeholder = st.empty()
+    full_response = ""
+    processed_content, graphs = process_geogebra_embeds(content)
+    
+    # Split content into text and graph placeholders
+    parts = re.split(r'(\{GRAPH_\d+\})', processed_content)
+    
+    for part in parts:
+        if re.match(r'\{GRAPH_\d+\}', part):
+            # Handle graph insertion
+            graph_index = int(re.search(r'\d+', part).group())
+            if graph_index < len(graphs):
+                message_placeholder.markdown(full_response + graphs[graph_index], unsafe_allow_html=True)
+        else:
+            # Handle text typing animation
+            for char in part:
+                full_response += char
+                message_placeholder.markdown(full_response + "▌", unsafe_allow_html=True)
+                time.sleep(0.005)
+    
+    message_placeholder.markdown(full_response, unsafe_allow_html=True)
+
+# Initialize chat with welcome message
 if not st.session_state.messages:
     initial_message = {
         "role": "assistant",
@@ -291,34 +334,32 @@ if not st.session_state.messages:
     st.toast("We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties.", icon="⏳")
     st.session_state.messages.append(initial_message)
 
+# Display existing messages
 display_messages(st.session_state.messages)
 
 # Response mode functions
 def get_system_message():
     mode = st.session_state.mode
+    graph_instruction = (
+        "If visualization would help, generate graphs using ##function## notation. "
+        "Example: 'Graf funkcije: ##x^2##'. Only one function per ## tags. "
+        "Keep graphs relevant and simple."
+    )
+    
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": (
-                "You are Shaped AI, a Slovenian tutor math expert. You are only for math. Provide direct solutions using LaTeX for all math.  Always at the start ask what topic the user wants tutoring on."
-                "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$ Dont forget to incase variables!Example izračunamo dolžino hipotenuze $$'c'$$"
-            )
+            "content": f"You are Shaped AI... {graph_instruction}"
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": (
-                "You are a patient math tutor named Shaped AI. You are only for math. Guide users step-by-step using Socratic questioning. Always at the start ask what topic the user wants tutoring on. "
-                "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$ Dont forget to incase variables!Example izračunamo dolžino hipotenuze $$'c'$$"
-            )
+            "content": f"You are a patient math tutor... {graph_instruction}"
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": (
-                "You are a Slovenian slang math tutor AI named Shaped AI. You are only for math. Use skibidi, aura, cap, fr, low taper fade in every response. Always at the start ask what topic the user wants tutoring on."
-                "Use a ton of slang. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$ Dont forget to incase variables! Example izračunamo dolžino hipotenuze $$'c'$$"
-            )
+            "content": f"You are a Slovenian slang tutor... {graph_instruction}"
         }
 
 # Main chat interface
