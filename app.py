@@ -321,7 +321,25 @@ def get_system_message():
                 "Use a ton of slang. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$"
             )
         }
-
+footer = """
+    <style>
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: transparent;
+        color: lightgrey;
+        text-align: center;
+        font-size: 12px;
+        padding: 5px 0;
+    }
+    </style>
+    <div class="footer">
+        This is my light grey small text at the bottom of the screen.
+    </div>
+"""
+st.markdown(footer, unsafe_allow_html=True)
 # Main chat interface
 if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
