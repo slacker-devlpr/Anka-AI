@@ -364,6 +364,7 @@ def get_system_message():
             )
         }
 
+
 # ----- Main Chat Interface -----
 if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -393,5 +394,3 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
         thinking_message.empty()
         # Now render the final processed message with GeoGebra commands replaced
         display_response_with_geogebra(response)
-    # Remove the "thinking" animation
-    thinking_message.empty()
