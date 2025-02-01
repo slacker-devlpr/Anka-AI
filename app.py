@@ -367,6 +367,4 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     # Rerun to update the display
     st.rerun()
 
-# ----- Final Rendering Pass -----
-display_messages()
 
