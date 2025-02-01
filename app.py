@@ -307,7 +307,7 @@ def display_response_with_geogebra(response_text):
         else:
             st.markdown(part)
 
-#----- Function to Display Chat Messages Permanently -----
+# ----- Function to Display Chat Messages Permanently -----
 def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
@@ -333,7 +333,7 @@ display_messages(st.session_state.messages)
 def get_system_message():
     # Instructions for using GeoGebra commands.
     graph_instructions = (
-        "If you want to generate a graph, use a command enclosed in double hash symbols (#). This will automatically be replaced with a graph once you type it. Do not place . after the command. The user should not be aware of this command. For example: ##1 + x##  Note: In this format, you cannot use LaTeX; only numbers, letters, +, -, =, *, ^, sin(), cos(), etc. are allowed. Example: Here's the graph: ##x^2 + y^2 = 1## Encase every mathematical letter, coordinates, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$ or  $$(0,0)$$ there are no exceptions! NOTE!: BOTH # AND $ COMMANDS CAN BE USED IN THE SAME RESPONSE."
+        "If you want to generate a graph, use a command enclosed in double hash symbols (#). This will automatically be replaced with a graph once you type it. Avoid placing '.' after the command. The user should not be aware of this command. For example: ##1 + x##. Note: In this format, you cannot use LaTeX; only numbers, letters, +, -, =, *, ^, sin(), cos(), etc. are allowed. Example: Here's the graph: ##x^2 + y^2 = 1## Encase every mathematical letter, coordinates, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$ there are no exceptions!"
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
@@ -364,7 +364,6 @@ def get_system_message():
             )
         }
 
-
 # ----- Main Chat Interface -----
 if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -381,20 +380,18 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
         messages=[get_system_message()] + st.session_state.messages
     ).choices[0].message.content
 
-    # Update chat and remove thinking message
-    thinking_message.empty()
+    # Append the new assistant message to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-    # Display the assistant's response with the typing animation
+    
     with st.chat_message("assistant", avatar=BOT_AVATAR):
         # Create a placeholder for typing animation
         animation_placeholder = st.empty()
-        
-        # Run typing animation
+        # Animate the raw response text (GeoGebra commands will appear as raw text here)
         type_response(response, animation_placeholder)
-
-        # Clear the animation placeholder once done
+        # Clear the animation placeholder
         animation_placeholder.empty()
-
-    # Now render the final processed message with GeoGebra commands replaced
-    display_response_with_geogebra(response)
+        thinking_message.empty()
+        # Now render the final processed message with GeoGebra commands replaced
+        display_response_with_geogebra(response)
+    # Remove the "thinking" animation
+    thinking_message.empty()
