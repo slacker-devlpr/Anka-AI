@@ -86,6 +86,14 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 
+import streamlit as st
+import datetime
+import pytz
+import time
+import re
+from urllib.parse import quote
+from openai import OpenAI  # Make sure you have the proper openai package imported
+
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
@@ -308,12 +316,16 @@ def display_response_with_geogebra(response_text):
         else:
             st.markdown(part)
 
-# ----- Function to Display Chat Messages -----
+# ----- Function to Display Chat Messages Permanently -----
 def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
-            st.markdown(message["content"])
+            # For assistant messages, process the response text for GeoGebra commands.
+            if message["role"] == "assistant":
+                display_response_with_geogebra(message["content"])
+            else:
+                st.markdown(message["content"])
 
 # ----- Initial Message -----
 if not st.session_state.messages:
@@ -326,11 +338,11 @@ if not st.session_state.messages:
 
 display_messages(st.session_state.messages)
 
-# ----- Updated System Message Function -----
+# ----- Updated System Message Function with Graph Command Instructions -----
 def get_system_message():
-    # Adding a note for graph generation using GeoGebra commands.
+    # Instructions for using GeoGebra commands.
     graph_instructions = (
-        "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakoma #. "
+        "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakovoma #. "
         "Na primer: **##1 + x##**. !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, *, ^, sin(), cos() ipd."
     )
     mode = st.session_state.mode
@@ -339,7 +351,7 @@ def get_system_message():
             "role": "system",
             "content": (
                 "You are Shaped AI, a Slovenian tutor math expert. You are only for math. Provide direct solutions using LaTeX for all math. Always at the start ask what topic the user wants tutoring on. "
-                "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$"
+                "Be concise. Example: 'Rešitev je $$x = 5$$.' Respond in Slovenian unless asked otherwise. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$"
                 + graph_instructions
             )
         }
@@ -378,9 +390,11 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
         messages=[get_system_message()] + st.session_state.messages
     ).choices[0].message.content
 
-    # Update chat and remove thinking message
-    thinking_message.empty()
+    # Update chat history and remove the "thinking" message
     st.session_state.messages.append({"role": "assistant", "content": response})
+    thinking_message.empty()
+
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        # Use the function that processes GeoGebra commands in the response
+        # Instead of using type_response (which animated the response),
+        # we now immediately display the processed response (with GeoGebra commands replaced)
         display_response_with_geogebra(response)
