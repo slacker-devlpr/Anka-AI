@@ -384,17 +384,20 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     # Append the new assistant message to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
 
-    # Now stop the "thinking" animation immediately
+    # Remove the "thinking" animation immediately before typing animation starts
     thinking_message.empty()
 
-    # Start the typing animation
+    # Create a placeholder for the assistant's response typing animation
     with st.chat_message("assistant", avatar=BOT_AVATAR):
         # Create a placeholder for typing animation
         animation_placeholder = st.empty()
-        # Animate the raw response text (GeoGebra commands will appear as raw text here)
+        
+        # Display the typing animation
         type_response(response, animation_placeholder)
-        # Clear the animation placeholder
+        
+        # Clear the animation placeholder once done
         animation_placeholder.empty()
 
     # Now render the final processed message with GeoGebra commands replaced
     display_response_with_geogebra(response)
+
