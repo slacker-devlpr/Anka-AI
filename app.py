@@ -162,6 +162,8 @@ MODE = st.sidebar.radio(
     help="Izberi način inštrukcije, ki ti najbolj ustreza"
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+
+st.button("hi", key="test")
 # Add "NOV KLEPET" button to reset the chat
 if st.sidebar.button("NOV KLEPET", key="NOV", help="Klikni za začetek novega klepeta"):
     st.session_state.messages = []  # Clear chat history
