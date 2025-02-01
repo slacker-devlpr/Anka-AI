@@ -390,6 +390,7 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
         type_response(response, animation_placeholder)
         # Clear the animation placeholder
         animation_placeholder.empty()
+        thinking_message.empty()
         # Now render the final processed message with GeoGebra commands replaced
         display_response_with_geogebra(response)
     # Remove the "thinking" animation
