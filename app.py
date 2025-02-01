@@ -258,20 +258,20 @@ mode_display = MODE.replace("**", "")  # Remove bold formatting for cleaner disp
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
 # ----- Typing Animation Function -----
-def type_response(content, container):
+def type_response(content):
+    message_placeholder = st.empty()
     full_response = ""
     for char in content:
         full_response += char
-        container.markdown(full_response + "▌")
+        message_placeholder.markdown(full_response + "▌")
         time.sleep(0.005)
-    # Finalize without the cursor
-    container.markdown(full_response)
+    message_placeholder.markdown(full_response)
 
 # ----- LaTeX Rendering Function -----
 def render_latex(text):
     parts = re.split(r'(\$\$[^\$]+\$\$)', text)
     rendered_parts = []
-    for part in parts:
+    for i, part in enumerate(parts):
         if part.startswith("$$") and part.endswith("$$"):
             rendered_parts.append(f"<div style='text-align:left;'>{part[2:-2]}</div>")
         else:
@@ -281,10 +281,11 @@ def render_latex(text):
 # ----- Function to Process and Display GeoGebra Commands -----
 def display_response_with_geogebra(response_text):
     """
-    Processes the response text from the AI. It searches for any GeoGebra commands
-    enclosed in double hashes (## ... ##) and embeds the corresponding GeoGebra applet.
-    Other text is displayed as markdown.
+    This function processes the response text from the AI.
+    It looks for any GeoGebra commands enclosed in double hashes (## ... ##)
+    and embeds the corresponding GeoGebra applet. Other text is displayed as markdown.
     """
+    # Split the response using regex to find patterns like ##...##
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
         if part.startswith("##") and part.endswith("##"):
@@ -310,11 +311,9 @@ def display_response_with_geogebra(response_text):
 # ----- Function to Display Chat Messages Permanently -----
 def display_messages(messages):
     for message in messages:
-        # For assistant messages, only display if they are finalized.
-        if message["role"] == "assistant" and not message.get("final", True):
-            continue
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
+            # For assistant messages, process the response text for GeoGebra commands.
             if message["role"] == "assistant":
                 display_response_with_geogebra(message["content"])
             else:
@@ -324,21 +323,19 @@ def display_messages(messages):
 if not st.session_state.messages:
     initial_message = {
         "role": "assistant",
-        "content": "Dobrodošel! Kako želiš, da te kličem?",
-        "final": True
+        "content": "Dobrodošel! Kako želiš, da te kličem?"
     }
     st.toast("We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties.", icon="⏳")
     st.session_state.messages.append(initial_message)
 
-# Display the chat history (only finalized messages)
 display_messages(st.session_state.messages)
 
 # ----- Updated System Message Function with Graph Command Instructions -----
 def get_system_message():
-    # Note: Removed bold markers from the GeoGebra command example.
+    # Instructions for using GeoGebra commands.
     graph_instructions = (
         "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakovoma #. "
-        "Na primer: ##1 + x##. !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, *, ^, sin(), cos() ipd."
+        "Na primer: **##1 + x##**. !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, *, ^, sin(), cos() ipd."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
@@ -371,34 +368,25 @@ def get_system_message():
 
 # ----- Main Chat Interface -----
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Append the user's message.
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(prompt)
 
-    # Show a temporary "thinking" placeholder.
-    thinking_placeholder = st.empty()
-    thinking_placeholder.markdown('<div class="fade-in-out">Razmišljam...</div>', unsafe_allow_html=True)
+    # Show "thinking" animation
+    thinking_message = st.empty()
+    thinking_message.markdown('<div class="fade-in-out">‎Razmišljam...</div>', unsafe_allow_html=True)
 
-    # Get response from the AI model.
+    # Get response from the AI model
     response = client.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[get_system_message()] + st.session_state.messages
     ).choices[0].message.content
 
-    # Append the new assistant message with final flag set to False.
-    st.session_state.messages.append({"role": "assistant", "content": response, "final": False})
-    
+    # Update chat history and remove the "thinking" message
+    st.session_state.messages.append({"role": "assistant", "content": response})
+    thinking_message.empty()
+
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        # Create a placeholder for typing animation.
-        animation_placeholder = st.empty()
-        type_response(response, animation_placeholder)
-        # After animation, clear the placeholder.
-        animation_placeholder.empty()
-    
-    # Update the last assistant message to be final and clear the "thinking" placeholder.
-    st.session_state.messages[-1]["final"] = True
-    thinking_placeholder.empty()
-    
-    # Rerun the app so that the newly finalized message shows in the history.
-    st.experimental_rerun()
+        # Instead of using type_response (which animated the response),
+        # we now immediately display the processed response (with GeoGebra commands replaced)
+        display_response_with_geogebra(response)
