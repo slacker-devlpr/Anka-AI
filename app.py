@@ -86,14 +86,6 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 
-import streamlit as st
-import datetime
-import pytz
-import time
-import re
-from urllib.parse import quote
-from openai import OpenAI  # Ensure you have the correct OpenAI package installed
-
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
@@ -342,7 +334,7 @@ def get_system_message():
     # Instructions for using GeoGebra commands.
     graph_instructions = (
         "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakovoma #. "
-        "Na primer: **##1 + x##**. !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, *, ^, sin(), cos() ipd."
+        "Na primer: **##1 + x##**. !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, =, *, ^, sin(), cos() ipd."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
