@@ -334,7 +334,7 @@ def get_system_message():
     # Instructions for using GeoGebra commands.
     graph_instructions = (
         "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakovoma #. "
-        "Na primer: ##1 + x## . !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, =, *, ^, sin(), cos() ipd."
+        "Na primer: ##1 + x## !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, =, *, ^, sin(), cos() ipd."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
