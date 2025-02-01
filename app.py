@@ -325,10 +325,9 @@ footer = """
     <style>
     .footer {
         position: fixed;
-        left: 0;
+        left: 50;
         bottom: 0;
         width: 100%;
-        background-color: transparent;
         color: lightgrey;
         text-align: center;
         font-size: 12px;
