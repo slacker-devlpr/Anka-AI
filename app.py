@@ -333,7 +333,7 @@ display_messages(st.session_state.messages)
 def get_system_message():
     # Instructions for using GeoGebra commands.
     graph_instructions = (
-        "If you want to generate a graph, use a command enclosed in double hash symbols (#). This will automatically be replaced with a graph once you type it. The user should not be aware of this command. For example: ##1 + x##. Note: In this format, you cannot use LaTeX; only numbers, letters, +, -, =, *, ^, sin(), cos(), etc. are allowed"
+        "If you want to generate a graph, use a command enclosed in double hash symbols (#). This will automatically be replaced with a graph once you type it. The user should not be aware of this command. For example: ##1 + x##. Note: In this format, you cannot use LaTeX; only numbers, letters, +, -, =, *, ^, sin(), cos(), etc. are allowed. Example: Here's the graph: ##x^2 + y^2 = 1##"
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
