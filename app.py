@@ -86,19 +86,8 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 
-# Sidebar styling
-
-import streamlit as st
-import time
-import datetime
-import pytz
-import re
-from urllib.parse import quote
-# (Ensure you have imported any other needed modules such as OpenAI's client library)
-
-# ---------- Sidebar Custom CSS and Components ----------
-st.markdown(
-    """
+# ----- Sidebar Customization and Styling -----
+st.markdown("""
     <style>
         [data-testid="stSidebar"] {
             background-color: #1a2431;
@@ -149,9 +138,7 @@ st.markdown(
             font-weight: bold;
         }
     </style>
-    """, 
-    unsafe_allow_html=True
-)
+    """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
 st.sidebar.image("shaped-ai.png", use_container_width=True)
@@ -178,7 +165,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎   ‎ ‎ ‎ ‎‎‎  ‎ ‎‎‎ ‎ ‎ ‎‎ **NOV KLEPET** ‎ ‎  ‎ ‎ ‎ ‎ ‎  ‎‎‎ ‎ ‎ ‎  ‎ ‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎   ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ", key="pulse", help="Klikni za začetek novega klepeta"):
     st.session_state.messages = []  # Clear chat history
-    st.rerun()  # Rerun the app to reflect the changes
+    st.experimental_rerun()  # Rerun the app to reflect the changes
 st.markdown('</div>', unsafe_allow_html=True)
 
 st.sidebar.markdown(
@@ -196,22 +183,24 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-# ---------- Define Avatars and OpenAI Client ----------
+# ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='sk-your-api-key')  # Replace with your OpenAI API key
+client = OpenAI(api_key='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')  # Your OpenAI API key
 
 # Set up the session state
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4"
 
+# Initialize chat history in session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ---------- Slovenian Greeting ----------
+# ----- Greeting Functions -----
 def get_slovene_greeting():
     slovenia_tz = pytz.timezone('Europe/Ljubljana')
     local_time = datetime.datetime.now(slovenia_tz)
+    
     if 5 <= local_time.hour < 12:
         return "Dobro jutro🌅"
     elif 12 <= local_time.hour < 18:
@@ -219,7 +208,9 @@ def get_slovene_greeting():
     else:
         return "Dober večer🌙"
 
+# Display the greeting with updated style
 greeting = get_slovene_greeting()
+
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
@@ -231,9 +222,11 @@ st.markdown(f"""
         margin-top: -20px; 
         margin-bottom: 10px;
     }}
+    
     .fade-in-out {{
         animation: fadeInOut 1.5s ease-in-out infinite;
     }}
+    
     @keyframes fadeInOut {{
         0% {{
             opacity: 0;
@@ -245,6 +238,7 @@ st.markdown(f"""
             opacity: 0;
         }}
     }}
+    
     .mode-display {{
         font-size: 20px;
         font-weight: bold;
@@ -253,16 +247,17 @@ st.markdown(f"""
         margin-top: -15px;
         margin-bottom: 40px;
         margin-left: -14px;
-        color: #f5f5f5;
+        color: #f5f5f5; /* Custom color for the mode text */
     }}
     </style>
     <div class="custom-greeting">{greeting}</div>
 """, unsafe_allow_html=True)
 
-mode_display = MODE.replace("**", "")
+# Display the selected mode under the greeting
+mode_display = MODE.replace("**", "")  # Remove bold formatting for cleaner display
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
-# ---------- Typing Animation Function ----------
+# ----- Typing Animation Function -----
 def type_response(content):
     message_placeholder = st.empty()
     full_response = ""
@@ -272,25 +267,55 @@ def type_response(content):
         time.sleep(0.005)
     message_placeholder.markdown(full_response)
 
-# ---------- LaTeX Rendering Helper ----------
+# ----- LaTeX Rendering Function -----
 def render_latex(text):
     parts = re.split(r'(\$\$[^\$]+\$\$)', text)
     rendered_parts = []
-    for part in parts:
+    for i, part in enumerate(parts):
         if part.startswith("$$") and part.endswith("$$"):
             rendered_parts.append(f"<div style='text-align:left;'>{part[2:-2]}</div>")
         else:
             rendered_parts.append(part)
     return "".join(rendered_parts)
 
-# ---------- Message Display Function ----------
+# ----- Function to Process and Display GeoGebra Commands -----
+def display_response_with_geogebra(response_text):
+    """
+    This function processes the response text from the AI.
+    It looks for any GeoGebra commands enclosed in double hashes (## ... ##)
+    and embeds the corresponding GeoGebra applet. Other text is displayed as markdown.
+    """
+    # Split the response using regex to find patterns like ##...##
+    parts = re.split(r'(##[^#]+##)', response_text)
+    for part in parts:
+        if part.startswith("##") and part.endswith("##"):
+            # Extract the function command without the hash symbols and whitespace
+            function_command = part[2:-2].strip()
+            # URL-encode the function to handle special characters
+            encoded_function = quote(function_command)
+            # Construct the GeoGebra URL dynamically
+            geogebra_url = f"https://www.geogebra.org/calculator?lang=en&command={encoded_function}"
+            # Embed the GeoGebra applet using an iframe
+            geogebra_html = f"""
+            <iframe src="{geogebra_url}" 
+                    width="800" 
+                    height="600" 
+                    allowfullscreen 
+                    style="border: 1px solid #e4e4e4;border-radius: 4px;">
+            </iframe>
+            """
+            st.components.v1.html(geogebra_html, height=600)
+        else:
+            st.markdown(part)
+
+# ----- Function to Display Chat Messages -----
 def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-# ---------- Initialize Chat with a Welcome Message ----------
+# ----- Initial Message -----
 if not st.session_state.messages:
     initial_message = {
         "role": "assistant",
@@ -301,56 +326,43 @@ if not st.session_state.messages:
 
 display_messages(st.session_state.messages)
 
-# ---------- System Message Generator with Graph Instruction ----------
+# ----- Updated System Message Function -----
 def get_system_message():
-    # Instruction to use the graph command:
-    graph_instruction = (" Če želiš, da ti prikažem graf, uporabi ukaz, zaprt v ##. "
-                         "Na primer: ##1 + x##. (Opomba: znotraj ukaza ne sme biti LaTeX; dovoljeni so samo številke, črke, operacije +, -, *, ^, sin(), cos() itd.)")
-    
+    # Adding a note for graph generation using GeoGebra commands.
+    graph_instructions = (
+        "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakoma #. "
+        "Na primer: **##1 + x##**. !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, *, ^, sin(), cos() ipd."
+    )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
             "content": (
-                "You are Shaped AI, a Slovenian math tutor expert. You are only for math. Provide direct solutions using LaTeX for all math. "
-                "Always at the start ask what topic the user wants tutoring on. Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise. "
-                "Encase every mathematical letter, variable, number, equation, or LaTeX in $$, for example: $$a$$ or $$2 + a$$."
-                + graph_instruction
+                "You are Shaped AI, a Slovenian tutor math expert. You are only for math. Provide direct solutions using LaTeX for all math. Always at the start ask what topic the user wants tutoring on. "
+                "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$"
+                + graph_instructions
             )
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
             "content": (
-                "You are a patient math tutor named Shaped AI. You are only for math. Guide users step-by-step using Socratic questioning. "
-                "Always at the start ask what topic the user wants tutoring on. Ask one question at a time. Use LaTeX for all math. "
-                "Respond in Slovenian unless asked otherwise. Encase every mathematical letter, variable, number, equation, or LaTeX in $$, for example: $$a$$ or $$2 + a$$."
-                + graph_instruction
+                "You are a patient math tutor named Shaped AI. You are only for math. Guide users step-by-step using Socratic questioning. Always at the start ask what topic the user wants tutoring on. "
+                "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$"
+                + graph_instructions
             )
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
             "content": (
-                "You are a Slovenian slang math tutor AI named Shaped AI. You are only for math. Use skibidi, aura, cap, fr, low taper fade in every response. "
-                "Always at the start ask what topic the user wants tutoring on. Use a ton of slang. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' "
-                "Use LaTeX for all math. Avoid formal terms. Encase every mathematical letter, variable, number, equation, or LaTeX in $$, for example: $$a$$ or $$2 + a$$."
-                + graph_instruction
+                "You are a Slovenian slang math tutor AI named Shaped AI. You are only for math. Use skibidi, aura, cap, fr, low taper fade in every response. Always at the start ask what topic the user wants tutoring on. "
+                "Use a ton of slang. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Use LaTeX for all math. Avoid formal terms. Encase every mathematical letter, variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$"
+                + graph_instructions
             )
         }
 
-# ---------- Helper: Process GeoGebra Commands in the Response ----------
-def process_geogebra_commands(text):
-    """
-    Looks for commands wrapped in double-hash (##...##) and returns the text with them removed,
-    along with a list of the extracted function strings.
-    """
-    commands = re.findall(r"##(.*?)##", text)
-    # Remove the commands from the text
-    new_text = re.sub(r"##(.*?)##", "", text)
-    return new_text, commands
-
-# ---------- Main Chat Interface ----------
+# ----- Main Chat Interface -----
 if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar=USER_AVATAR):
@@ -366,40 +378,9 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
         messages=[get_system_message()] + st.session_state.messages
     ).choices[0].message.content
 
-    # Process response to check for any GeoGebra commands (##...##)
-    processed_response, graph_commands = process_geogebra_commands(response)
-
-    # Update chat and remove the thinking animation
+    # Update chat and remove thinking message
     thinking_message.empty()
-    st.session_state.messages.append({"role": "assistant", "content": processed_response})
+    st.session_state.messages.append({"role": "assistant", "content": response})
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        type_response(processed_response)
-    
-    # For each graph command found, create and display a GeoGebra applet
-    for cmd in graph_commands:
-        encoded_cmd = quote(cmd)
-        geogebra_url = f"https://www.geogebra.org/calculator?lang=en&command={encoded_cmd}"
-        geogebra_html = f"""
-        <iframe src="{geogebra_url}" 
-                width="800" 
-                height="600" 
-                allowfullscreen 
-                style="border: 1px solid #e4e4e4;border-radius: 4px;">
-        </iframe>
-        """
-        st.components.v1.html(geogebra_html, height=600)
-
-# ---------- Optional: Standalone GeoGebra Graphing Utility ----------
-with st.expander("GeoGebra Graphing Utility"):
-    function_input = st.text_input("Enter a function (e.g., x^2, 2x+3):", "x^2", key="graph_input")
-    encoded_function = quote(function_input)
-    geogebra_url = f"https://www.geogebra.org/calculator?lang=en&command={encoded_function}"
-    geogebra_html = f"""
-    <iframe src="{geogebra_url}" 
-            width="800" 
-            height="600" 
-            allowfullscreen 
-            style="border: 1px solid #e4e4e4;border-radius: 4px;">
-    </iframe>
-    """
-    st.components.v1.html(geogebra_html, height=600)
+        # Use the function that processes GeoGebra commands in the response
+        display_response_with_geogebra(response)
