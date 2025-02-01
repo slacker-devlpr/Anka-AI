@@ -354,19 +354,16 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message to history
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Show thinking animation only during API call
-    with st.spinner('‎‎‎‎Razmišljam...'):
+    # Show thinking animation
+    with st.spinner('‎‎‎‎Razmišljam...'):  # This automatically handles the spinner
+        # Get AI response
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
             messages=[get_system_message()] + st.session_state.messages
         ).choices[0].message.content
-
+        
     # Add assistant response to history
     st.session_state.messages.append({"role": "assistant", "content": response})
     
     # Rerun to update the display
     st.rerun()
-
-# ----- Final Rendering Pass -----
-display_messages()
-thinking_message.empty()
