@@ -166,13 +166,13 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 st.markdown("""
     <style>
-        .center-button {
+        .pulse {
             display: flex;
             justify-content: center;
             align-items: center;
             margin-top: 20px; /* Adjust spacing as needed */
         }
-        .center-button button {
+        .pulse button {
             width: 100%; /* Make the button full width */
             padding: 10px; /* Add padding for better appearance */
             font-size: 16px; /* Adjust font size */
