@@ -333,7 +333,7 @@ display_messages(st.session_state.messages)
 def get_system_message():
     # Instructions for using GeoGebra commands.
     graph_instructions = (
-        "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakovoma #. "
+        "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakovoma #. Takoj ko bos ti napisal to(not when the user types it) bo ta del besedila zamenjal graf. Uporabnik nesme izvedeti za ta ukaz! "
         "Na primer: ##1 + x## !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, =, *, ^, sin(), cos() ipd. !DONT FORGET TO USE THE $$ COMMAND FOR EVERYTHING CONNECTED WITH MATH!"
     )
     mode = st.session_state.mode
