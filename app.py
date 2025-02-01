@@ -164,25 +164,6 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-st.markdown("""
-    <style>
-        .pulse {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px; /* Adjust spacing as needed */
-        }
-        .pulse button {
-            width: 100%; /* Make the button full width */
-            padding: 10px; /* Add padding for better appearance */
-            font-size: 16px; /* Adjust font size */
-            font-weight: bold; /* Make text bold */
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# Add the button inside a centered container
-st.markdown('<div class="center-button">', unsafe_allow_html=True)
 if st.sidebar.button("‎ **NOV KLEPET** ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎  ", key="pulse", help="Klikni za začetek novega klepeta"):
     st.session_state.messages = []  # Clear chat history
     st.rerun()  # Rerun the app to reflect the changes
