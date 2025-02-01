@@ -86,55 +86,6 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 
-# Function to generate GeoGebra embed HTML
-def generate_geogebra_html(function_input):
-    """
-    Generates HTML code to embed a GeoGebra graph based on the function input.
-    
-    Args:
-        function_input (str): The mathematical function to graph (e.g., "x^2", "2x + 3").
-    
-    Returns:
-        str: HTML code for embedding the GeoGebra graph.
-    """
-    # URL-encode the function input to handle special characters like '+'
-    encoded_function = quote(function_input)
-    
-    # Construct the GeoGebra URL dynamically
-    geogebra_url = f"https://www.geogebra.org/calculator?lang=en&command={encoded_function}"
-    
-    # Generate the iframe HTML
-    geogebra_html = f"""
-    <iframe src="{geogebra_url}" 
-            width="800" 
-            height="600" 
-            allowfullscreen 
-            style="border: 1px solid #e4e4e4;border-radius: 4px;">
-    </iframe>
-    """
-    return geogebra_html
-
-# Function to extract and replace ##function## with GeoGebra embed HTML
-def replace_graph_placeholders(text):
-    """
-    Replaces ##function## placeholders in the text with GeoGebra embed HTML.
-    
-    Args:
-        text (str): The text containing ##function## placeholders.
-    
-    Returns:
-        str: The text with placeholders replaced by GeoGebra embed HTML.
-    """
-    # Use regex to find all ##function## placeholders
-    matches = re.findall(r'##(.*?)##', text)
-    
-    # Replace each placeholder with the GeoGebra embed HTML
-    for match in matches:
-        geogebra_html = generate_geogebra_html(match)
-        text = text.replace(f"##{match}##", geogebra_html)
-    
-    return text
-
 # Sidebar styling
 st.markdown("""
     <style>
@@ -231,7 +182,6 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
-
 # Define avatars and OpenAI client
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
@@ -386,9 +336,6 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
         model=st.session_state["openai_model"],
         messages=[get_system_message()] + st.session_state.messages
     ).choices[0].message.content
-
-    # Replace ##function## placeholders with GeoGebra embed HTML
-    response = replace_graph_placeholders(response)
 
     # Update chat and remove thinking message
     thinking_message.empty()
