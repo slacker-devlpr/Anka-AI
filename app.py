@@ -168,21 +168,7 @@ if st.sidebar.button("‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎
     st.session_state.messages = []  # Clear chat history
     st.rerun()  # Rerun the app to reflect the changes
 # Add slightly visible text under the last line in the sidebar
-st.sidebar.markdown(
-    """
-    <style>
-    .subtle-text {
-        color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
-        font-size: 12px;
-        text-align: center;
-        margin-top: 6px; /* Adjust spacing as needed */
-    }
-    </style>
-    <div class="subtle-text">We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties.</div>
-    """,
-    unsafe_allow_html=True
-)
-
+st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 st.sidebar.markdown(
     """
     <style>
@@ -303,6 +289,7 @@ if not st.session_state.messages:
         "role": "assistant",
         "content": "Dobrodošel! Kako želiš, da te kličem?"
     }
+    st.toast("We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties.", icon="⏳")
     st.session_state.messages.append(initial_message)
 
 display_messages(st.session_state.messages)
