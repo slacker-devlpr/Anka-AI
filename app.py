@@ -86,6 +86,14 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
+import streamlit as st
+import datetime
+import pytz
+import time
+import re
+from openai import OpenAI
+from urllib.parse import quote
+
 # Sidebar styling
 st.markdown("""
     <style>
@@ -172,10 +180,10 @@ st.sidebar.markdown(
     """
     <style>
     .subtle-text {
-        color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
+        color: rgba(255, 255, 255, 0.3);
         font-size: 12px;
         text-align: center;
-        margin-top: 6px; /* Adjust spacing as needed */
+        margin-top: 6px;
     }
     </style>
     <div class="subtle-text">You are currently running Shaped AI 1.3 powered by OpenAI and Streamlit, Shaped AI © 2024</div>
@@ -186,7 +194,7 @@ st.sidebar.markdown(
 # Define avatars and OpenAI client
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='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')  # Replace with your OpenAI API key
+client = OpenAI(api_key='your-api-key-here')
 
 # Set up the session state
 if "openai_model" not in st.session_state:
@@ -247,7 +255,7 @@ st.markdown(f"""
         margin-top: -15px;
         margin-bottom: 40px;
         margin-left: -14px;
-        color: #f5f5f5; /* Custom color for the mode text */
+        color: #f5f5f5;
     }}
     </style>
     <div class="custom-greeting">{greeting}</div>
@@ -266,10 +274,13 @@ def process_geogebra_embeds(text):
     
     for i, part in enumerate(parts):
         if i % 2 == 1:  # Odd elements are the graph expressions
-            safe_expr = quote(part.strip())
+            # Clean and encode the expression
+            cleaned_expr = part.strip().replace(' ', '').replace('^', '%5E')
+            safe_expr = quote(cleaned_expr)
+            
             iframe = f"""
             <div style="margin: 15px 0; border-radius: 8px; overflow: hidden;">
-                <iframe src="https://www.geogebra.org/graphing?input={safe_expr}" 
+                <iframe src="https://www.geogebra.org/graphing?input={safe_expr}&embed"
                         width="100%" 
                         height="400" 
                         style="border: 1px solid #2d4059;"
@@ -292,15 +303,15 @@ def display_messages(messages):
             processed_text, graphs = process_geogebra_embeds(message["content"])
             
             # Split text by graph placeholders
-            text_parts = re.split(r'\{GRAPH_(\d+)\}', processed_text)
+            text_parts = re.split(r'(\{GRAPH_\d+\})', processed_text)
             
-            for i, part in enumerate(text_parts):
-                if i % 2 == 0:  # Regular text
-                    st.markdown(part, unsafe_allow_html=True)
-                else:  # Graph index
-                    graph_index = int(part)
+            for part in text_parts:
+                if re.match(r'\{GRAPH_\d+\}', part):
+                    graph_index = int(re.search(r'\d+', part).group())
                     if graph_index < len(graphs):
                         st.markdown(graphs[graph_index], unsafe_allow_html=True)
+                else:
+                    st.markdown(part, unsafe_allow_html=True)
 
 # Typing animation function
 def type_response(content):
@@ -313,12 +324,10 @@ def type_response(content):
     
     for part in parts:
         if re.match(r'\{GRAPH_\d+\}', part):
-            # Handle graph insertion
             graph_index = int(re.search(r'\d+', part).group())
             if graph_index < len(graphs):
                 message_placeholder.markdown(full_response + graphs[graph_index], unsafe_allow_html=True)
         else:
-            # Handle text typing animation
             for char in part:
                 full_response += char
                 message_placeholder.markdown(full_response + "▌", unsafe_allow_html=True)
@@ -344,24 +353,28 @@ def get_system_message():
     graph_instruction = (
         "If visualization would help, generate graphs using ##function## notation. "
         "Example: 'Graf funkcije: ##x^2##'. Only one function per ## tags. "
-        "Keep graphs relevant and simple."
+        "Keep graphs relevant and simple. Always use explicit function notation (include y= or f(x)=)"
     )
     
-    if mode == "**⚡ Takojšnji odgovor**":
-        return {
-            "role": "system",
-            "content": f"You are Shaped AI... {graph_instruction}"
-        }
-    elif mode == "**📚 Filozofski način**":
-        return {
-            "role": "system",
-            "content": f"You are a patient math tutor... {graph_instruction}"
-        }
-    elif mode == "**😎 Gen Alpha način**":
-        return {
-            "role": "system",
-            "content": f"You are a Slovenian slang tutor... {graph_instruction}"
-        }
+    base_messages = {
+        "**⚡ Takojšnji odgovor**": (
+            "You are Shaped AI, a Slovenian math expert. Provide direct solutions using LaTeX for all math. "
+            "Be concise. Example: 'Rešitev je $$x = 5$$. Respond in Slovenian unless asked otherwise."
+        ),
+        "**📚 Filozofski način**": (
+            "You are a patient math tutor named Shaped AI. Guide users step-by-step using Socratic questioning. "
+            "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise."
+        ),
+        "**😎 Gen Alpha način**": (
+            "You are a Slovenian slang tutor AI named Shaped AI. Use skibidi, aura, cap, fr, low taper fade in every response. "
+            "Use a ton of slang. Example: 'To je easy, samo uporabiš $$E=mc^2$$.' Avoid formal terms."
+        )
+    }
+    
+    return {
+        "role": "system",
+        "content": f"{base_messages[mode]} {graph_instruction}"
+    }
 
 # Main chat interface
 if prompt := st.chat_input("Kako lahko pomagam?"):
