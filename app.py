@@ -271,7 +271,7 @@ def type_response(content, container):
 def render_latex(text):
     parts = re.split(r'(\$\$[^\$]+\$\$)', text)
     rendered_parts = []
-    for i, part in enumerate(parts):
+    for part in parts:
         if part.startswith("$$") and part.endswith("$$"):
             rendered_parts.append(f"<div style='text-align:left;'>{part[2:-2]}</div>")
         else:
@@ -310,10 +310,12 @@ def display_response_with_geogebra(response_text):
 # ----- Function to Display Chat Messages Permanently -----
 def display_messages(messages):
     for message in messages:
+        # For assistant messages, only display if they are finalized.
+        if message["role"] == "assistant" and not message.get("final", True):
+            continue
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                # For assistant messages, process GeoGebra commands in the final output.
                 display_response_with_geogebra(message["content"])
             else:
                 st.markdown(message["content"])
@@ -322,19 +324,21 @@ def display_messages(messages):
 if not st.session_state.messages:
     initial_message = {
         "role": "assistant",
-        "content": "Dobrodošel! Kako želiš, da te kličem?"
+        "content": "Dobrodošel! Kako želiš, da te kličem?",
+        "final": True
     }
     st.toast("We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties.", icon="⏳")
     st.session_state.messages.append(initial_message)
 
+# Display the chat history (only finalized messages)
 display_messages(st.session_state.messages)
 
 # ----- Updated System Message Function with Graph Command Instructions -----
 def get_system_message():
-    # Instructions for using GeoGebra commands.
+    # Note: Removed bold markers from the GeoGebra command example.
     graph_instructions = (
         "\n\nČe želiš ustvariti graf, uporabi ukaz, ki je zaprt med dvojitima znakovoma #. "
-        "Na primer: **##1 + x##**. !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, *, ^, sin(), cos() ipd."
+        "Na primer: ##1 + x##. !NOTE: V tej obliki ne moreš uporabljati LaTeX; dovolj so samo števila, črke, +, -, *, ^, sin(), cos() ipd."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
@@ -367,32 +371,34 @@ def get_system_message():
 
 # ----- Main Chat Interface -----
 if prompt := st.chat_input("Kako lahko pomagam?"):
+    # Append the user's message.
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(prompt)
 
-    # Show "thinking" animation
-    thinking_message = st.empty()
-    thinking_message.markdown('<div class="fade-in-out">‎Razmišljam...</div>', unsafe_allow_html=True)
+    # Show a temporary "thinking" placeholder.
+    thinking_placeholder = st.empty()
+    thinking_placeholder.markdown('<div class="fade-in-out">Razmišljam...</div>', unsafe_allow_html=True)
 
-    # Get response from the AI model
+    # Get response from the AI model.
     response = client.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[get_system_message()] + st.session_state.messages
     ).choices[0].message.content
 
-    # Append the new assistant message to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    # Append the new assistant message with final flag set to False.
+    st.session_state.messages.append({"role": "assistant", "content": response, "final": False})
     
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        # Create a placeholder for typing animation
+        # Create a placeholder for typing animation.
         animation_placeholder = st.empty()
-        # Animate the raw response text (GeoGebra commands will appear as raw text here)
         type_response(response, animation_placeholder)
-        # Clear the animation placeholder
+        # After animation, clear the placeholder.
         animation_placeholder.empty()
-        # Now render the final processed message with GeoGebra commands replaced
-        display_response_with_geogebra(response)
     
-    # Remove the "thinking" animation
-    thinking_message.empty()
+    # Update the last assistant message to be final and clear the "thinking" placeholder.
+    st.session_state.messages[-1]["final"] = True
+    thinking_placeholder.empty()
+    
+    # Rerun the app so that the newly finalized message shows in the history.
+    st.experimental_rerun()
