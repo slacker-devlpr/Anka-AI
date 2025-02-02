@@ -265,7 +265,9 @@ def type_response(content):
 # ----- Add to session state setup -----
 if "last_animated_index" not in st.session_state:
     st.session_state.last_animated_index = -1
-
+# ----- Session State Setup -----
+if "animated_messages" not in st.session_state:
+    st.session_state.animated_messages = set()
 # ----- Modified display functions -----
 def display_response_with_geogebra(response_text, animate=True):
     parts = re.split(r'(##[^#]+##)', response_text)
@@ -295,13 +297,14 @@ def display_messages(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                # Only animate if this is a new response
-                is_new_message = index > st.session_state.last_animated_index
-                display_response_with_geogebra(message["content"], animate=is_new_message)
-                
-                # Update animation tracker if needed
-                if is_new_message:
-                    st.session_state.last_animated_index = index
+                # Check if this message hasn't been animated yet
+                if index not in st.session_state.animated_messages:
+                    # Animate new response
+                    display_response_with_geogebra(message["content"], animate=True)
+                    st.session_state.animated_messages.add(index)
+                else:
+                    # Show static version for previously animated messages
+                    display_response_with_geogebra(message["content"], animate=False)
             else:
                 st.markdown(message["content"])
 
@@ -331,16 +334,15 @@ def get_system_message():
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
 
-# Process new user input after displaying existing messages
+# Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add user message to session state and trigger immediate display
+    # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
-    st.session_state.generate_response = True  # Set response generation flag
-    st.rerun()  # Immediate refresh to show user message
+    st.session_state.generate_response = True
+    st.rerun()
 
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
-    # Generate assistant response with spinner
     with st.spinner("Razmišljam..."):
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
@@ -349,5 +351,5 @@ if st.session_state.get("generate_response"):
     
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
-    del st.session_state.generate_response  # Clear the flag
-    st.rerun()  # Final refresh to show AI response
+    del st.session_state.generate_response
+    st.rerun()
