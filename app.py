@@ -86,6 +86,14 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 
+import streamlit as st
+import pytz
+import datetime
+import re
+import time
+from urllib.parse import quote
+from openai import OpenAI
+
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
@@ -137,11 +145,24 @@ st.markdown("""
             background-color: #d4f8e1;
             font-weight: bold;
         }
+
+        /* GeoGebra container styling */
+        .geogebra-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: visible;
+        }
+        .geogebra-container iframe {
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e4e4e4;
+        }
     </style>
     """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_container_width=True)
+st.sidebar.image("shaped-ai.png", use_column_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar with working header
@@ -166,16 +187,15 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎   ‎ ‎ ‎ ‎‎‎  ‎ ‎‎‎ ‎ ‎ ‎‎ **NOV KLEPET** ‎ ‎  ‎ ‎ ‎ ‎ ‎  ‎‎‎ ‎ ‎ ‎  ‎ ‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎   ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ", key="pulse", help="Klikni za začetek novega klepeta"):
     st.session_state.messages = []  # Clear chat history
     st.rerun()  # Rerun the app to reflect the changes
-st.markdown('</div>', unsafe_allow_html=True)
 
 st.sidebar.markdown(
     """
     <style>
     .subtle-text {
-        color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
+        color: rgba(255, 255, 255, 0.3);
         font-size: 12px;
         text-align: center;
-        margin-top: 6px; /* Adjust spacing as needed */
+        margin-top: 6px;
     }
     </style>
     <div class="subtle-text">You are currently running Shaped AI 1.3 powered by OpenAI and Streamlit, Shaped AI © 2024</div>
@@ -186,7 +206,7 @@ st.sidebar.markdown(
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='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')  # Your OpenAI API key
+client = OpenAI(api_key='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')
 
 # Set up the session state
 if "openai_model" not in st.session_state:
@@ -223,22 +243,6 @@ st.markdown(f"""
         margin-bottom: 10px;
     }}
     
-    .fade-in-out {{
-        animation: fadeInOut 1.5s ease-in-out infinite;
-    }}
-    
-    @keyframes fadeInOut {{
-        0% {{
-            opacity: 0;
-        }}
-        50% {{
-            opacity: 0.9;
-        }}
-        100% {{
-            opacity: 0;
-        }}
-    }}
-    
     .mode-display {{
         font-size: 20px;
         font-weight: bold;
@@ -247,14 +251,14 @@ st.markdown(f"""
         margin-top: -15px;
         margin-bottom: 40px;
         margin-left: -14px;
-        color: #f5f5f5; /* Custom color for the mode text */
+        color: #f5f5f5;
     }}
     </style>
     <div class="custom-greeting">{greeting}</div>
 """, unsafe_allow_html=True)
 
 # Display the selected mode under the greeting
-mode_display = MODE.replace("**", "")  # Remove bold formatting for cleaner display
+mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
 # ----- Typing Animation Function -----
@@ -264,56 +268,35 @@ def type_response(content, container):
         full_response += char
         container.markdown(full_response + "▌")
         time.sleep(0.005)
-    # Finalize without the cursor
     container.markdown(full_response)
 
-# ----- LaTeX Rendering Function -----
-def render_latex(text):
-    parts = re.split(r'(\$\$[^\$]+\$\$)', text)
-    rendered_parts = []
-    for i, part in enumerate(parts):
-        if part.startswith("$$") and part.endswith("$$"):
-            rendered_parts.append(f"<div style='text-align:left;'>{part[2:-2]}</div>")
-        else:
-            rendered_parts.append(part)
-    return "".join(rendered_parts)
-
-# ----- Function to Process and Display GeoGebra Commands -----
+# ----- GeoGebra Display Function -----
 def display_response_with_geogebra(response_text):
-    """
-    Processes the response text from the AI. It searches for any GeoGebra commands
-    enclosed in double hashes (## ... ##) and embeds the corresponding GeoGebra applet.
-    Other text is displayed as markdown.
-    """
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
         if part.startswith("##") and part.endswith("##"):
-            # Extract the function command without the hash symbols and whitespace
             function_command = part[2:-2].strip()
-            # URL-encode the function to handle special characters
             encoded_function = quote(function_command)
-            # Construct the GeoGebra URL dynamically
             geogebra_url = f"https://www.geogebra.org/calculator?lang=en&command={encoded_function}"
-            # Embed the GeoGebra applet using an iframe
             geogebra_html = f"""
-            <iframe src="{geogebra_url}" 
-                    width="800" 
-                    height="600" 
-                    allowfullscreen 
-                    style="border: 1px solid #e4e4e4;border-radius: 4px;">
-            </iframe>
+            <div class="geogebra-container">
+                <iframe src="{geogebra_url}" 
+                        width="100%" 
+                        height="450" 
+                        allowfullscreen>
+                </iframe>
+            </div>
             """
-            st.components.v1.html(geogebra_html, height=600)
+            st.components.v1.html(geogebra_html, height=450)
         else:
             st.markdown(part)
 
-# ----- Function to Display Chat Messages Permanently -----
+# ----- Chat History Display -----
 def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                # For assistant messages, process GeoGebra commands in the final output.
                 display_response_with_geogebra(message["content"])
             else:
                 st.markdown(message["content"])
@@ -324,44 +307,31 @@ if not st.session_state.messages:
         "role": "assistant",
         "content": "Dobrodošel! Kako želiš, da te kličem?"
     }
-    st.toast("We sincerely apologize for the slow response times. The API servers, powered by DeepSeek, are currently experiencing technical difficulties.", icon="⏳")
     st.session_state.messages.append(initial_message)
 
 display_messages(st.session_state.messages)
 
-# ----- Updated System Message Function with Graph Command Instructions -----
+# ----- System Message Configuration -----
 def get_system_message():
-    # Instructions for using GeoGebra commands.
     graph_instructions = (
-        "If you want to generate a graph, use a command enclosed in double hash symbols (#). This will automatically be replaced with a graph once you type it. Avoid placing '.' after the command. The user should not be aware of this command. For example: ##1 + x## Note: In this format, you cannot use LaTeX; only numbers, letters, +, -, =, *, ^, sin(), cos(), etc. are allowed. Example: Here's the graph: ##x^2 + y^2 = 1## Encase every mathematical letter, coordinates (0,1), variable, number, equation, latex into $$ for example: $$a$$ or $$2 + a$$ there are no exceptions!"
+        "If you want to generate a graph, use a command enclosed in double hash symbols (##). "
+        "Example: ##x^2 + y^2 = 1## Encase all math in $$ symbols."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": (
-                "You are Shaped AI, a Slovenian tutor math expert. You are only for math. Provide direct solutions using LaTeX for all math. Always at the start ask what topic the user wants tutoring on. "
-                "Be concise. Example: 'Rešitev je $$x = 5$$.' Respond in Slovenian unless asked otherwise. "
-                + graph_instructions
-            )
+            "content": f"You are Shaped AI, a Slovenian math tutor. Provide direct solutions using LaTeX. {graph_instructions}"
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": (
-                "You are a patient math tutor named Shaped AI. You are only for math. Guide users step-by-step using Socratic questioning. Always at the start ask what topic the user wants tutoring on. "
-                "Ask one question at a time. Use LaTeX for all math. Respond in Slovenian unless asked otherwise."
-                + graph_instructions
-            )
+            "content": f"Guide users step-by-step using Socratic questioning. {graph_instructions}"
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": (
-                "You are a Slovenian slang math tutor AI named Shaped AI. You are only for math. Use skibidi, aura, cap, fr, low taper fade in every response. Always at the start ask what topic the user wants tutoring on. "
-                "Use a ton of slang."
-                + graph_instructions
-            )
+            "content": f"Use Slovenian slang in every response. {graph_instructions}"
         }
 
 # ----- Main Chat Interface -----
@@ -370,28 +340,17 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(prompt)
 
-    # Show "thinking" animation
-    thinking_message = st.empty()
-    thinking_message.markdown('<div class="fade-in-out">‎Razmišljam...</div>', unsafe_allow_html=True)
+    # Get response with loading spinner
+    with st.spinner("Razmišljam..."):
+        response = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=[get_system_message()] + st.session_state.messages
+        ).choices[0].message.content
 
-    # Get response from the AI model
-    response = client.chat.completions.create(
-        model=st.session_state["openai_model"],
-        messages=[get_system_message()] + st.session_state.messages
-    ).choices[0].message.content
-
-    # Append the new assistant message to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
     
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        # Create a placeholder for typing animation
         animation_placeholder = st.empty()
-        # Animate the raw response text (GeoGebra commands will appear as raw text here)
         type_response(response, animation_placeholder)
-        # Clear the animation placeholder
         animation_placeholder.empty()
-        thinking_message.empty()
-        # Now render the final processed message with GeoGebra commands replaced
         display_response_with_geogebra(response)
-    # Remove the "thinking" animation
-    thinking_message.empty()
