@@ -252,6 +252,16 @@ mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
 # ----- Display Functions -----
+def type_response(content):
+    message_placeholder = st.empty()
+    full_response = ""
+    for char in content:
+        full_response += char
+        message_placeholder.markdown(full_response + "▌")
+        time.sleep(0.005)
+    message_placeholder.markdown(full_response)
+
+# Modified display function
 def display_response_with_geogebra(response_text):
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
@@ -270,8 +280,9 @@ def display_response_with_geogebra(response_text):
             """
             st.components.v1.html(geogebra_html, height=450)
         else:
-            st.markdown(part)
+            type_response(part)  # Use typing animation for text parts
 
+# In your main logic where you display messages:
 def display_messages(messages):
     for message in messages:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
