@@ -175,9 +175,10 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎   ‎ ‎ ‎ ‎‎‎  ‎ ‎‎‎ ‎ ‎ ‎‎ **NOV KLEPET** ‎ ‎  ‎ ‎ ‎ ‎ ‎  ‎‎‎ ‎ ‎ ‎  ‎ ‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎   ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ", key="pulse", help="Klikni za začetek novega klepeta"):
-    st.session_state.messages = []  # Clear chat history
-    st.rerun()  # Rerun the app to reflect the changes
+if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎   ‎ ‎ ‎ ‎‎‎  ‎ ‎‎‎ ‎ ‎ ‎‎ **NOV KLEPET** ‎ ‎  ‎ ‎ ‎ ‎ ‎  ‎‎‎ ‎ ‎ ‎  ‎ ‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎   ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ", key="pulse"):
+    st.session_state.messages = []
+    st.session_state.last_animated_index = -1  # Reset animation tracker
+    st.rerun()
 
 st.sidebar.markdown(
     """
@@ -261,6 +262,11 @@ def type_response(content):
         time.sleep(0.005)
     message_placeholder.markdown(full_response)
 
+# ----- Add to session state setup -----
+if "last_animated_index" not in st.session_state:
+    st.session_state.last_animated_index = -1
+
+# ----- Modified display functions -----
 def display_response_with_geogebra(response_text, animate=True):
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
@@ -280,17 +286,22 @@ def display_response_with_geogebra(response_text, animate=True):
             st.components.v1.html(geogebra_html, height=450)
         else:
             if animate:
-                type_response(part)
+                type_response(part)  # Animate only new responses
             else:
-                st.markdown(part)
+                st.markdown(part)  # Static display for older messages
 
 def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                is_last_message = index == len(messages) - 1
-                display_response_with_geogebra(message["content"], animate=is_last_message)
+                # Only animate if this is a new response
+                is_new_message = index > st.session_state.last_animated_index
+                display_response_with_geogebra(message["content"], animate=is_new_message)
+                
+                # Update animation tracker if needed
+                if is_new_message:
+                    st.session_state.last_animated_index = index
             else:
                 st.markdown(message["content"])
 
