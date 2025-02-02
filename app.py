@@ -179,7 +179,7 @@ if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎
     st.session_state.messages = []
     st.session_state.last_animated_index = -1  # Reset animation tracker
     st.rerun()
-st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+
 st.sidebar.image("MADE USING.png", use_container_width = True)
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
