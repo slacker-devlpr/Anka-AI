@@ -189,6 +189,7 @@ client = OpenAI(api_key='sk-proj-MsOwVosHqgDr31ern_Uo0gQkzDDwBQHZTbakwEDvAVa0Gxg
 # Set up the session state
 if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
+    @st.dialog("Cast your vote")
     st.session_state["openai_model"] = "gpt-4o-mini"
 
 if "messages" not in st.session_state:
