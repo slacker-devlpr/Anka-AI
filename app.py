@@ -261,8 +261,7 @@ def type_response(content):
         time.sleep(0.005)
     message_placeholder.markdown(full_response)
 
-# Modified display function
-def display_response_with_geogebra(response_text):
+def display_response_with_geogebra(response_text, animate=True):
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
         if part.startswith("##") and part.endswith("##"):
@@ -280,15 +279,18 @@ def display_response_with_geogebra(response_text):
             """
             st.components.v1.html(geogebra_html, height=450)
         else:
-            type_response(part)  # Use typing animation for text parts
+            if animate:
+                type_response(part)
+            else:
+                st.markdown(part)
 
-# In your main logic where you display messages:
 def display_messages(messages):
-    for message in messages:
+    for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                display_response_with_geogebra(message["content"])
+                is_last_message = index == len(messages) - 1
+                display_response_with_geogebra(message["content"], animate=is_last_message)
             else:
                 st.markdown(message["content"])
 
@@ -335,4 +337,3 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     
     # Rerun to refresh the display with new messages
     st.rerun()
-
