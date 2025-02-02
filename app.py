@@ -85,6 +85,7 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
+# ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -174,9 +175,9 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎**NOV KLEPET**‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎", key="pulse", help="Klikni za začetek novega klepeta"):
-    st.session_state.messages = []  # Clear chat history
-    st.rerun()  # Rerun the app to reflect the changes
+if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎   ‎ ‎ ‎ ‎‎‎  ‎ ‎‎‎ ‎ ‎ ‎‎ **NOV KLEPET** ‎ ‎  ‎ ‎ ‎ ‎ ‎  ‎‎‎ ‎ ‎ ‎  ‎ ‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎   ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ", key="pulse", help="Klikni za začetek novega klepeta"):
+    st.session_state.messages = []
+    st.rerun()
 
 st.sidebar.markdown(
     """
@@ -198,7 +199,7 @@ USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
 client = OpenAI(api_key='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')
 
-# Set up the session state
+# ----- Session State Initialization -----
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini"
 
@@ -251,7 +252,18 @@ mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
 # ----- Display Functions -----
+def type_response(content):
+    """Display typing animation effect"""
+    message_placeholder = st.empty()
+    full_response = ""
+    for char in content:
+        full_response += char
+        message_placeholder.markdown(full_response + "▌")
+        time.sleep(0.005)
+    message_placeholder.markdown(full_response)
+
 def display_response_with_geogebra(response_text):
+    """Handle GeoGebra commands and regular text"""
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
         if part.startswith("##") and part.endswith("##"):
@@ -271,51 +283,56 @@ def display_response_with_geogebra(response_text):
         else:
             st.markdown(part)
 
-def display_messages(messages):
-    for message in messages:
-        avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
-        with st.chat_message(message["role"], avatar=avatar):
-            if message["role"] == "assistant":
-                display_response_with_geogebra(message["content"])
-            else:
-                st.markdown(message["content"])
-
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##). "
-        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$"
+        "You are ShapedAI. Speak Slovenian unless asked otherwise. For graphs use ##commands##. "
+        "Examples: ##x^2## or ##x^2 + y^2 = 1##. Use $$ for math: $$a$$, $$1$$, $$2x + 3 = 1y$$"
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": f"You are Shaped AI, a Slovenian math tutor. Provide direct solutions using LaTeX. {graph_instructions}"
+            "content": f"Shaped AI Slovenian math tutor. Direct solutions with LaTeX. {graph_instructions}"
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": f"Guide users step-by-step using Socratic questioning. Ask one question at a time. {graph_instructions}"
+            "content": f"Guide with Socratic questioning. Ask one question at a time. {graph_instructions}"
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": f"Use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}"
+            "content": f"Use skibidi, fr, cap, aura, rizz slang. Example: 'Nah fam, that equation's sus' {graph_instructions}"
         }
 
-# ----- Main Logic -----
-# Process user input first
+# ----- Main Chat Logic -----
+# Display existing messages
+for message in st.session_state.messages:
+    avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
+    with st.chat_message(message["role"], avatar=avatar):
+        if message["role"] == "assistant":
+            display_response_with_geogebra(message["content"])
+        else:
+            st.markdown(message["content"])
+
+# Handle new input
 if prompt := st.chat_input("Kako lahko pomagam?"):
+    # Immediately show user message
+    with st.chat_message("user", avatar=USER_AVATAR):
+        st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    # Generate assistant response
-    with st.spinner("Razmišljam..."):
-        response = client.chat.completions.create(
-            model=st.session_state["openai_model"],
-            messages=[get_system_message()] + st.session_state.messages
-        ).choices[0].message.content
+
+    # Generate and display assistant response
+    with st.chat_message("assistant", avatar=BOT_AVATAR):
+        with st.spinner("Razmišljam..."):
+            response = client.chat.completions.create(
+                model=st.session_state["openai_model"],
+                messages=[get_system_message()] + st.session_state.messages
+            ).choices[0].message.content
+        
+        response_container = st.empty()
+        type_response(response)
+        display_response_with_geogebra(response)
     
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-# Display all messages after processing input
-display_messages(st.session_state.messages)
