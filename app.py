@@ -289,7 +289,7 @@ def display_messages(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                is_last_message = index == len(messages) - 1
+                is_last_message = index == len(messages) - 2
                 display_response_with_geogebra(message["content"], animate=is_last_message)
             else:
                 st.markdown(message["content"])
