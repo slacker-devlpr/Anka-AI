@@ -192,11 +192,7 @@ if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini"
     @st.dialog("Dobrodošli👋")
     def vote():
-        st.write("Shaped AI Inštruktor je eden prvih brezplačnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀 Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡
-
-A čeprav so naše storitve brezplačne, njihovo delovanje ni – strežniki, materiali in čas zahtevajo sredstva. Če želite podpreti našo misijo, bomo izjemno hvaležni za donacije na [BTC WALLET]. 🙏💙
-
-📍 Živite v Ljubljani? Pokličite 031 577 600 in si zagotovite ena na ena inštrukcije v živo! 📞✨")
+        st.write("Shaped AI Inštruktor je eden prvih brezplačnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀 Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡 A čeprav so naše storitve brezplačne, njihovo delovanje ni – strežniki, materiali in čas zahtevajo sredstva. Če želite podpreti našo misijo, bomo izjemno hvaležni za donacije na [BTC WALLET]. 🙏💙📍 Živite v Ljubljani? Pokličite 031 577 600 in si zagotovite ena na ena inštrukcije v živo! 📞✨")
     vote()
 
 if "messages" not in st.session_state:
