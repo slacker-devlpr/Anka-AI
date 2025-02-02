@@ -316,17 +316,12 @@ def get_system_message():
         }
 
 # ----- Main Logic -----
-# Display existing messages first
 display_messages(st.session_state.messages)
 
 # Process new user input after displaying existing messages
 if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message to session state
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    # Immediately display user's new message
-    with st.chat_message("user", avatar=USER_AVATAR):
-        st.markdown(prompt)
     
     # Generate assistant response with spinner
     with st.spinner("Razmišljam..."):
@@ -338,6 +333,6 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
     
-    # Immediately display assistant's response
-    with st.chat_message("assistant", avatar=BOT_AVATAR):
-        display_response_with_geogebra(response)
+    # Rerun to refresh the display with new messages
+    st.rerun()
+
