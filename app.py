@@ -320,4 +320,4 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
         display_response_with_geogebra(response)
     
     # Add final response to session state
-    st.session_state.messages.append({"role": "assistant", "content": response)
+    st.session_state.messages.append({"role": "assistant", "content": response})
