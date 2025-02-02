@@ -99,11 +99,13 @@ st.markdown("""
             margin-bottom: 0 !important;
         }
         
+        /* Tight divider styling */
         .sidebar-divider {
             border: 1px solid #FF5733;
             margin: 0 0 5px 0 !important;
         }
         
+        /* Header styling */
         .sidebar-header {
             font-size: 1.5rem !important;
             text-align: center !important;
@@ -114,6 +116,7 @@ st.markdown("""
             width: 100% !important;
         }
         
+        /* Radio button styling */
         div[role="radiogroup"] {
             margin-top: 15px !important;
         }
@@ -134,6 +137,7 @@ st.markdown("""
             font-weight: bold;
         }
 
+        /* GeoGebra container styling */
         .geogebra-container {
             width: 100%;
             max-width: 800px;
@@ -148,10 +152,11 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Sidebar components
+# Add image to sidebar with tight divider
 st.sidebar.image("shaped-ai.png", use_column_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
+# Add mode selection radio buttons to sidebar with working header
 MODE = st.sidebar.radio(
     "‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ **Način Inštrukcije**",
     options=[
@@ -170,9 +175,9 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎   ‎ ‎ ‎ ‎‎‎  ‎ ‎‎‎ ‎ ‎ ‎‎ **NOV KLEPET** ‎ ‎  ‎ ‎ ‎ ‎ ‎  ‎‎‎ ‎ ‎ ‎  ‎ ‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎   ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ", key="pulse"):
-    st.session_state.messages = []
-    st.rerun()
+if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎   ‎ ‎ ‎ ‎‎‎  ‎ ‎‎‎ ‎ ‎ ‎‎ **NOV KLEPET** ‎ ‎  ‎ ‎ ‎ ‎ ‎  ‎‎‎ ‎ ‎ ‎  ‎ ‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎   ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ", key="pulse", help="Klikni za začetek novega klepeta"):
+    st.session_state.messages = []  # Clear chat history
+    st.rerun()  # Rerun the app to reflect the changes
 
 st.sidebar.markdown(
     """
@@ -189,27 +194,64 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-# ----- Core Configuration -----
+# ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
 client = OpenAI(api_key='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')
 
+# Set up the session state
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ----- Display Functions -----
-def type_response(content):
-    message_placeholder = st.empty()
-    full_response = ""
-    for char in content:
-        full_response += char
-        message_placeholder.markdown(full_response + "▌")
-        time.sleep(0.005)
-    message_placeholder.markdown(full_response)
+# ----- Greeting Functions -----
+def get_slovene_greeting():
+    slovenia_tz = pytz.timezone('Europe/Ljubljana')
+    local_time = datetime.datetime.now(slovenia_tz)
+    
+    if 5 <= local_time.hour < 12:
+        return "Dobro jutro🌅"
+    elif 12 <= local_time.hour < 18:
+        return "Dober dan☀️"
+    else:
+        return "Dober večer🌙"
 
+# Display the greeting with updated style
+greeting = get_slovene_greeting()
+
+st.markdown(f"""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+    .custom-greeting {{
+        font-size: 40px;
+        font-weight: bold;
+        font-family: 'Raleway', sans-serif;
+        text-align: center;
+        margin-top: -20px; 
+        margin-bottom: 10px;
+    }}
+    
+    .mode-display {{
+        font-size: 20px;
+        font-weight: bold;
+        font-family: 'Raleway', sans-serif;
+        text-align: center;
+        margin-top: -15px;
+        margin-bottom: 40px;
+        margin-left: -14px;
+        color: #f5f5f5;
+    }}
+    </style>
+    <div class="custom-greeting">{greeting}</div>
+""", unsafe_allow_html=True)
+
+# Display the selected mode under the greeting
+mode_display = MODE.replace("**", "")
+st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
+
+# ----- Display Functions -----
 def display_response_with_geogebra(response_text):
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
@@ -239,85 +281,42 @@ def display_messages(messages):
             else:
                 st.markdown(message["content"])
 
-# ----- System Messages -----
+# ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##). For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$"
+        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##). "
+        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$"
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": f"Shaped AI Slovenian math tutor. Provide direct solutions. {graph_instructions}"
+            "content": f"You are Shaped AI, a Slovenian math tutor. Provide direct solutions using LaTeX. {graph_instructions}"
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": f"Guide with Socratic questioning. Ask one question at a time. {graph_instructions}"
+            "content": f"Guide users step-by-step using Socratic questioning. Ask one question at a time. {graph_instructions}"
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": f"Use skibidi, fr, cap, aura, rizz slang. Example: 'Nah fam, that equation's sus' {graph_instructions}"
+            "content": f"Use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}"
         }
 
-# ----- Greeting Display -----
-def get_slovene_greeting():
-    slovenia_tz = pytz.timezone('Europe/Ljubljana')
-    local_time = datetime.datetime.now(slovenia_tz)
-    if 5 <= local_time.hour < 12: return "Dobro jutro🌅"
-    elif 12 <= local_time.hour < 18: return "Dober dan☀️"
-    else: return "Dober večer🌙"
-
-st.markdown(f"""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
-    .custom-greeting {{
-        font-size: 40px;
-        font-weight: bold;
-        font-family: 'Raleway', sans-serif;
-        text-align: center;
-        margin-top: -20px; 
-        margin-bottom: 10px;
-    }}
-    .mode-display {{
-        font-size: 20px;
-        font-weight: bold;
-        font-family: 'Raleway', sans-serif;
-        text-align: center;
-        margin-top: -15px;
-        margin-bottom: 40px;
-        margin-left: -14px;
-        color: #f5f5f5;
-    }}
-    </style>
-    <div class="custom-greeting">{get_slovene_greeting()}</div>
-    <div class="mode-display">{MODE.replace("**", "")}</div>
-""", unsafe_allow_html=True)
-
-# ----- Main Chat Flow -----
-display_messages(st.session_state.messages)
-
+# ----- Main Logic -----
+# Process user input first
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Immediately show user message
-    with st.chat_message("user", avatar=USER_AVATAR):
-        st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
-
-    # Generate response
-    with st.chat_message("assistant", avatar=BOT_AVATAR):
-        with st.spinner("Razmišljam..."):
-            response = client.chat.completions.create(
-                model=st.session_state["openai_model"],
-                messages=[get_system_message()] + st.session_state.messages
-            ).choices[0].message.content
-        
-        # Display response with typing animation
-        response_placeholder = st.empty()
-        type_response(response)
-        
-        # Handle GeoGebra components
-        display_response_with_geogebra(response)
     
-    # Add final response to session state
+    # Generate assistant response
+    with st.spinner("Razmišljam..."):
+        response = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=[get_system_message()] + st.session_state.messages
+        ).choices[0].message.content
+    
     st.session_state.messages.append({"role": "assistant", "content": response})
+
+# Display all messages after processing input
+display_messages(st.session_state.messages)
