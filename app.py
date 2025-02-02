@@ -251,7 +251,6 @@ st.markdown(f"""
 mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
-# ----- Display Functions -----
 def type_response(content):
     message_placeholder = st.empty()
     full_response = ""
@@ -261,11 +260,11 @@ def type_response(content):
         time.sleep(0.005)
     message_placeholder.markdown(full_response)
 
-# Modified display function
-def display_response_with_geogebra(response_text):
+def display_response_with_geogebra(response_text, animate=False):
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
         if part.startswith("##") and part.endswith("##"):
+            # GeoGebra handling (no animation)
             function_command = part[2:-2].strip()
             encoded_function = quote(function_command)
             geogebra_url = f"https://www.geogebra.org/calculator?lang=en&command={encoded_function}"
@@ -280,15 +279,26 @@ def display_response_with_geogebra(response_text):
             """
             st.components.v1.html(geogebra_html, height=450)
         else:
-            type_response(part)  # Use typing animation for text parts
+            # Text handling with animation control
+            if animate:
+                type_response(part)
+            else:
+                st.markdown(part)
 
-# In your main logic where you display messages:
 def display_messages(messages):
-    for message in messages:
+    for idx, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                display_response_with_geogebra(message["content"])
+                # Check if we need to animate this message
+                should_animate = not message.get("animated", False)
+                
+                # Display content with animation control
+                display_response_with_geogebra(message["content"], animate=should_animate)
+                
+                # Mark message as animated after first display
+                if should_animate:
+                    st.session_state.messages[idx]["animated"] = True
             else:
                 st.markdown(message["content"])
 
@@ -319,25 +329,24 @@ def get_system_message():
 # Display existing messages first
 display_messages(st.session_state.messages)
 
-# Process new user input after displaying existing messages
+# ----- Modified main logic -----
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add user message to session state
+    # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Immediately display user's new message
-    with st.chat_message("user", avatar=USER_AVATAR):
-        st.markdown(prompt)
-    
-    # Generate assistant response with spinner
+    # Generate assistant response
     with st.spinner("Razmišljam..."):
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
             messages=[get_system_message()] + st.session_state.messages
         ).choices[0].message.content
     
-    # Add assistant response to session state
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    
-    # Immediately display assistant's response
-    with st.chat_message("assistant", avatar=BOT_AVATAR):
-        display_response_with_geogebra(response)
+    # Add assistant response with animation flag
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": response,
+        "animated": False  # Flag to track animation status
+    })
+
+# Always display messages
+display_messages(st.session_state.messages)
