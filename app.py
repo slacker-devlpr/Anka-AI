@@ -328,14 +328,19 @@ def get_system_message():
             "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}"
         }
 
-# ----- Main Logic -----
+#Main-----------------------------------
+
 display_messages(st.session_state.messages)
 
 # Process new user input after displaying existing messages
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add user message to session state
+    # Add user message to session state and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
+    st.session_state.generate_response = True
+    st.rerun()
+
+# Generate AI response after user message is displayed
+if st.session_state.get("generate_response"):
     # Generate assistant response with spinner
     with st.spinner("Razmišljam..."):
         response = client.chat.completions.create(
@@ -345,6 +350,5 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
-    
-    # Rerun to refresh the display with new messages
+    del st.session_state.generate_response
     st.rerun()
