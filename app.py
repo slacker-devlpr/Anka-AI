@@ -179,7 +179,7 @@ if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎
     st.session_state.messages = []
     st.session_state.last_animated_index = -1  # Reset animation tracker
     st.rerun()
-
+st.sidebar.image("MADE USING.png", use_container_width = True)
 st.sidebar.markdown(
     """
     <style>
