@@ -190,9 +190,13 @@ client = OpenAI(api_key='sk-proj-MsOwVosHqgDr31ern_Uo0gQkzDDwBQHZTbakwEDvAVa0Gxg
 if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
     st.session_state["openai_model"] = "gpt-4o-mini"
-    @st.dialog("Cast your vote")
+    @st.dialog("Dobrodošli👋")
     def vote():
-        st.write(f"Why is your favorite?")
+        st.write(f"Shaped AI Inštruktor je eden prvih brezplačnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀 Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡
+
+A čeprav so naše storitve brezplačne, njihovo delovanje ni – strežniki, materiali in čas zahtevajo sredstva. Če želite podpreti našo misijo, bomo izjemno hvaležni za donacije na [BTC WALLET]. 🙏💙
+
+📍 Živite v Ljubljani? Pokličite 031 577 600 in si zagotovite ena na ena inštrukcije v živo! 📞✨")
     vote()
 
 if "messages" not in st.session_state:
