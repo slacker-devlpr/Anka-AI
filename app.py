@@ -193,6 +193,7 @@ if "openai_model" not in st.session_state:
     @st.dialog("Cast your vote")
     def vote():
         st.write(f"Why is your favorite?")
+    vote()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
