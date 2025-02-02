@@ -153,7 +153,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_column_width=True)
+st.sidebar.image("shaped-ai.png", use_container_width)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar with working header
