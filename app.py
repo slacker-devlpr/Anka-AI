@@ -305,18 +305,28 @@ def get_system_message():
         }
 
 # ----- Main Logic -----
-# Process user input first
+# Display existing messages first
+display_messages(st.session_state.messages)
+
+# Process new user input after displaying existing messages
 if prompt := st.chat_input("Kako lahko pomagam?"):
+    # Add user message to session state
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Generate assistant response
+    # Immediately display user's new message
+    with st.chat_message("user", avatar=USER_AVATAR):
+        st.markdown(prompt)
+    
+    # Generate assistant response with spinner
     with st.spinner("Razmišljam..."):
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
             messages=[get_system_message()] + st.session_state.messages
         ).choices[0].message.content
     
+    # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-# Display all messages after processing input
-display_messages(st.session_state.messages)
+    
+    # Immediately display assistant's response
+    with st.chat_message("assistant", avatar=BOT_AVATAR):
+        display_response_with_geogebra(response)
