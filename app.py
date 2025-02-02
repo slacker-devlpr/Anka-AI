@@ -179,7 +179,7 @@ if st.sidebar.button("‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎
     st.session_state.messages = []
     st.session_state.last_animated_index = -1  # Reset animation tracker
     st.rerun()
-st.sidebar.image("MADE USING.png", use_container_width = True)
+st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 st.sidebar.markdown(
     """
     <style>
@@ -190,11 +190,11 @@ st.sidebar.markdown(
         margin-top: 6px;
     }
     </style>
-    <div class="subtle-text">You are currently running Shaped AI 1.3 powered by OpenAI and Streamlit, Shaped AI © 2024</div>
+    <div class="subtle-text">You are currently running Shaped AI 1.6, Shaped AI © 2024</div>
     """,
     unsafe_allow_html=True
 )
-
+st.sidebar.image("MADE USING.png", use_container_width = True)
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
