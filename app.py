@@ -192,7 +192,7 @@ if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini"
     @st.dialog("Cast your vote")
     def vote():
-    st.write(f"Why is your favorite?")
+        st.write(f"Why is your favorite?")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
