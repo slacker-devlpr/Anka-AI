@@ -333,32 +333,21 @@ display_messages(st.session_state.messages)
 
 # Process new user input after displaying existing messages
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add user message to session state
+    # Add user message to session state and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
-    # Trigger response generation on next run
-    st.session_state.generate_response = True
-    st.rerun()
+    st.session_state.generate_response = True  # Set response generation flag
+    st.rerun()  # Immediate refresh to show user message
 
-# Generate response only after user message is displayed
+# Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
-    # Create placeholder for bot response
-    with st.chat_message("assistant", avatar=BOT_AVATAR):
-        response_placeholder = st.empty()
-        
-        # Show temporary spinner
-        with st.spinner("Razmišljam..."):
-            # Generate AI response
-            response = client.chat.completions.create(
-                model=st.session_state["openai_model"],
-                messages=[get_system_message()] + st.session_state.messages
-            ).choices[0].message.content
-        
-        # Store response before animation
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        
-        # Clear spinner and animate response
-        response_placeholder.empty()
-        display_response_with_geogebra(response, animate=True)
+    # Generate assistant response with spinner
+    with st.spinner("Razmišljam..."):
+        response = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=[get_system_message()] + st.session_state.messages
+        ).choices[0].message.content
     
-    # Cleanup and prevent duplicate responses
-    del st.session_state.generate_response
+    # Add assistant response to session state
+    st.session_state.messages.append({"role": "assistant", "content": response})
+    del st.session_state.generate_response  # Clear the flag
+    st.rerun()  # Final refresh to show AI response
