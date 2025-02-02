@@ -85,15 +85,6 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
-
-import streamlit as st
-import pytz
-import datetime
-import re
-import time
-from urllib.parse import quote
-from openai import OpenAI
-
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
