@@ -84,6 +84,7 @@ enable_scroll = """
 """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
+# MAIN---------------------------------------------------------------------------------------------------------------------------:
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
