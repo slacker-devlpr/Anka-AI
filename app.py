@@ -193,8 +193,6 @@ st.sidebar.image("MADE USING.png", use_column_width=True)
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
 
-# (Replace this with your actual OpenAI client initialization.)
-from openai_client import OpenAI  # Make sure you have your client module
 client = OpenAI(api_key='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')
 
 # ----- Set up Session State -----
