@@ -8,7 +8,4 @@ matplotlib
 numpy 
 sympy
 pathlib
-pytesseract
-Pillow
-pytz
-tesseract-ocr
+
