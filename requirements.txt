@@ -11,3 +11,5 @@ pathlib
 pytesseract
 Pillow
 pytz
+tesseract-ocr
+libtesseract-dev
