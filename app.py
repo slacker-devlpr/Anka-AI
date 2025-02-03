@@ -349,6 +349,44 @@ def get_system_message():
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
 
+# Add Camera Button CSS and Logic
+st.markdown("""
+    <style>
+        .camera-button-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .camera-button-container button {
+            background-color: #FF5733 !important;
+            color: white !important;
+            border-radius: 50% !important;
+            width: 60px !important;
+            height: 60px !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+            font-size: 24px !important;
+        }
+        .camera-button-container button:hover {
+            background-color: #E64A19 !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+with st.container():
+    st.markdown('<div class="camera-button-container">', unsafe_allow_html=True)
+    if st.button("📸", key="camera_button"):
+        st.session_state.show_camera = True
+    st.markdown('</div>', unsafe_allow_html=True)
+
+if st.session_state.get("show_camera"):
+    image = st.camera_input("Slikaj svoj problem")
+    if image:
+        # You can add image processing logic here
+        st.session_state.show_camera = False
+
 # Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message and trigger immediate display
