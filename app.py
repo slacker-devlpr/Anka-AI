@@ -4,7 +4,6 @@ from openai import OpenAI
 import shelve
 from PIL import Image
 import pathlib
-from openai import OpenAI
 import time
 import re
 import markdown
@@ -15,6 +14,7 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
+import easyocr  # <-- Added import for EasyOCR
 
 # Page config:
 st.set_page_config(
@@ -84,7 +84,7 @@ enable_scroll = """
 """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
-# MAIN---------------------------------------------------------------------------------------------------------------------------:
+# MAIN---------------------------------------------------------------------------------------------------------------------------
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
@@ -205,6 +205,34 @@ if "openai_model" not in st.session_state:
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# =============================================================================
+# NEW: Image Upload with EasyOCR
+# =============================================================================
+uploaded_file = st.file_uploader("Naloži sliko z matematičnim problemom", type=["png", "jpg", "jpeg"])
+if uploaded_file is not None:
+    # Open and display the uploaded image
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Naložena slika", use_column_width=True)
+    
+    # Play the "razmisljanje" (thinking) animation with a spinner
+    with st.spinner("Razmišljam..."):
+        # Convert image to a numpy array for OCR processing
+        image_np = np.array(image)
+        reader = easyocr.Reader(['en', 'sl'])
+        # Perform OCR (with detail=0 to return only text)
+        ocr_results = reader.readtext(image_np, detail=0)
+        extracted_text = " ".join(ocr_results)
+        # (Optional) simulate a short delay for the animation
+        time.sleep(2)
+    
+    st.success("Prepoznano besedilo: " + extracted_text)
+    
+    # Create a new user prompt based on the extracted text and add it to the chat history.
+    query = f"Solve this problem: {extracted_text}"
+    st.session_state.messages.append({"role": "user", "content": query})
+    st.session_state.generate_response = True
+    st.rerun()  # Rerun to trigger the chat response
 
 # ----- Greeting Functions -----
 def get_slovene_greeting():
