@@ -8,4 +8,6 @@ matplotlib
 numpy 
 sympy
 pathlib
-pytesseract Pillow
+pytesseract
+Pillow
+pytz
