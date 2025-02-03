@@ -14,8 +14,13 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
-import easyocr  # <-- Added import for EasyOCR
+import easyocr  # Add EasyOCR import
 
+# Initialize EasyOCR reader with caching
+@st.cache_resource
+def load_easyocr():
+    return easyocr.Reader(['en', 'sl'])  # Supports both English and Slovenian
+    
 # Page config:
 st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
@@ -275,6 +280,41 @@ st.markdown(f"""
     <div class="custom-greeting">{greeting}</div>
 """, unsafe_allow_html=True)
 
+mode_display = MODE.replace("**", "")
+st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
+
+# ----- Image Upload Section -----
+uploaded_file = st.file_uploader("📤 Naloži sliko matematičnega problema", type=["png", "jpg", "jpeg"])
+
+if uploaded_file is not None:
+    # Display uploaded image
+    image = Image.open(uploaded_file)
+    st.image(image, caption='Naložena slika', use_column_width=True)
+    
+    with st.spinner("🔍 Prenašam sliko v možgane..."):
+        try:
+            # Initialize OCR reader
+            reader = load_easyocr()
+            
+            # Convert image to numpy array
+            img_np = np.array(image)
+            
+            # Extract text
+            results = reader.readtext(img_np, detail=0)
+            extracted_text = " ".join(results).strip()
+            
+            if not extracted_text:
+                st.error("❌ Na sliki ni bilo mogoče prepoznati besedila. Prosimo, poskusite z drugo sliko.")
+            else:
+                # Add extracted text as user message
+                prompt = f"Reši ta problem: {extracted_text}"
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                st.session_state.generate_response = True
+                st.rerun()
+                
+        except Exception as e:
+            st.error(f"❌ Napaka pri obdelavi slike: {str(e)}")
+            
 # Display the selected mode under the greeting
 mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
