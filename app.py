@@ -343,7 +343,7 @@ def get_system_message():
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}"
+            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions} IMPORTANT!: You still need to reply in slovene just use this type of slang!"
         }
 
 # ----- Main Logic -----
