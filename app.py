@@ -15,12 +15,7 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
-import easyocr  # Add EasyOCR import
-
-# Initialize EasyOCR reader with caching
-@st.cache_resource
-def load_easyocr():
-    return easyocr.Reader(['en', 'sl'])  # Supports both English and Slovenian
+import easyocr
 
 # Page config:
 st.set_page_config(
@@ -192,7 +187,7 @@ st.sidebar.image("MADE USING.png", use_container_width = True)
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='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')
+client = OpenAI(api_key='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')
 
 # Set up the session state
 if "openai_model" not in st.session_state:
@@ -257,37 +252,28 @@ st.markdown(f"""
 mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
-# ----- Image Upload Section -----
-uploaded_file = st.file_uploader("📤 Naloži sliko matematičnega problema", type=["png", "jpg", "jpeg"])
+# Image upload handling
+uploaded_image = st.file_uploader("Naloži sliko matematičnega problema", type=["png", "jpg", "jpeg"], key="image_uploader")
 
-if uploaded_file is not None:
-    # Display uploaded image
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Naložena slika', use_column_width=True)
-    
-    with st.spinner("🔍 Prenašam sliko v možgane..."):
-        try:
-            # Initialize OCR reader
-            reader = load_easyocr()
+if uploaded_image is not None:
+    if "last_image_id" not in st.session_state or st.session_state.last_image_id != uploaded_image.file_id:
+        st.session_state.last_image_id = uploaded_image.file_id
+        
+        with st.spinner("Procesiram sliko..."):
+            # Process image
+            image = Image.open(uploaded_image)
+            img_array = np.array(image)
             
-            # Convert image to numpy array
-            img_np = np.array(image)
+            # Perform OCR
+            reader = easyocr.Reader(['sl', 'en'])
+            result = reader.readtext(img_array)
+            extracted_text = " ".join([res[1] for res in result])
             
-            # Extract text
-            results = reader.readtext(img_np, detail=0)
-            extracted_text = " ".join(results).strip()
-            
-            if not extracted_text:
-                st.error("❌ Na sliki ni bilo mogoče prepoznati besedila. Prosimo, poskusite z drugo sliko.")
-            else:
-                # Add extracted text as user message
-                prompt = f"Reši ta problem: {extracted_text}"
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                st.session_state.generate_response = True
-                st.rerun()
-                
-        except Exception as e:
-            st.error(f"❌ Napaka pri obdelavi slike: {str(e)}")
+            # Create prompt
+            prompt = f"IMAGE_UPLOAD:Solve this problem: {extracted_text}"
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            st.session_state.generate_response = True
+            st.rerun()
 
 # ----- Display Functions -----
 def type_response(content):
@@ -302,9 +288,11 @@ def type_response(content):
 # ----- Add to session state setup -----
 if "last_animated_index" not in st.session_state:
     st.session_state.last_animated_index = -1
+
 # ----- Session State Setup -----
 if "animated_messages" not in st.session_state:
     st.session_state.animated_messages = set()
+
 # ----- Modified display functions -----
 def display_response_with_geogebra(response_text, animate=True):
     parts = re.split(r'(##[^#]+##)', response_text)
@@ -325,25 +313,25 @@ def display_response_with_geogebra(response_text, animate=True):
             st.components.v1.html(geogebra_html, height=450)
         else:
             if animate:
-                type_response(part)  # Animate only new responses
+                type_response(part)
             else:
-                st.markdown(part)  # Static display for older messages
+                st.markdown(part)
 
 def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                # Check if this message hasn't been animated yet
                 if index not in st.session_state.animated_messages:
-                    # Animate new response
                     display_response_with_geogebra(message["content"], animate=True)
                     st.session_state.animated_messages.add(index)
                 else:
-                    # Show static version for previously animated messages
                     display_response_with_geogebra(message["content"], animate=False)
             else:
-                st.markdown(message["content"])
+                if message["content"].startswith("IMAGE_UPLOAD:"):
+                    st.markdown("📷 Naložena slika matematičnega problema")
+                else:
+                    st.markdown(message["content"])
 
 # ----- System Message Configuration -----
 def get_system_message():
@@ -373,7 +361,6 @@ display_messages(st.session_state.messages)
 
 # Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
     st.rerun()
@@ -381,12 +368,20 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
+        # Prepare messages for API
+        messages_for_api = [get_system_message()]
+        for msg in st.session_state.messages:
+            if msg["role"] == "user" and msg["content"].startswith("IMAGE_UPLOAD:"):
+                content = msg["content"].replace("IMAGE_UPLOAD:", "", 1)
+                messages_for_api.append({"role": "user", "content": content})
+            else:
+                messages_for_api.append(msg)
+        
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
-            messages=[get_system_message()] + st.session_state.messages
+            messages=messages_for_api
         ).choices[0].message.content
     
-    # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
     del st.session_state.generate_response
     st.rerun()
