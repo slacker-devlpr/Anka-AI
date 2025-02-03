@@ -177,7 +177,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎ ‎ ‎ ‎ ‎  ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="pulse"):
     st.session_state.messages = []
-    st.session_state.last_animated_index = -1  # Reset animation tracker
+    #st.session_state.last_animated_index = -1  # Reset animation tracker
     st.rerun()
 
 st.sidebar.image("MADE USING.png", use_container_width = True)
