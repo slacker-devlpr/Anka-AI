@@ -178,10 +178,9 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎ ‎ ‎ ‎ ‎  ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="pulse"):
     st.session_state.messages = []
     st.session_state.last_animated_index = -1
-    st.session_state.animated_messages = set()  # Reset animation tracker
+    st.session_state.animated_messages = set()
+    st.session_state.msg_key = str(uuid.uuid4())  # Add unique key
     st.rerun()
-This change ensure
-
 st.sidebar.image("MADE USING.png", use_container_width = True)
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
@@ -294,15 +293,14 @@ def display_response_with_geogebra(response_text, animate=True):
 def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
-        with st.chat_message(message["role"], avatar=avatar):
+        with st.chat_message(message["role"], 
+                           avatar=avatar,
+                           key=f"{st.session_state.msg_key}_{index}"):  # Unique key per message
             if message["role"] == "assistant":
-                # Check if this message hasn't been animated yet
                 if index not in st.session_state.animated_messages:
-                    # Animate new response
                     display_response_with_geogebra(message["content"], animate=True)
                     st.session_state.animated_messages.add(index)
                 else:
-                    # Show static version for previously animated messages
                     display_response_with_geogebra(message["content"], animate=False)
             else:
                 st.markdown(message["content"])
