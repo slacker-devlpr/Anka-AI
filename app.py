@@ -203,6 +203,7 @@ if "openai_model" not in st.session_state:
         st.write("Takoj ko bomo pridobili dovolj sredstev iz donacij, bomo povečali zmogljivost naših modelov 💪, izboljšali hitrost odgovarjanja ⚡ in dodali možnost nalaganja slik matematičnih problemov 🧮, ki jih bo chatbot reševal 📸. Trenutno ta funkcionalnost ni mogoča zaradi omejitev zmogljivosti platforme Streamlit. ")
         st.write(" ")
         st.write("📍 Živite v Ljubljani? Pokličite 031 577 600 in si zagotovite ena na ena inštrukcije v živo! 📞✨")
+        st.image("MADE USING.png")
     vote()
 
 if "messages" not in st.session_state:
