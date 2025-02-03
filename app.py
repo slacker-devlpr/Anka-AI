@@ -15,8 +15,8 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
-import pytesseract
-import io
+import easyocr
+
 # Page config:
 st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
@@ -87,7 +87,7 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------
 
-# ----- Sidebar Customization and Styling -----
+# ----------------- Sidebar Customization and Styling -----------------
 st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -151,15 +151,6 @@ st.markdown("""
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             border: 1px solid #e4e4e4;
         }
-
-        /* File uploader container fixed to bottom right */
-        div[data-testid="stFileUploader"] {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 250px;
-            z-index: 9999;
-        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -167,7 +158,7 @@ st.markdown("""
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-# Add mode selection radio buttons to sidebar with working header
+# Mode selection radio buttons
 MODE = st.sidebar.radio(
     "‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ **Način Inštrukcije**",
     options=[
@@ -195,12 +186,13 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ 
 
 st.sidebar.image("MADE USING.png", use_container_width=True)
 
-# ----- Define Avatars and OpenAI Client -----
+# ----------------- Define Avatars and OpenAI Client -----------------
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='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')
+# (Assuming you have an OpenAI client; adjust as needed)
+client = OpenAI(api_key='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')
 
-# Set up the session state
+# ----------------- Session State Setup -----------------
 if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
     st.session_state["openai_model"] = "gpt-4o-mini"
@@ -218,11 +210,13 @@ if "openai_model" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ----- Greeting Functions -----
+if "show_uploader" not in st.session_state:
+    st.session_state.show_uploader = False
+
+# ----------------- Greeting Functions -----------------
 def get_slovene_greeting():
     slovenia_tz = pytz.timezone('Europe/Ljubljana')
     local_time = datetime.datetime.now(slovenia_tz)
-    
     if 5 <= local_time.hour < 12:
         return "Dobro jutro🌅"
     elif 12 <= local_time.hour < 18:
@@ -230,9 +224,7 @@ def get_slovene_greeting():
     else:
         return "Dober večer🌙"
 
-# Display the greeting with updated style
 greeting = get_slovene_greeting()
-
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
@@ -244,7 +236,6 @@ st.markdown(f"""
         margin-top: -20px; 
         margin-bottom: 10px;
     }}
-    
     .mode-display {{
         font-size: 20px;
         font-weight: bold;
@@ -259,11 +250,10 @@ st.markdown(f"""
     <div class="custom-greeting">{greeting}</div>
 """, unsafe_allow_html=True)
 
-# Display the selected mode under the greeting
 mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
-# ----- Display Functions -----
+# ----------------- Display Functions -----------------
 def type_response(content):
     message_placeholder = st.empty()
     full_response = ""
@@ -273,13 +263,6 @@ def type_response(content):
         time.sleep(0.005)
     message_placeholder.markdown(full_response)
 
-# ----- Add to session state setup -----
-if "last_animated_index" not in st.session_state:
-    st.session_state.last_animated_index = -1
-# ----- Session State Setup -----
-if "animated_messages" not in st.session_state:
-    st.session_state.animated_messages = set()
-# ----- Modified display functions -----
 def display_response_with_geogebra(response_text, animate=True):
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
@@ -299,31 +282,29 @@ def display_response_with_geogebra(response_text, animate=True):
             st.components.v1.html(geogebra_html, height=450)
         else:
             if animate:
-                type_response(part)  # Animate only new responses
+                type_response(part)
             else:
-                st.markdown(part)  # Static display for older messages
+                st.markdown(part)
 
 def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                # Check if this message hasn't been animated yet
                 if index not in st.session_state.animated_messages:
-                    # Animate new response
                     display_response_with_geogebra(message["content"], animate=True)
                     st.session_state.animated_messages.add(index)
                 else:
-                    # Show static version for previously animated messages
                     display_response_with_geogebra(message["content"], animate=False)
             else:
                 st.markdown(message["content"])
 
-# ----- System Message Configuration -----
+# ----------------- System Message Configuration -----------------
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
-        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} !IMPORTANT: The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs."
+        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple functions separate them by using ; example: ##sin(x); x^2 ## "
+        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols; you can only place numbers, letters, =, +, -, sin(), * etc. This will be displayed using: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} "
+        "IMPORTANT: The ## command will be replaced with the graph so the user should not be aware of its existence. Also, every number, variable, equation, latex, coordinates and any math-related symbol must be enclosed in $$ (e.g., $$a$$, $$1$$, $$2x + 3 = 1y$$)."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
@@ -339,54 +320,63 @@ def get_system_message():
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}"
+            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. Be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}"
         }
 
-# ----- Main Logic -----
+# ----------------- Main Chat Logic -----------------
 display_messages(st.session_state.messages)
 
-# ---- Image Upload and OCR Processing ----
-# The file uploader is fixed to the bottom right using custom CSS (see above)
-uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"], key="image_upload")
-
-if uploaded_file is not None:
-    # Process OCR only once per uploaded image
-    if "ocr_result" not in st.session_state:
-        image = Image.open(uploaded_file)
-        # Use pytesseract to extract text from the image
-        extracted_text = pytesseract.image_to_string(image)
-        st.session_state.ocr_result = extracted_text
-    else:
-        extracted_text = st.session_state.ocr_result
-
-    st.markdown("### Extracted Math Problem:")
-    # Allow the user to verify or correct the extracted text.
-    corrected_text = st.text_area("Please verify or edit the math problem extracted from the image:", 
-                                  value=extracted_text, key="ocr_text")
-    if st.button("Submit Math Problem", key="ocr_submit"):
-        # Add a new user message instructing the AI to solve the (verified) math problem.
-        st.session_state.messages.append({"role": "user", "content": f"Solve this: {corrected_text}"})
-        st.session_state.generate_response = True
-        # Clear the OCR result so that the process resets for future uploads.
-        del st.session_state.ocr_result
-        st.rerun()
-
-# Process new user input from the chat input
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
     st.rerun()
 
-# Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
             messages=[get_system_message()] + st.session_state.messages
         ).choices[0].message.content
-    
-    # Add assistant response to session state
+
     st.session_state.messages.append({"role": "assistant", "content": response})
     del st.session_state.generate_response
     st.rerun()
+
+# ----------------- Floating "Upload Image" Button -----------------
+st.markdown("""
+    <style>
+    .floating-upload {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+with st.container():
+    st.markdown('<div class="floating-upload">', unsafe_allow_html=True)
+    if st.button("Upload Image", key="upload_image", help="Upload an image to extract text"):
+        st.session_state.show_uploader = True
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ----------------- Image Uploader and OCR Processing -----------------
+if st.session_state.get("show_uploader"):
+    uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"], key="image_uploader")
+    if uploaded_file is not None:
+        # Initialize EasyOCR (using English for recognition; adjust languages as needed)
+        reader = easyocr.Reader(['en'], gpu=False)
+        image = Image.open(uploaded_file)
+        image_np = np.array(image)
+        # Extract text without bounding box details (detail=0 returns only text)
+        result = reader.readtext(image_np, detail=0)
+        extracted_text = " ".join(result)
+        st.write("**Extracted Text (please verify or edit if needed):**")
+        corrected_text = st.text_input("Extracted Math Problem", value=extracted_text, key="ocr_text")
+        if st.button("Submit OCR Text", key="submit_ocr"):
+            # Add the OCR text as a user prompt (with instructions to solve)
+            message = f"Solve this: {corrected_text}"
+            st.session_state.messages.append({"role": "user", "content": message})
+            st.session_state.generate_response = True
+            st.session_state.show_uploader = False
+            st.rerun()
