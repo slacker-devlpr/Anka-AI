@@ -20,7 +20,7 @@ import easyocr  # Add EasyOCR import
 @st.cache_resource
 def load_easyocr():
     return easyocr.Reader(['en', 'sl'])  # Supports both English and Slovenian
-    
+
 # Page config:
 st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
@@ -89,7 +89,7 @@ enable_scroll = """
 """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
-# MAIN---------------------------------------------------------------------------------------------------------------------------
+# MAIN---------------------------------------------------------------------------------------------------------------------------:
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
@@ -211,34 +211,6 @@ if "openai_model" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# =============================================================================
-# NEW: Image Upload with EasyOCR
-# =============================================================================
-uploaded_file = st.file_uploader("Naloži sliko z matematičnim problemom", type=["png", "jpg", "jpeg"])
-if uploaded_file is not None:
-    # Open and display the uploaded image
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Naložena slika", use_column_width=True)
-    
-    # Play the "razmisljanje" (thinking) animation with a spinner
-    with st.spinner("Razmišljam..."):
-        # Convert image to a numpy array for OCR processing
-        image_np = np.array(image)
-        reader = easyocr.Reader(['en', 'sl'])
-        # Perform OCR (with detail=0 to return only text)
-        ocr_results = reader.readtext(image_np, detail=0)
-        extracted_text = " ".join(ocr_results)
-        # (Optional) simulate a short delay for the animation
-        time.sleep(2)
-    
-    st.success("Prepoznano besedilo: " + extracted_text)
-    
-    # Create a new user prompt based on the extracted text and add it to the chat history.
-    query = f"Solve this problem: {extracted_text}"
-    st.session_state.messages.append({"role": "user", "content": query})
-    st.session_state.generate_response = True
-    st.rerun()  # Rerun to trigger the chat response
-
 # ----- Greeting Functions -----
 def get_slovene_greeting():
     slovenia_tz = pytz.timezone('Europe/Ljubljana')
@@ -280,44 +252,10 @@ st.markdown(f"""
     <div class="custom-greeting">{greeting}</div>
 """, unsafe_allow_html=True)
 
-mode_display = MODE.replace("**", "")
-st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
-
-# ----- Image Upload Section -----
-uploaded_file = st.file_uploader("📤 Naloži sliko matematičnega problema", type=["png", "jpg", "jpeg"])
-
-if uploaded_file is not None:
-    # Display uploaded image
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Naložena slika', use_column_width=True)
-    
-    with st.spinner("🔍 Prenašam sliko v možgane..."):
-        try:
-            # Initialize OCR reader
-            reader = load_easyocr()
-            
-            # Convert image to numpy array
-            img_np = np.array(image)
-            
-            # Extract text
-            results = reader.readtext(img_np, detail=0)
-            extracted_text = " ".join(results).strip()
-            
-            if not extracted_text:
-                st.error("❌ Na sliki ni bilo mogoče prepoznati besedila. Prosimo, poskusite z drugo sliko.")
-            else:
-                # Add extracted text as user message
-                prompt = f"Reši ta problem: {extracted_text}"
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                st.session_state.generate_response = True
-                st.rerun()
-                
-        except Exception as e:
-            st.error(f"❌ Napaka pri obdelavi slike: {str(e)}")
-            
 # Display the selected mode under the greeting
 mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
+
 
 # ----- Display Functions -----
 def type_response(content):
@@ -399,6 +337,38 @@ def get_system_message():
         }
 
 # ----- Main Logic -----
+# ----- Image Upload Section -----
+uploaded_file = st.file_uploader("📤 Naloži sliko matematičnega problema", type=["png", "jpg", "jpeg"])
+
+if uploaded_file is not None:
+    # Display uploaded image
+    image = Image.open(uploaded_file)
+    st.image(image, caption='Naložena slika', use_column_width=True)
+    
+    with st.spinner("🔍 Prenašam sliko v možgane..."):
+        try:
+            # Initialize OCR reader
+            reader = load_easyocr()
+            
+            # Convert image to numpy array
+            img_np = np.array(image)
+            
+            # Extract text
+            results = reader.readtext(img_np, detail=0)
+            extracted_text = " ".join(results).strip()
+            
+            if not extracted_text:
+                st.error("❌ Na sliki ni bilo mogoče prepoznati besedila. Prosimo, poskusite z drugo sliko.")
+            else:
+                # Add extracted text as user message
+                prompt = f"Reši ta problem: {extracted_text}"
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                st.session_state.generate_response = True
+                st.rerun()
+                
+        except Exception as e:
+            st.error(f"❌ Napaka pri obdelavi slike: {str(e)}")
+            
 display_messages(st.session_state.messages)
 
 # Process new user input
