@@ -191,7 +191,7 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ 
     st.session_state.messages = []
     st.session_state.animated_messages = set()
     st.session_state.last_animated_index = -1
-    st.experimental_rerun()
+    st.rerun()
 
 st.sidebar.image("MADE USING.png", use_container_width=True)
 
@@ -369,14 +369,14 @@ if uploaded_file is not None:
         st.session_state.generate_response = True
         # Clear the OCR result so that the process resets for future uploads.
         del st.session_state.ocr_result
-        st.experimental_rerun()
+        st.rerun()
 
 # Process new user input from the chat input
 if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
-    st.experimental_rerun()
+    st.rerun()
 
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
@@ -389,4 +389,4 @@ if st.session_state.get("generate_response"):
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
     del st.session_state.generate_response
-    st.experimental_rerun()
+    st.rerun()
