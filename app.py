@@ -327,7 +327,7 @@ def display_messages(messages):
 def get_system_message():
     graph_instructions = (
         "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
-        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs. You can generate an empty geogebra window with: ## ## Again the user should not know this command exists."
+        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs. You can generate an empty geogebra window with: ## ## Again the user should not know this command exists. If the user wants to take an image of his problem write: //camera which will openup the camera."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
@@ -349,72 +349,27 @@ def get_system_message():
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
 
-# Add Camera Button CSS and Logic
-st.markdown("""
-    <style>
-        .camera-button-container {
-            position: fixed;
-            bottom: 20px;
-            left: calc(25% + 20px); /* Position right of sidebar */
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        .camera-button-container button {
-            background-color: #FF5733 !important;
-            color: white !important;
-            border-radius: 50% !important;
-            width: 60px !important;
-            height: 60px !important;
-            padding: 0 !important;
-            border: none !important;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-            font-size: 24px !important;
-        }
-        .camera-button-container button:hover {
-            transform: scale(1.1);
-            background-color: #E64A19 !important;
-        }
-        
-        /* Adjust main content margin */
-        .main .block-container {
-            padding-left: 2rem;
-        }
-    </style>
-""", unsafe_allow_html=True)
 
-# Create columns for layout
-col1, col2 = st.columns([1, 3])
-
-with col1:
-    # Empty column just for spacing
-    st.markdown('<div class="camera-button-container">', unsafe_allow_html=True)
-    if st.button("📸", key="camera_button"):
+# Process new user input
+if prompt := st.chat_input("Kako lahko pomagam?"):
+    if prompt.strip().lower() == "//camera":
+        # Add camera command to history but don't generate response
+        st.session_state.messages.append({"role": "user", "content": prompt})
         st.session_state.show_camera = True
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.rerun()
+    else:
+        # Normal message processing
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.generate_response = True
+        st.rerun()
 
-# Process camera input
+# Handle camera command
 if st.session_state.get("show_camera"):
     image = st.camera_input("Slikaj svoj problem")
     if image:
         # You can add image processing logic here
         st.session_state.show_camera = False
+        # Optional: Add image to chat history
+        # st.session_state.messages.append({"role": "user", "content": "📸 Poslano sliko problema", "image": image})
 
-# Process new user input
-if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add user message and trigger immediate display
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.session_state.generate_response = True
-    st.rerun()
-
-# Generate AI response after user message is displayed
-if st.session_state.get("generate_response"):
-    with st.spinner("Razmišljam..."):
-        response = client.chat.completions.create(
-            model=st.session_state["openai_model"],
-            messages=[get_system_message()] + st.session_state.messages
-        ).choices[0].message.content
-    
-    # Add assistant response to session state
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    del st.session_state.generate_response
-    st.rerun()
+# ... (keep the rest of your existing code) ...
