@@ -8,4 +8,4 @@ matplotlib
 numpy 
 sympy
 pathlib
-pytesseract
+pytesseract-ocr
