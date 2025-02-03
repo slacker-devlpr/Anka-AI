@@ -1,2 +1,2 @@
 # ShapedAI
-A personal AI tutor devolped by slacker.
+A personal AI tutor developed by slacker.
