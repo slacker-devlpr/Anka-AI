@@ -8,6 +8,4 @@ matplotlib
 numpy 
 sympy
 pathlib
-pytesseract==0.3.10
-Pillow==10.1.0
-pytz==2023.3
+pytesseract Pillow
