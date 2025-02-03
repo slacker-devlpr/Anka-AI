@@ -4,6 +4,7 @@ from openai import OpenAI
 import shelve
 from PIL import Image
 import pathlib
+from openai import OpenAI
 import time
 import re
 import markdown
@@ -14,12 +15,6 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
-import easyocr  # Add EasyOCR import
-
-# Initialize EasyOCR reader with caching
-@st.cache_resource
-def load_easyocr():
-    return easyocr.Reader(['en', 'sl'])  # Supports both English and Slovenian
 
 # Page config:
 st.set_page_config(
@@ -256,7 +251,6 @@ st.markdown(f"""
 mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
 
-
 # ----- Display Functions -----
 def type_response(content):
     message_placeholder = st.empty()
@@ -337,38 +331,6 @@ def get_system_message():
         }
 
 # ----- Main Logic -----
-# ----- Image Upload Section -----
-uploaded_file = st.file_uploader("📤 Naloži sliko matematičnega problema", type=["png", "jpg", "jpeg"])
-
-if uploaded_file is not None:
-    # Display uploaded image
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Naložena slika', use_column_width=True)
-    
-    with st.spinner("🔍 Prenašam sliko v možgane..."):
-        try:
-            # Initialize OCR reader
-            reader = load_easyocr()
-            
-            # Convert image to numpy array
-            img_np = np.array(image)
-            
-            # Extract text
-            results = reader.readtext(img_np, detail=0)
-            extracted_text = " ".join(results).strip()
-            
-            if not extracted_text:
-                st.error("❌ Na sliki ni bilo mogoče prepoznati besedila. Prosimo, poskusite z drugo sliko.")
-            else:
-                # Add extracted text as user message
-                prompt = f"Reši ta problem: {extracted_text}"
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                st.session_state.generate_response = True
-                st.rerun()
-                
-        except Exception as e:
-            st.error(f"❌ Napaka pri obdelavi slike: {str(e)}")
-            
 display_messages(st.session_state.messages)
 
 # Process new user input
