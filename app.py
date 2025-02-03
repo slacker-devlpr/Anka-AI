@@ -21,40 +21,7 @@ st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
     page_icon=r"top-logo.png"
 )
-import streamlit as st
-import easyocr
-import numpy as np
-import cv2
-from PIL import Image
 
-def extract_text(image):
-    reader = easyocr.Reader(['en'])  # Initialize the OCR reader for English
-    img_array = np.array(image)
-    results = reader.readtext(img_array)
-    
-    extracted_text = "\n".join([text for _, text, _ in results])
-    return extracted_text, results
-
-def annotate_image(image, results):
-    img_array = np.array(image)
-    for bbox, _, _ in results:
-        top_left = tuple([int(val) for val in bbox[0]])
-        bottom_right = tuple([int(val) for val in bbox[2]])
-        img_array = cv2.rectangle(img_array, top_left, bottom_right, (0, 255, 0), 3)
-    return Image.fromarray(img_array)
-
-uploaded_image = st.file_uploader("Upload an Image", type=['png', 'jpg', 'jpeg'])
-
-if uploaded_image is not None:
-    image = Image.open(uploaded_image)
-    st.image(image, caption="Uploaded Image", use_column_width=True)
-    
-    extracted_text, results = extract_text(image)
-    st.subheader("Extracted Text:")
-    st.text(extracted_text)
-    
-    annotated_image = annotate_image(image, results)
-    st.image(annotated_image, caption="Annotated Image", use_column_width=True)
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
