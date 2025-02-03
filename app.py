@@ -15,7 +15,6 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
-import easyocr
 
 # Page config:
 st.set_page_config(
@@ -87,8 +86,7 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
 # ----- Sidebar Customization and Styling -----
-st.markdown(
-    """
+st.markdown("""
     <style>
         [data-testid="stSidebar"] {
             background-color: #1a2431;
@@ -152,12 +150,10 @@ st.markdown(
             border: 1px solid #e4e4e4;
         }
     </style>
-    """,
-    unsafe_allow_html=True,
-)
+    """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_column_width=True)
+st.sidebar.image("shaped-ai.png", use_container_width = True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar with working header
@@ -166,44 +162,39 @@ MODE = st.sidebar.radio(
     options=[
         "**📚 Filozofski način**",
         "**⚡ Takojšnji odgovor**",
-        "**😎 Gen Alpha način**",
+        "**😎 Gen Alpha način**"
     ],
     captions=[
         "Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
         "Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
-        "Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap.",
+        "Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."
     ],
     index=0,
     key="mode",
-    help="Izberi način inštrukcije, ki ti najbolj ustreza",
+    help="Izberi način inštrukcije, ki ti najbolj ustreza"
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎ ‎ ‎ ‎ ‎  ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="pulse"):
-    # Reset chat history and any file upload flag
+    # Reset chat history
     st.session_state.messages = []
     st.session_state.animated_messages = set()
     st.session_state.last_animated_index = -1
-    if "file_processed" in st.session_state:
-        del st.session_state["file_processed"]
     st.rerun()
 
-st.sidebar.image("MADE USING.png", use_column_width=True)
-
+st.sidebar.image("MADE USING.png", use_container_width = True)
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
+client = OpenAI(api_key='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')
 
-client = OpenAI(api_key='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')
-
-# ----- Set up Session State -----
+# Set up the session state
 if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
     st.session_state["openai_model"] = "gpt-4o-mini"
-
     @st.dialog("Dobrodošli👋")
     def vote():
-        st.write("Shaped AI Inštruktor je eden prvih brezplačnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀")
+        st.write("Shaped AI Inštruktor je eden prvih brezplačnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀") 
         st.write(" ")
         st.write("Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡")
         st.write(" ")
@@ -215,10 +206,11 @@ if "openai_model" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ----- Slovenian Greeting -----
+# ----- Greeting Functions -----
 def get_slovene_greeting():
-    slovenia_tz = pytz.timezone("Europe/Ljubljana")
+    slovenia_tz = pytz.timezone('Europe/Ljubljana')
     local_time = datetime.datetime.now(slovenia_tz)
+    
     if 5 <= local_time.hour < 12:
         return "Dobro jutro🌅"
     elif 12 <= local_time.hour < 18:
@@ -226,9 +218,10 @@ def get_slovene_greeting():
     else:
         return "Dober večer🌙"
 
+# Display the greeting with updated style
 greeting = get_slovene_greeting()
-st.markdown(
-    f"""
+
+st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
     .custom-greeting {{
@@ -252,35 +245,11 @@ st.markdown(
     }}
     </style>
     <div class="custom-greeting">{greeting}</div>
-    """,
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
+# Display the selected mode under the greeting
 mode_display = MODE.replace("**", "")
 st.markdown(f'<div class="mode-display">{mode_display}</div>', unsafe_allow_html=True)
-
-# ----- File Uploader Block (in Slovenian) -----
-# This uploader lets the user upload a file (e.g. a PNG with a math problem)
-uploaded_file = st.file_uploader(
-    "Naloži datoteko s problemom (npr. PNG, JPG)",
-    type=["png", "jpg", "jpeg"],
-    key="uploaded_file",
-    help="Naloži sliko s matematičnim problemom",
-)
-
-if uploaded_file is not None and "file_processed" not in st.session_state:
-    with st.spinner("Razmišljam..."):
-        reader = easyocr.Reader(["sl"])  # using Slovenian language for OCR
-        image = Image.open(uploaded_file)
-        image_np = np.array(image)
-        # Extract text from image; detail=0 returns only the text strings
-        result = reader.readtext(image_np, detail=0)
-        extracted_text = " ".join(result)
-        # Append the extracted text as a user message
-        st.session_state.messages.append({"role": "user", "content": extracted_text})
-        # Set a flag so that we do not reprocess the same file on reruns
-        st.session_state.file_processed = True
-        st.rerun()
 
 # ----- Display Functions -----
 def type_response(content):
@@ -292,8 +261,15 @@ def type_response(content):
         time.sleep(0.005)
     message_placeholder.markdown(full_response)
 
+# ----- Add to session state setup -----
+if "last_animated_index" not in st.session_state:
+    st.session_state.last_animated_index = -1
+# ----- Session State Setup -----
+if "animated_messages" not in st.session_state:
+    st.session_state.animated_messages = set()
+# ----- Modified display functions -----
 def display_response_with_geogebra(response_text, animate=True):
-    parts = re.split(r"(##[^#]+##)", response_text)
+    parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
         if part.startswith("##") and part.endswith("##"):
             function_command = part[2:-2].strip()
@@ -311,19 +287,22 @@ def display_response_with_geogebra(response_text, animate=True):
             st.components.v1.html(geogebra_html, height=450)
         else:
             if animate:
-                type_response(part)
+                type_response(part)  # Animate only new responses
             else:
-                st.markdown(part)
+                st.markdown(part)  # Static display for older messages
 
 def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
+                # Check if this message hasn't been animated yet
                 if index not in st.session_state.animated_messages:
+                    # Animate new response
                     display_response_with_geogebra(message["content"], animate=True)
                     st.session_state.animated_messages.add(index)
                 else:
+                    # Show static version for previously animated messages
                     display_response_with_geogebra(message["content"], animate=False)
             else:
                 st.markdown(message["content"])
@@ -331,48 +310,45 @@ def display_messages(messages):
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. You should speak slovenian unless asked otherwise. "
-        "If you want to generate a graph, use a command enclosed in double hash symbols (##). "
-        "To graph multiple functions separate them using ; e.g.: ##sin(x); x^2 ##. "
-        "For example, ##x^2## or for a circle ##x^2 + y^2 = 1##. "
-        "Do not put LaTeX inside the ## since only numbers, letters, =, +, -, sin(), * etc. are allowed. "
-        "This will be rendered using GeoGebra at https://www.geogebra.org/calculator?lang=en&command={your_command}. "
-        "Important: For any mathematical symbols (numbers, variables, equations, etc.) use $$ delimiters, e.g.: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. "
-        "Do not create smiley faces or other shapes—only circles and graphs."
+        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
+        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": f"You are Shaped AI, a Slovenian math tutor. Provide direct solutions using LaTeX. {graph_instructions}",
+            "content": f"You are Shaped AI, a Slovenian math tutor. Provide direct solutions using LaTeX. {graph_instructions}"
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": f"Guide users step-by-step using Socratic questioning. Ask one question at a time. {graph_instructions}",
+            "content": f"Guide users step-by-step using Socratic questioning. Ask one question at a time. {graph_instructions}"
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. Be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}",
+            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}"
         }
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
 
-# Process new user input (text chat)
+# Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
+    # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
     st.rerun()
 
-# Generate AI response if required
+# Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
-            messages=[get_system_message()] + st.session_state.messages,
+            messages=[get_system_message()] + st.session_state.messages
         ).choices[0].message.content
+    
+    # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
     del st.session_state.generate_response
     st.rerun()
