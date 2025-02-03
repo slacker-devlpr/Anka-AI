@@ -355,8 +355,9 @@ st.markdown("""
         .camera-button-container {
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            left: calc(25% + 20px); /* Position right of sidebar */
             z-index: 1000;
+            transition: all 0.3s ease;
         }
         .camera-button-container button {
             background-color: #FF5733 !important;
@@ -370,17 +371,28 @@ st.markdown("""
             font-size: 24px !important;
         }
         .camera-button-container button:hover {
+            transform: scale(1.1);
             background-color: #E64A19 !important;
+        }
+        
+        /* Adjust main content margin */
+        .main .block-container {
+            padding-left: 2rem;
         }
     </style>
 """, unsafe_allow_html=True)
 
-with st.container():
+# Create columns for layout
+col1, col2 = st.columns([1, 3])
+
+with col1:
+    # Empty column just for spacing
     st.markdown('<div class="camera-button-container">', unsafe_allow_html=True)
     if st.button("📸", key="camera_button"):
         st.session_state.show_camera = True
     st.markdown('</div>', unsafe_allow_html=True)
 
+# Process camera input
 if st.session_state.get("show_camera"):
     image = st.camera_input("Slikaj svoj problem")
     if image:
