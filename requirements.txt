@@ -8,4 +8,7 @@ matplotlib
 numpy 
 sympy
 pathlib
+easyocr
+pillow
+pytz
 
