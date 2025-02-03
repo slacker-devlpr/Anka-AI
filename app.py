@@ -198,7 +198,7 @@ st.sidebar.image("MADE USING.png", use_container_width=True)
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI('api_key=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')
+client = OpenAI(api_key='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')
 
 # Set up the session state
 if "openai_model" not in st.session_state:
