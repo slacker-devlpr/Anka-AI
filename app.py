@@ -182,7 +182,20 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ 
     st.session_state.last_animated_index = -1
     st.rerun()
 
-st.sidebar.image("MADE USING.png", use_container_width = True)
+st.sidebar.markdown(
+    """
+    <style>
+    .subtle-text {
+        color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
+        font-size: 12px;
+        text-align: center;
+        margin-top: 6px; /* Adjust spacing as needed */
+    }
+    </style>
+    <div class="subtle-text">You are currently running Shaped AI 1.3 made by slacker, Shaped AI © 2024</div>
+    """,
+    unsafe_allow_html=True
+)
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
