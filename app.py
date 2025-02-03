@@ -15,7 +15,8 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
-
+import pytesseract
+import io
 # Page config:
 st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
@@ -85,6 +86,7 @@ enable_scroll = """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
 # MAIN---------------------------------------------------------------------------------------------------------------------------:
+
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
@@ -97,6 +99,19 @@ st.markdown("""
         .sidebar .image-container img {
             margin-top: 0;
             margin-bottom: 0 !important;
+        }
+        
+        /* Upload button styling */
+        .upload-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: #FF5733 !important;
+            color: white !important;
+            border-radius: 25px;
+            padding: 10px 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         /* Tight divider styling */
@@ -188,6 +203,33 @@ st.sidebar.image("MADE USING.png", use_container_width = True)
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
 client = OpenAI(api_key='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')
+
+# ----- Image Upload and OCR Processing -----
+def process_image(uploaded_image):
+    try:
+        image = Image.open(io.BytesIO(uploaded_image.getvalue()))
+        text = pytesseract.image_to_string(image)
+        return text.strip()
+    except Exception as e:
+        st.error(f"Error processing image: {str(e)}")
+        return None
+
+# Floating upload button
+st.markdown("""
+    <div class="upload-btn">
+        <input type="file" id="file-upload" style="display: none;">
+        <label for="file-upload" style="margin: 0; cursor: pointer;">📸 Upload Math Problem</label>
+    </div>
+""", unsafe_allow_html=True)
+
+uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="image_upload", label_visibility="collapsed")
+
+if uploaded_file is not None:
+    extracted_text = process_image(uploaded_file)
+    if extracted_text:
+        st.session_state.messages.append({"role": "user", "content": f"PROCESSED IMAGE TEXT: {extracted_text}"})
+        st.session_state.generate_response = True
+        st.rerun()
 
 # Set up the session state
 if "openai_model" not in st.session_state:
@@ -297,13 +339,10 @@ def display_messages(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
-                # Check if this message hasn't been animated yet
                 if index not in st.session_state.animated_messages:
-                    # Animate new response
                     display_response_with_geogebra(message["content"], animate=True)
                     st.session_state.animated_messages.add(index)
                 else:
-                    # Show static version for previously animated messages
                     display_response_with_geogebra(message["content"], animate=False)
             else:
                 st.markdown(message["content"])
@@ -311,24 +350,26 @@ def display_messages(messages):
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
-        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} !IMPORTANT: The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs."
+        "You are ShapedAI. First confirm the math problem from the user's image text. "
+        "If OCR text is unclear, ask for clarification. Use Slovenian unless asked otherwise. "
+        "For graphs, use ##commands##. Format all math in $$. OCR text will start with 'PROCESSED IMAGE TEXT:'. "
+        "First response should be: 'Prepoznani matematični problem: [extracted text]. Je to pravilno?'"
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": f"You are Shaped AI, a Slovenian math tutor. Provide direct solutions using LaTeX. {graph_instructions}"
+            "content": f"{graph_instructions} Provide direct solutions using LaTeX."
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": f"Guide users step-by-step using Socratic questioning. Ask one question at a time. {graph_instructions}"
+            "content": f"{graph_instructions} Guide using Socratic questioning."
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions}"
+            "content": f"{graph_instructions} Use Gen Alpha slang in every response."
         }
 
 # ----- Main Logic -----
@@ -336,12 +377,11 @@ display_messages(st.session_state.messages)
 
 # Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
     st.rerun()
 
-# Generate AI response after user message is displayed
+# Generate AI response
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         response = client.chat.completions.create(
@@ -349,7 +389,6 @@ if st.session_state.get("generate_response"):
             messages=[get_system_message()] + st.session_state.messages
         ).choices[0].message.content
     
-    # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
     del st.session_state.generate_response
     st.rerun()
