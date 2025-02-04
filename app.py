@@ -199,7 +199,7 @@ st.sidebar.markdown(
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='sk-proj-J5V8I3d08t-lhkharNQWQss9KAgU-WYtV1guVpmUni086MqIyKt2UwSXCKdagzYjk5F6OpVOGyT3BlbkFJ66Ae3ECHG7yqFyuLY0EGhvrPRVhDVfyiJ0asoNJ1OKkYuaRNyfGViH-8eRAOQAIyFSZreeRO0')
+client = OpenAI(api_key='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')
 
 # Set up the session state
 if "openai_model" not in st.session_state:
