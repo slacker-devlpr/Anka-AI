@@ -20,7 +20,7 @@ st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
     page_icon=r"top-logo.png"
 )
-
+use_fast=True
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
