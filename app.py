@@ -15,7 +15,7 @@ import datetime
 import pytz
 from urllib.parse import quote
 
-# Additional imports for MathOCR (TrOCR)
+# --- NEW: Import the OCR libraries ---
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
 # Page config:
@@ -69,7 +69,7 @@ height: 0%;
 }
 </style>
 """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 st.markdown('''
 <style>
 .stApp [data-testid="stToolbar"]{
@@ -182,7 +182,11 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ 
     st.session_state.messages = []
     st.session_state.animated_messages = set()
     st.session_state.last_animated_index = -1
-    st.experimental_rerun()
+    st.rerun()
+
+# ----- NEW: Add a button to open the camera input -----
+if st.sidebar.button("📸 Posneti matematični problem"):
+    st.session_state.show_camera = True
 
 st.sidebar.markdown(
     """
@@ -198,26 +202,24 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
-
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='sk-proj-J5V8I3d08t-lhkharNQWQss9KAgU-WYtV1guVpmUni086MqIyKt2UwSXCKdagzYjk5F6OpVOGyT3BlbkFJ66Ae3ECHG7yqFyuLY0EGhvrPRVhDVfyiJ0asoNJ1OKkYuaRNyfGViH-8eRAOQAIyFSZreeRO0()')  # Replace with your actual key
+client = OpenAI(api_key='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')
 
 # Set up the session state
 if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
     st.session_state["openai_model"] = "gpt-4o-mini"
-
     @st.dialog("Dobrodošli👋")
     def vote():
-        st.write("Shaped AI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀")
+        st.write("Shaped AI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀") 
         st.write(" ")
         st.write("Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡")
         st.write(" ")
         st.write("A čeprav so naše storitve brezplačne, njihovo delovanje ni – strežniki, materiali in čas zahtevajo sredstva. Če želite podpreti našo misijo, bomo izjemno hvaležni za BTC donacije čez BTC network na 1KB31MXN19KNMwFFsvwGyjkMdSku3NGgu9🙏💙")
         st.write(" ")
-        st.write("Takoj ko bomo pridobili dovolj sredstev iz donacij, bomo povečali zmogljivost naših modelov 💪, izboljšali hitrost odgovarjanja ⚡ in dodali možnost nalaganja slik matematičnih problemov 🧮, ki jih bo chatbot reševal 📸. Trenutno ta funkcionalnost ni mogoča zaradi omejitev zmogljivosti platforme Streamlit.")
+        st.write("Takoj ko bomo pridobili dovolj sredstev iz donacij, bomo povečali zmogljivost naših modelov 💪, izboljšali hitrost odgovarjanja ⚡ in dodali možnost nalaganja slik matematičnih problemov 🧮, ki jih bo chatbot reševal 📸. Trenutno ta funkcionalnost ni mogoča zaradi omejitev zmogljivosti platforme Streamlit. ")
         st.write(" ")
         st.write("📍 Živite v Ljubljani? Pokličite 031 577 600 in si zagotovite ena na ena inštrukcije v živo! 📞✨")
         st.image("MADE USING.png")
@@ -350,57 +352,45 @@ def get_system_message():
             "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions} IMPORTANT!: You still need to reply in slovene just use this type of slang!"
         }
 
-# ----- Add MathOCR Camera Input Section -----
-# Initialize a flag in session state to control the camera input widget
-if "show_camera" not in st.session_state:
-    st.session_state["show_camera"] = False
-
-# A button to trigger the camera widget
-if st.button("📸 Naloži sliko problema"):
-    st.session_state["show_camera"] = True
-    st.experimental_rerun()  # Rerun to display the camera input widget
-
-# If the flag is set, display the camera widget
-if st.session_state["show_camera"]:
-    img_file = st.camera_input("Posnemi sliko svojega matematičnega problema")
-    if img_file is not None:
-        with st.spinner("Obdelujem sliko..."):
-            # Open the image and convert it to RGB
-            image = Image.open(img_file).convert("RGB")
-            
-            # Load the OCR processor and model (cached so they aren’t reloaded each time)
-            @st.cache_resource(show_spinner=False)
-            def load_mathocr_model():
-                processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
-                model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
-                return processor, model
-
-            processor, model = load_mathocr_model()
-
-            # Process the image with the OCR model
-            pixel_values = processor(image, return_tensors="pt").pixel_values
-            generated_ids = model.generate(pixel_values)
-            extracted_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-
-        st.success("Slika uspešno obdelana!")
-        # Append the OCR result as a user message for the chatbot to solve
-        st.session_state.messages.append({
-            "role": "user",
-            "content": f"Solve this: {extracted_text}"
-        })
-        # Reset the flag so the widget is hidden again
-        st.session_state["show_camera"] = False
-        st.experimental_rerun()
-
-# ----- Main Logic -----
+# ----- MAIN LOGIC -----
 display_messages(st.session_state.messages)
 
-# Process new user input from text
+# ----- NEW: If the camera flag is set, show camera input and process image -----
+if st.session_state.get("show_camera"):
+    st.header("Posneti svoj matematični problem")
+    # st.camera_input returns a BytesIO object if a photo is captured
+    camera_image = st.camera_input("Posnemi matematični problem")
+    if camera_image is not None:
+        with st.spinner("Obdelujem sliko..."):
+            try:
+                # Open the image and convert to RGB
+                image = Image.open(camera_image).convert("RGB")
+                # Load the pre-trained processor and model (this may take a few seconds)
+                processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+                model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
+                # Prepare the image for the model
+                pixel_values = processor(image, return_tensors="pt").pixel_values
+                # Generate predicted token ids
+                generated_ids = model.generate(pixel_values)
+                # Decode the token ids to string
+                extracted_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+            except Exception as e:
+                st.error("Napaka pri obdelavi slike: " + str(e))
+                extracted_text = ""
+        if extracted_text:
+            st.success("Prepoznano: " + extracted_text)
+            # Append the OCR result as a new user message for the chatbot to solve.
+            st.session_state.messages.append({"role": "user", "content": f"Reši ta problem: {extracted_text}"})
+        # Remove the flag and rerun to trigger chat processing.
+        st.session_state.show_camera = False
+        st.rerun()
+
+# Process new user input (if any)
 if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
-    st.experimental_rerun()
+    st.rerun()
 
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
@@ -413,4 +403,4 @@ if st.session_state.get("generate_response"):
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
     del st.session_state.generate_response
-    st.experimental_rerun()
+    st.rerun()
