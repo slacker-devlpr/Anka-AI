@@ -1,4 +1,3 @@
-# Libraries:
 import streamlit as st
 from openai import OpenAI
 import shelve
@@ -39,31 +38,31 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 hide_streamlit_style = """
 <style>
 div[data-testid="stToolbar"] {
-visibility: hidden;
-height: 0%;
-position: fixed;
+    visibility: hidden;
+    height: 0%;
+    position: fixed;
 }
 div[data-testid="stDecoration"] {
-visibility: hidden;
-height: 0%;
-position: fixed;
+    visibility: hidden;
+    height: 0%;
+    position: fixed;
 }
 div[data-testid="stStatusWidget"] {
-visibility: hidden;
-height: 0%;
-position: fixed;
+    visibility: hidden;
+    height: 0%;
+    position: fixed;
 }
 #MainMenu {
-visibility: hidden;
-height: 0%;
+    visibility: hidden;
+    height: 0%;
 }
 header {
-visibility: hidden;
-height: 0%;
+    visibility: hidden;
+    height: 0%;
 }
 footer {
-visibility: hidden;
-height: 0%;
+    visibility: hidden;
+    height: 0%;
 }
 </style>
 """
@@ -153,7 +152,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_container_width = True)
+st.sidebar.image("shaped-ai.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar with working header
@@ -196,10 +195,11 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
+
 # ----- Define Avatars and OpenAI Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-client = OpenAI(api_key='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')
+client = OpenAI(api_key='sk-proj-J5V8I3d08t-lhkharNQWQss9KAgU-WYtV1guVpmUni086MqIyKt2UwSXCKdagzYjk5F6OpVOGyT3BlbkFJ66Ae3ECHG7yqFyuLY0EGhvrPRVhDVfyiJ0asoNJ1OKkYuaRNyfGViH-8eRAOQAIyFSZreeRO0')
 
 # Set up the session state
 if "openai_model" not in st.session_state:
@@ -326,7 +326,7 @@ def display_messages(messages):
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## The user can take images of their question if they want, you can open up the camera using the command: //camera"
+        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
         "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs. You can generate an empty geogebra window with: ## ## Again the user should not know this command exists."
     )
     mode = st.session_state.mode
@@ -348,6 +348,35 @@ def get_system_message():
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
+
+# ---------------------------
+# NEW FEATURE: Camera Input Trigger
+# If an assistant message contains "//camera", then open a camera input.
+if any(message["role"] == "assistant" and "//camera" in message["content"] 
+       for message in st.session_state.messages) and not st.session_state.get("camera_processed", False):
+    st.markdown("### Prosimo, posnemi sliko svojega matematičnega problema:")
+    image_file = st.camera_input("Klikni in posnemi")
+    if image_file is not None:
+        # Add a spinner/loading animation while processing the image
+        with st.spinner("Obdelujem sliko..."):
+            # Open the image and convert to RGB
+            image = Image.open(image_file).convert("RGB")
+            # Import the required transformers libraries
+            from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+            # Initialize the processor and model (this may take a few seconds)
+            processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+            model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
+            # Preprocess the image and generate OCR results
+            pixel_values = processor(image, return_tensors="pt").pixel_values
+            generated_ids = model.generate(pixel_values)
+            extracted_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+        st.success("Slika je bila obdelana!")
+        # Append a new user message with the extracted text so that the chatbot can solve it
+        st.session_state.messages.append({"role": "user", "content": f"solve this: {extracted_text}"})
+        # Set a flag so that the camera widget is not shown again for this trigger
+        st.session_state.camera_processed = True
+        st.rerun()
+# ---------------------------
 
 # Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
