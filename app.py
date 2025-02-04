@@ -1,3 +1,4 @@
+# Libraries:
 import streamlit as st
 from openai import OpenAI
 import shelve
@@ -14,9 +15,6 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
-
-# --- NEW: Import the OCR libraries ---
-from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
 # Page config:
 st.set_page_config(
@@ -155,7 +153,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_container_width=True)
+st.sidebar.image("shaped-ai.png", use_container_width = True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar with working header
@@ -183,10 +181,6 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ 
     st.session_state.animated_messages = set()
     st.session_state.last_animated_index = -1
     st.rerun()
-
-# ----- NEW: Add a button to open the camera input -----
-if st.sidebar.button("📸 Posneti matematični problem"):
-    st.session_state.show_camera = True
 
 st.sidebar.markdown(
     """
@@ -352,40 +346,10 @@ def get_system_message():
             "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions} IMPORTANT!: You still need to reply in slovene just use this type of slang!"
         }
 
-# ----- MAIN LOGIC -----
+# ----- Main Logic -----
 display_messages(st.session_state.messages)
 
-# ----- NEW: If the camera flag is set, show camera input and process image -----
-if st.session_state.get("show_camera"):
-    st.header("Posneti svoj matematični problem")
-    # st.camera_input returns a BytesIO object if a photo is captured
-    camera_image = st.camera_input("Posnemi matematični problem")
-    if camera_image is not None:
-        with st.spinner("Obdelujem sliko..."):
-            try:
-                # Open the image and convert to RGB
-                image = Image.open(camera_image).convert("RGB")
-                # Load the pre-trained processor and model (this may take a few seconds)
-                processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
-                model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
-                # Prepare the image for the model
-                pixel_values = processor(image, return_tensors="pt").pixel_values
-                # Generate predicted token ids
-                generated_ids = model.generate(pixel_values)
-                # Decode the token ids to string
-                extracted_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-            except Exception as e:
-                st.error("Napaka pri obdelavi slike: " + str(e))
-                extracted_text = ""
-        if extracted_text:
-            st.success("Prepoznano: " + extracted_text)
-            # Append the OCR result as a new user message for the chatbot to solve.
-            st.session_state.messages.append({"role": "user", "content": f"Reši ta problem: {extracted_text}"})
-        # Remove the flag and rerun to trigger chat processing.
-        st.session_state.show_camera = False
-        st.rerun()
-
-# Process new user input (if any)
+# Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
