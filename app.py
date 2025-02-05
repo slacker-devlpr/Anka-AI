@@ -199,14 +199,14 @@ st.sidebar.markdown(
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
 client = OpenAI(
-    api_key='sk-db3b884cf6a44e0eae9418edebe63488',  # Replace with your DeepSeek API key
+    api_key='sk-cf1d014c8d474945968d9df2d28f7634',  # Replace with your DeepSeek API key
     base_url="https://api.deepseek.com/v3"
 )
 
 # Set up the session state
 if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
-    st.session_state["openai_model"] = "deepseek-v3"
+    st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog("Dobrodošli👋")
     def vote():
         st.write("Shaped AI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀") 
@@ -368,7 +368,5 @@ if st.session_state.get("generate_response"):
     
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
-    del st.session_state.generate_response
-    st.rerun()
     del st.session_state.generate_response
     st.rerun()
