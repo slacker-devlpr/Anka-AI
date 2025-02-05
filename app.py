@@ -223,7 +223,7 @@ if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog(" ")
     def vote():
-        st.image("Screenshot shaped-main.png")
+        st.image("shaped-main.png")
         st.html("<span class='big-dialog'></span>")
     vote()
 
