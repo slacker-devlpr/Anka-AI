@@ -210,7 +210,7 @@ if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 2.1", icon="⚙️")
     # Change the model name to DeepSeek's model
     st.session_state["openai_model"] = "deepseek-chat"
-    @dialog(" ")
+    @st.dialog(" ")
     def vote():
         st.image("Screenshot 2025-02-05 203606.png")
         st.image("MADE USING.png")
