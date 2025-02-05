@@ -14,11 +14,10 @@ import base64
 import datetime
 import pytz
 from urllib.parse import quote
-
+#page_title="Shaped AI, Osebni Inštruktor Matematike",
 # Page config:
 st.set_page_config(
-    page_title="Shaped AI, Osebni Inštruktor Matematike",
-    page_icon=r"top-logo.png"
+    page_icon=r"shaped-logo.png"
 )
 
 # Load css from assets
