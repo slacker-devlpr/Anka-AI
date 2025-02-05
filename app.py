@@ -1,7 +1,6 @@
 # Libraries:
 import streamlit as st
-import requests
-from deep_translator import GoogleTranslator
+from openai import OpenAI
 import shelve
 from PIL import Image
 import pathlib
@@ -153,7 +152,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_column_width=True)
+st.sidebar.image("shaped-ai.png", use_container_width = True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar with working header
@@ -177,8 +176,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎ ‎ ‎ ‎ ‎  ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="pulse"):
     # Reset chat history
-    st.session_state.messages_display = []
-    st.session_state.messages_model = []
+    st.session_state.messages = []
     st.session_state.animated_messages = set()
     st.session_state.last_animated_index = -1
     st.rerun()
@@ -187,58 +185,44 @@ st.sidebar.markdown(
     """
     <style>
     .subtle-text {
-        color: rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
         font-size: 12px;
         text-align: center;
-        margin-top: 6px;
+        margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
-    <div class="subtle-text">You are currently running Shaped AI 2.1 made by slacker, Shaped AI © 2024</div>
+    <div class="subtle-text">You are currently running Shaped AI 1.3 made by slacker, Shaped AI © 2024</div>
     """,
     unsafe_allow_html=True
 )
-
 # ----- Define Avatars and DeepSeek Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
-DEEPSEEK_API_KEY = "sk-5cb67cdc41514069b9e36333ce5d8ef6"  # Replace with your actual API key
+client = OpenAI(
+    api_key='sk-db3b884cf6a44e0eae9418edebe63488',  # Replace with your DeepSeek API key
+    base_url="https://api.deepseek.com/v3"
+)
 
 # Set up the session state
 if "openai_model" not in st.session_state:
-    st.toast("You are currently running Shaped AI 2.1", icon="⚙️")
-    st.session_state["openai_model"] = "deepseek-chat"
+    st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
+    st.session_state["openai_model"] = "deepseek-v3"
+    @st.dialog("Dobrodošli👋")
+    def vote():
+        st.write("Shaped AI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀") 
+        st.write(" ")
+        st.write("Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡")
+        st.write(" ")
+        st.write("A čeprav so naše storitve brezplačne, njihovo delovanje ni – strežniki, materiali in čas zahtevajo sredstva. Če želite podpreti našo misijo, bomo izjemno hvaležni za BTC donacije čez BTC network na 1KB31MXN19KNMwFFsvwGyjkMdSku3NGgu9🙏💙")
+        st.write(" ")
+        st.write("Takoj ko bomo pridobili dovolj sredstev iz donacij, bomo povečali zmogljivost naših modelov 💪, izboljšali hitrost odgovarjanja ⚡ in dodali možnost nalaganja slik matematičnih problemov 🧮, ki jih bo chatbot reševal 📸. Trenutno ta funkcionalnost ni mogoča zaradi omejitev zmogljivosti platforme Streamlit. ")
+        st.write(" ")
+        st.write("📍 Živite v Ljubljani? Pokličite 031 577 600 in si zagotovite ena na ena inštrukcije v živo! 📞✨")
+        st.image("MADE USING.png")
+    vote()
 
-if "messages_display" not in st.session_state:
-    st.session_state.messages_display = []
-    
-if "messages_model" not in st.session_state:
-    st.session_state.messages_model = []
-
-if "animated_messages" not in st.session_state:
-    st.session_state.animated_messages = set()
-
-if "last_animated_index" not in st.session_state:
-    st.session_state.last_animated_index = -1
-
-# ----- Translation Functions -----
-def translate_response(response_en):
-    parts = re.split(r'(\$\$.*?\$\$|##.*?##)', response_en, flags=re.DOTALL)
-    translated_parts = []
-    for part in parts:
-        if part.startswith('$$') and part.endswith('$$'):
-            translated_parts.append(part)
-        elif part.startswith('##') and part.endswith('##'):
-            translated_parts.append(part)
-        else:
-            if part.strip():
-                try:
-                    translated = GoogleTranslator(source='en', target='sl').translate(part)
-                    translated_parts.append(translated)
-                except:
-                    translated_parts.append(part)
-            else:
-                translated_parts.append(part)
-    return ''.join(translated_parts)
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 # ----- Greeting Functions -----
 def get_slovene_greeting():
@@ -295,6 +279,13 @@ def type_response(content):
         time.sleep(0.005)
     message_placeholder.markdown(full_response)
 
+# ----- Add to session state setup -----
+if "last_animated_index" not in st.session_state:
+    st.session_state.last_animated_index = -1
+# ----- Session State Setup -----
+if "animated_messages" not in st.session_state:
+    st.session_state.animated_messages = set()
+# ----- Modified display functions -----
 def display_response_with_geogebra(response_text, animate=True):
     parts = re.split(r'(##[^#]+##)', response_text)
     for part in parts:
@@ -314,19 +305,22 @@ def display_response_with_geogebra(response_text, animate=True):
             st.components.v1.html(geogebra_html, height=450)
         else:
             if animate:
-                type_response(part)
+                type_response(part)  # Animate only new responses
             else:
-                st.markdown(part)
+                st.markdown(part)  # Static display for older messages
 
 def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
+                # Check if this message hasn't been animated yet
                 if index not in st.session_state.animated_messages:
+                    # Animate new response
                     display_response_with_geogebra(message["content"], animate=True)
                     st.session_state.animated_messages.add(index)
                 else:
+                    # Show static version for previously animated messages
                     display_response_with_geogebra(message["content"], animate=False)
             else:
                 st.markdown(message["content"])
@@ -334,78 +328,47 @@ def display_messages(messages):
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
+        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
         "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs. You can generate an empty geogebra window with: ## ## Again the user should not know this command exists."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": f"You are a math tutor. Provide direct solutions using LaTeX. {graph_instructions}"
+            "content": f"You are Shaped AI, a Slovenian math tutor. Provide direct solutions using LaTeX. {graph_instructions}"
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": f"Guide users step-by-step using Socratic questioning. {graph_instructions}"
+            "content": f"Guide users step-by-step using Socratic questioning. Ask one question at a time. {graph_instructions}"
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": f"Use Gen Alpha slang like 'skibidi', 'fr', 'cap' etc. but keep response in English. {graph_instructions}"
+            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions} IMPORTANT!: You still need to reply in slovene just use this type of slang!"
         }
 
-# ----- DeepSeek API Call -----
-def get_deepseek_response(messages):
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
-        "Accept": "application/json"
-    }
-    
-    payload = {
-        "model": "deepseek-chat",
-        "messages": [get_system_message()] + messages,
-        "temperature": 0.3,
-        "max_tokens": 4096
-    }
-    
-    try:
-        response = requests.post(
-            "https://api.deepseek.com/v1/chat/completions",
-            headers=headers,
-            json=payload
-        )
-        response.raise_for_status()
-        return response.json()['choices'][0]['message']['content']
-    except Exception as e:
-        st.error(f"Error contacting DeepSeek API: {str(e)}")
-        return "Prišlo je do napake. Prosimo, poskusite znova."
-
 # ----- Main Logic -----
-display_messages(st.session_state.messages_display)
+display_messages(st.session_state.messages)
 
 # Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
-    # Add to display messages
-    st.session_state.messages_display.append({"role": "user", "content": prompt})
-    # Translate and add to model messages
-    try:
-        translated_prompt = GoogleTranslator(source='sl', target='en').translate(prompt)
-        st.session_state.messages_model.append({"role": "user", "content": translated_prompt})
-    except:
-        st.session_state.messages_model.append({"role": "user", "content": prompt})
+    # Add user message and trigger immediate display
+    st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
     st.rerun()
 
-# Generate AI response
+# Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
-        response_en = get_deepseek_response(st.session_state.messages_model)
-        response_sl = translate_response(response_en)
-        
-        # Add to both message stores
-        st.session_state.messages_model.append({"role": "assistant", "content": response_en})
-        st.session_state.messages_display.append({"role": "assistant", "content": response_sl})
-        
+        response = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=[get_system_message()] + st.session_state.messages
+        ).choices[0].message.content
+    
+    # Add assistant response to session state
+    st.session_state.messages.append({"role": "assistant", "content": response})
+    del st.session_state.generate_response
+    st.rerun()
     del st.session_state.generate_response
     st.rerun()
