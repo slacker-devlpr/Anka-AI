@@ -20,11 +20,7 @@ st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
     page_icon=r"shaped-logo.png"
 )
-st.markdown('''<style>
-div[data-testid="stModal"] div[role="dialog"] {
-    width: 80%;
-}
-</style>''', unsafe_allow_html=True)
+
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
@@ -208,6 +204,17 @@ client = OpenAI(
     api_key='sk-fcd0c54da9824560a6fd8a93bb546d50',         # Replace with your DeepSeek API key
     base_url="https://api.deepseek.com"        # Set the DeepSeek base URL
 )
+st.markdown(
+    """
+<style>
+div[data-testid="stDialog"] div[role="dialog"]:has(.big-dialog) {
+    width: 80vw;
+    height: 80vh;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
 
 # Set up the session state
 if "openai_model" not in st.session_state:
@@ -218,6 +225,7 @@ if "openai_model" not in st.session_state:
     def vote():
         st.image("Screenshot 2025-02-05 203606.png")
         st.image("MADE USING.png")
+        st.html("<span class='big-dialog'></span>")
     vote()
 
 if "messages" not in st.session_state:
