@@ -209,7 +209,7 @@ st.markdown(
 <style>
 div[data-testid="stDialog"] div[role="dialog"]:has(.big-dialog) {
     width: 80vw;
-    height: 80vh;
+    height: 100vh;
 }
 </style>
 """,
@@ -224,7 +224,6 @@ if "openai_model" not in st.session_state:
     @st.dialog(" ")
     def vote():
         st.image("Screenshot 2025-02-05 203606.png")
-        st.image("MADE USING.png")
         st.html("<span class='big-dialog'></span>")
     vote()
 
