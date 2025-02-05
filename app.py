@@ -302,7 +302,7 @@ if "animated_messages" not in st.session_state:
     st.session_state.animated_messages = set()
 # ----- Modified display functions -----
 def display_response_with_geogebra(response_text, animate=True):
-    parts = re.split(r'(@@[^@]@@)', response_text)
+    parts = re.split(r'(@@[^@]+@@)', response_text)  # Fix: Use [^@]+ instead of [^@]
     for part in parts:
         if part.startswith("@@") and part.endswith("@@"):
             function_command = part[2:-2].strip()
@@ -318,12 +318,7 @@ def display_response_with_geogebra(response_text, animate=True):
             </div>
             """
             st.components.v1.html(geogebra_html, height=450)
-        else:
-            if animate:
-                type_response(part)  # Animate only new responses
-            else:
-                st.markdown(part)  # Static display for older messages
-
+            
 def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
@@ -343,8 +338,8 @@ def display_messages(messages):
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. If you get asked the same question twice reply diffrently(like diffrently structured do not change the information) You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double @ symbols (@@) To graph multiple functions separate them by using ; example: @@sin(x); x^2 @@ IMPORTANT: DO NOT REPLY WITH A GRAPH IF THE USER HASNT EXPLICITLY ASKED FOR IT!!!!"
-        "For example ##x^2## or for a circle @@x^2 + y^2 = 1@@ Do not put latex inside the @@; you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the @@} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: In case every number, variable, equation, latex, coordinates and any symbols related with math are wrapped in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORTANT: You can't create a smiley face or other shapes; only circles and graphs."
+       "You are ShapedAI. If you get asked the same question twice reply diffrently(like diffrently structured do not change the information) You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double @ symbols (@@) To graph multiple functions separate them by using ; example: @@sin(x); x^2 @@ IMPORTANT: DO NOT REPLY WITH A GRAPH IF THE USER HASNT EXPLICITLY ASKED FOR IT!!!! "
+       "For example @@x^2@@ or for a circle @@x^2 + y^2 = 1@@ Do not put latex inside the @@ in the @ symbols; you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the @@} The @@ command will be replaced with the graph so the user should not be aware of its existence."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
