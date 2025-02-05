@@ -1,6 +1,6 @@
 # Libraries:
 import streamlit as st
-from openai import OpenAI
+from openai import OpenAI  # We continue using the same library, but now with a custom base_url
 import shelve
 from PIL import Image
 import pathlib
@@ -152,7 +152,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_container_width = True)
+st.sidebar.image("shaped-ai.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 # Add mode selection radio buttons to sidebar with working header
@@ -198,14 +198,17 @@ st.sidebar.markdown(
 # ----- Define Avatars and DeepSeek Client -----
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
+
+# IMPORTANT: Change the client initialization to use DeepSeek v3.
 client = OpenAI(
-    api_key='sk-cf1d014c8d474945968d9df2d28f7634',  # Replace with your DeepSeek API key
-    base_url="https://api.deepseek.com/v3"
+    api_key='sk-fcd0c54da9824560a6fd8a93bb546d50',         # Replace with your DeepSeek API key
+    base_url="https://api.deepseek.com"        # Set the DeepSeek base URL
 )
 
 # Set up the session state
 if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
+    # Change the model name to DeepSeek's model
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog("Dobrodošli👋")
     def vote():
@@ -328,8 +331,8 @@ def display_messages(messages):
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
-        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs. You can generate an empty geogebra window with: ## ## Again the user should not know this command exists."
+        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple functions separate them by using ; example: ##sin(x); x^2 ## "
+        "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols; you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: In case every number, variable, equation, latex, coordinates and any symbols related with math are wrapped in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORTANT: You can't create a smiley face or other shapes; only circles and graphs. You can generate an empty GeoGebra window with: ## ## Again, the user should not know this command exists."
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
@@ -345,7 +348,7 @@ def get_system_message():
     elif mode == "**😎 Gen Alpha način**":
         return {
             "role": "system",
-            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions} IMPORTANT!: You still need to reply in slovene just use this type of slang!"
+            "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere, be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions} IMPORTANT!: You still need to reply in slovene just use this type of slang!"
         }
 
 # ----- Main Logic -----
@@ -361,9 +364,11 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
+        # Use the DeepSeek API to generate the chat completion
         response = client.chat.completions.create(
             model=st.session_state["openai_model"],
-            messages=[get_system_message()] + st.session_state.messages
+            messages=[get_system_message()] + st.session_state.messages,
+            stream=False  # Change stream as needed
         ).choices[0].message.content
     
     # Add assistant response to session state
