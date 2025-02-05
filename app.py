@@ -208,8 +208,8 @@ st.markdown(
     """
 <style>
 div[data-testid="stDialog"] div[role="dialog"]:has(.big-dialog) {
-    width: 80vw;
-    height: 100vh;
+    width: 100vw;
+    height: 70vh;
 }
 </style>
 """,
@@ -223,7 +223,7 @@ if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog(" ")
     def vote():
-        st.image("Screenshot 2025-02-05 203606.png")
+        st.image("Screenshot shaped-main.png")
         st.html("<span class='big-dialog'></span>")
     vote()
 
