@@ -20,7 +20,11 @@ st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
     page_icon=r"shaped-logo.png"
 )
-
+st.markdown('''<style>
+div[data-testid="stModal"] div[role="dialog"] {
+    width: 80%;
+}
+</style>''', unsafe_allow_html=True)
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
