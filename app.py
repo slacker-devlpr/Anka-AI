@@ -302,7 +302,7 @@ if "animated_messages" not in st.session_state:
     st.session_state.animated_messages = set()
 # ----- Modified display functions -----
 def display_response_with_geogebra(response_text, animate=True):
-    parts = re.split(r'(@@[^@]+@@)', response_text)  # Fix: Use [^@]+ instead of [^@]
+    parts = re.split(r'(@@[^@]+@@)', response_text)
     for part in parts:
         if part.startswith("@@") and part.endswith("@@"):
             function_command = part[2:-2].strip()
@@ -318,6 +318,11 @@ def display_response_with_geogebra(response_text, animate=True):
             </div>
             """
             st.components.v1.html(geogebra_html, height=450)
+        else:
+            if animate:
+                type_response(part)  # Animate only new responses
+            else:
+                st.markdown(part)  # Static display for older messages
             
 def display_messages(messages):
     for index, message in enumerate(messages):
