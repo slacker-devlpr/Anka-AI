@@ -224,6 +224,7 @@ if "openai_model" not in st.session_state:
     @st.dialog(" ")
     def vote():
         st.image("shaped-main.png")
+        st.image("MADE USING.png")
         st.html("<span class='big-dialog'></span>")
     vote()
 
