@@ -205,15 +205,8 @@ DEEPSEEK_API_KEY = "sk-5cb67cdc41514069b9e36333ce5d8ef6"  # Replace with your ac
 
 # Set up the session state
 if "openai_model" not in st.session_state:
-    st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
+    st.toast("You are currently running Shaped AI 2.1", icon="⚙️")
     st.session_state["openai_model"] = "deepseek-chat"
-    @st.dialog("Dobrodošli👋")
-    def vote():
-        st.write("Shaped AI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀") 
-        st.write("Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡")
-        st.write("BTC donacije: 1KB31MXN19KNMwFFsvwGyjkMdSku3NGgu9")
-        st.image("MADE USING.png")
-    vote()
 
 if "messages_display" not in st.session_state:
     st.session_state.messages_display = []
@@ -341,7 +334,7 @@ def display_messages(messages):
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions = (
-        "You are ShapedAI. You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
+        "You are ShapedAI. If you want to generate a graph, use a command enclosed in double hash symbols (##) To graph multiple funtions seperate them by using ; example: ##sin(x); x^2 ## "
         "For example ##x^2## or for a circle ##x^2 + y^2 = 1## Do not put latex inside the ## in the hash symbols you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the ##} The ## command will be replaced with the graph so the user should not be aware of its existence. !DO NOT FORGET!: Incase every number, variable, equation, latex, cordinates and any symbols related with math in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORATANT: you cant create smiley face or other shapes only circle and graphs. You can generate an empty geogebra window with: ## ## Again the user should not know this command exists."
     )
     mode = st.session_state.mode
