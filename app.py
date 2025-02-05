@@ -191,7 +191,7 @@ st.sidebar.markdown(
         margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
-    <div class="subtle-text">You are currently running Shaped AI 1.3 made by slacker, Shaped AI © 2024</div>
+    <div class="subtle-text">You are currently running Shaped AI 2.1 made by slacker, Shaped AI © 2024</div>
     """,
     unsafe_allow_html=True
 )
@@ -207,7 +207,7 @@ client = OpenAI(
 
 # Set up the session state
 if "openai_model" not in st.session_state:
-    st.toast("You are currently running Shaped AI 1.6", icon="⚙️")
+    st.toast("You are currently running Shaped AI 2.1", icon="⚙️")
     # Change the model name to DeepSeek's model
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog("Dobrodošli👋")
