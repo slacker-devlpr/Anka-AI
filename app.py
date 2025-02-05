@@ -211,7 +211,7 @@ if "openai_model" not in st.session_state:
     # Change the model name to DeepSeek's model
     st.session_state["openai_model"] = "deepseek-chat"
     def vote():
-        st.image("")
+        st.image("Screenshot 2025-02-05 203606.png")
         st.image("MADE USING.png")
     vote()
 
