@@ -370,7 +370,9 @@ if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
 if st.session_state.previous_mode != MODE:
-    st.session_state.messages = []  # This line clears existing messages
+    st.session_state.messages = []
+    st.session_state.animated_messages = set()
+    st.session_state.last_animated_index = -1
     st.session_state.previous_mode = MODE
     if "generate_response" in st.session_state:
         del st.session_state.generate_response
@@ -390,7 +392,7 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         try:
-            @st.dialog("⚠️🚧 OPOZORILO: Težave s strežniki🚧⚠️ ‎ ‎ ‎")
+            @st.dialog("⚠️🚧 OPOZORILO: Težave s strežniki🚧⚠️")
             def vote1():
                 st.write("Zaradi hitrega povečanja priljubljenosti platforme DeepSeek se trenutno soočajo z velikimi težavami s strežniki. Posledično ima tudi Shaped AI matematični inštruktor, ki deluje s pomočjo DeepSeeka, tehnične težave.") 
                 st.write("🔧 Ekipa intenzivno dela na odpravi težav, vendar to lahko začasno vpliva na hitrost odzivanja in delovanje storitve. Hvala za vaše razumevanje in potrpežljivost! 🔧")
@@ -403,13 +405,13 @@ if st.session_state.get("generate_response"):
             ).choices[0].message.content
         except json.decoder.JSONDecodeError as jde:
             # Handle error when the response isn't valid JSON
-            st.error("Napaka: nepravilno posredovanje JSON odziva. Poskusite znova kasneje.")
+            st.error("Napaka: API ni posredoval pravilnega JSON odziva. Poskusite znova kasneje.")
             # Optionally log the error details or perform other cleanup
             del st.session_state.generate_response
             st.stop()
         except Exception as e:
             # Handle any other exceptions (e.g., network issues)
-            st.error("Prišlo je do težave pri povezavi. Poskusite kasneje.")
+            st.error("Prišlo je do težave pri povezavi z API. Poskusite kasneje.")
             # Optionally log e for debugging:
             # st.error(f"Podrobnosti: {e}")
             del st.session_state.generate_response
