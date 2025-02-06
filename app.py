@@ -365,6 +365,7 @@ def get_system_message():
             "role": "system",
             "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere, be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions} IMPORTANT!: You still need to reply in slovene just use this type of slang!"
         }
+
 if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
@@ -373,7 +374,10 @@ if st.session_state.previous_mode != MODE:
     st.session_state.animated_messages = set()
     st.session_state.last_animated_index = -1
     st.session_state.previous_mode = MODE
+    if "generate_response" in st.session_state:
+        del st.session_state.generate_response
     st.rerun()
+
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
 
@@ -384,29 +388,34 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.generate_response = True
     st.rerun()
 
-# Generate AI response after user message is displayed
+# Modified response generation section
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         try:
-            # Use the DeepSeek API to generate the chat completion
+            # Check if messages were cleared during generation
+            if not st.session_state.messages or st.session_state.messages[-1]["role"] != "user":
+                del st.session_state.generate_response
+                st.stop()
+            
             response = client.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[get_system_message()] + st.session_state.messages,
-                stream=False  # Change stream as needed
+                stream=False
             ).choices[0].message.content
-        except json.decoder.JSONDecodeError as jde:
-            # Handle error when the response isn't valid JSON
-            st.error("Napaka: API ni posredoval pravilnega JSON odziva. Poskusite znova kasneje.")
-            # Optionally log the error details or perform other cleanup
-            del st.session_state.generate_response
-            st.stop()
+            
+            # Final check before adding response
+            if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
+                st.session_state.messages.append({"role": "assistant", "content": response})
+            else:
+                st.toast("Klepet je bil ponastavljen med generiranjem odgovora", icon="⚠️")
+            
         except Exception as e:
-            # Handle any other exceptions (e.g., network issues)
-            st.error("Prišlo je do težave pri povezavi z API. Poskusite kasneje.")
-            # Optionally log e for debugging:
-            # st.error(f"Podrobnosti: {e}")
-            del st.session_state.generate_response
-            st.stop()
+            st.error(f"Prišlo je do napake: {str(e)}")
+        finally:
+            if "generate_response" in st.session_state:
+                del st.session_state.generate_response
+            st.rerun()
+
     
     
     # Add assistant response to session state
