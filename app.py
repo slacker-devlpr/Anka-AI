@@ -241,11 +241,6 @@ if "openai_model" not in st.session_state:
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    @st.dialog("⚠️🚧 OPOZORILO: Težave s strežniki zaradi povečane popularnosti DeepSeek 🚧⚠️")
-    def vote1():
-        st.write("Zaradi hitrega povečanja priljubljenosti platforme DeepSeek se trenutno soočajo z velikimi težavami s strežniki. Posledično ima tudi Shaped AI matematični inštruktor, ki deluje s pomočjo DeepSeeka, tehnične težave.") 
-        st.write("🔧 Ekipa intenzivno dela na odpravi težav, vendar to lahko začasno vpliva na hitrost odzivanja in delovanje storitve. Hvala za vaše razumevanje in potrpežljivost! 🔧")
-    vote1()
 
 # ----- Greeting Functions -----
 def get_slovene_greeting():
@@ -397,6 +392,11 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         try:
+            @st.dialog("⚠️🚧 OPOZORILO: Težave s strežniki zaradi povečane popularnosti DeepSeek 🚧⚠️")
+            def vote1():
+                st.write("Zaradi hitrega povečanja priljubljenosti platforme DeepSeek se trenutno soočajo z velikimi težavami s strežniki. Posledično ima tudi Shaped AI matematični inštruktor, ki deluje s pomočjo DeepSeeka, tehnične težave.") 
+                st.write("🔧 Ekipa intenzivno dela na odpravi težav, vendar to lahko začasno vpliva na hitrost odzivanja in delovanje storitve. Hvala za vaše razumevanje in potrpežljivost! 🔧")
+            vote1()
             # Use the DeepSeek API to generate the chat completion
             response = client.chat.completions.create(
                 model=st.session_state["openai_model"],
