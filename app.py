@@ -237,6 +237,10 @@ if "openai_model" not in st.session_state:
         st.image("graph.png")
         st.image("MADE USING.png")
     vote()
+    @st.dialog("Opozorilo!")
+    def vote():
+        st.write("Shaped AI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀") 
+    vote()
 
 
 if "messages" not in st.session_state:
@@ -388,34 +392,30 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.generate_response = True
     st.rerun()
 
-# Modified response generation section
+# Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         try:
-            # Check if messages were cleared during generation
-            if not st.session_state.messages or st.session_state.messages[-1]["role"] != "user":
-                del st.session_state.generate_response
-                st.stop()
-            
+            # Use the DeepSeek API to generate the chat completion
             response = client.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[get_system_message()] + st.session_state.messages,
-                stream=False
+                stream=False  # Change stream as needed
             ).choices[0].message.content
-            
-            # Final check before adding response
-            if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
-                st.session_state.messages.append({"role": "assistant", "content": response})
-            else:
-                st.toast("Klepet je bil ponastavljen med generiranjem odgovora", icon="⚠️")
-            
+        except json.decoder.JSONDecodeError as jde:
+            # Handle error when the response isn't valid JSON
+            st.error("Napaka: API ni posredoval pravilnega JSON odziva. Poskusite znova kasneje.")
+            # Optionally log the error details or perform other cleanup
+            del st.session_state.generate_response
+            st.stop()
         except Exception as e:
-            st.error(f"Prišlo je do napake: {str(e)}")
-        finally:
-            if "generate_response" in st.session_state:
-                del st.session_state.generate_response
-            st.rerun()
-
+            # Handle any other exceptions (e.g., network issues)
+            st.error("Prišlo je do težave pri povezavi z API. Poskusite kasneje.")
+            # Optionally log e for debugging:
+            # st.error(f"Podrobnosti: {e}")
+            del st.session_state.generate_response
+            st.stop()
+    
     
     
     # Add assistant response to session state
