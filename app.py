@@ -373,7 +373,7 @@ if st.session_state.previous_mode != MODE:
     st.rerun()
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
-st.warning("The server is busy. Please try again later.")
+
 # Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message and trigger immediate display
