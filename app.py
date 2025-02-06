@@ -194,7 +194,7 @@ st.sidebar.markdown(
         margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
-    <div class="subtle-text">You are currently running Shaped AI 2.1 made by slacker, Shaped AI © 2024</div>
+    <div class="subtle-text">You are currently running Shaped AI 2.1 powered by DeepSeek-V3, Shaped AI © 2024</div>
     """,
     unsafe_allow_html=True
 )
