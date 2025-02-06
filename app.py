@@ -370,6 +370,7 @@ if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
 if st.session_state.previous_mode != MODE:
+    st.session_state.messages = []  # This line clears existing messages
     st.session_state.previous_mode = MODE
     if "generate_response" in st.session_state:
         del st.session_state.generate_response
