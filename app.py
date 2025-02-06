@@ -370,7 +370,6 @@ if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
 if st.session_state.previous_mode != MODE:
-    st.session_state.messages = []
     st.session_state.animated_messages = set()
     st.session_state.last_animated_index = -1
     st.session_state.previous_mode = MODE
