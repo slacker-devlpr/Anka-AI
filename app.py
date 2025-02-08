@@ -294,7 +294,7 @@ def type_response(content):
     for char in content:
         full_response += char
         message_placeholder.markdown(full_response + "▌")
-        time.sleep(0.005)
+        time.sleep(0.002)
     message_placeholder.markdown(full_response)
 
 # ----- Add to session state setup -----
