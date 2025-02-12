@@ -366,17 +366,12 @@ def get_system_message():
             "content": f"U have to use skibidi, fr, cap, aura, low taper fade, brainrot, rizz and other slang in every response. You need to use this slang everywhere, be creative! Example: 'Nah fam, that equation's looking sus, let's fix that rizz' {graph_instructions} IMPORTANT!: You still need to reply in slovene just use this type of slang!"
         }
 
+# Replace with this simplified version:
 if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
 if st.session_state.previous_mode != MODE:
-    st.session_state.messages = []
-    st.session_state.animated_messages = set()
-    st.session_state.last_animated_index = -1
-    st.session_state.previous_mode = MODE
-    if "generate_response" in st.session_state:
-        del st.session_state.generate_response
-    st.rerun()
+    st.session_state.previous_mode = MODE  # Just update the previous mode
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
