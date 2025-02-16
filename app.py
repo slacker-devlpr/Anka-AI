@@ -387,31 +387,56 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         try:
-            #@st.dialog("⚠️🚧 OPOZORILO: Težave s strežniki🚧⚠️")
-            def vote1():
-                st.write("Zaradi hitrega povečanja priljubljenosti platforme DeepSeek se trenutno soočajo z velikimi težavami s strežniki. Posledično ima tudi Shaped AI matematični inštruktor, ki deluje s pomočjo DeepSeeka, tehnične težave.") 
-                st.write("🔧 Ekipa intenzivno dela na odpravi težav, vendar to lahko začasno vpliva na hitrost odzivanja in delovanje storitve. Hvala za vaše razumevanje in potrpežljivost! 🔧")
-            #vote1()
-            # Use the DeepSeek API to generate the chat completion
             response = client.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[get_system_message()] + st.session_state.messages,
                 stream=False  # Change stream as needed
             ).choices[0].message.content
         except json.decoder.JSONDecodeError as jde:
-            # Handle error when the response isn't valid JSON
             st.error("Napaka: API ni posredoval pravilnega JSON odziva. Poskusite znova kasneje.")
-            # Optionally log the error details or perform other cleanup
             del st.session_state.generate_response
             st.stop()
         except Exception as e:
-            # Handle any other exceptions (e.g., network issues)
             st.error("Prišlo je do težave pri povezavi z API. Poskusite kasneje.")
-            # Optionally log e for debugging:
-            # st.error(f"Podrobnosti: {e}")
             del st.session_state.generate_response
             st.stop()
-    
+
+    # Check for the special token that triggers the camera dialog
+    if "()open()" in response:
+        # Remove the token from the response
+        response = response.replace("()open()", "")
+        # Append the modified assistant message to the conversation
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        
+        @st.dialog("Take a photo of your math problem!")
+        def photo_dialog():
+            st.write("Prosimo, posnemi fotografijo svojega matematičnega problema:")
+            picture = st.camera_input("Take a picture")
+            if picture:
+                st.image(picture)
+                # Use Gemini AI to extract text from the image
+                from google import genai
+                from google.genai import types
+                from PIL import Image
+                import io
+                image = Image.open(picture)
+                gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
+                gemini_response = gemini_client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=["What is this image?", image]
+                )
+                extracted_text = gemini_response.text
+                st.write("Extracted text:", extracted_text)
+                # Append the extracted text as a new user message
+                st.session_state.messages.append({"role": "user", "content": extracted_text})
+                st.rerun()
+        photo_dialog()
+    else:
+        st.session_state.messages.append({"role": "assistant", "content": response})
+
+    del st.session_state.generate_response
+    st.rerun()
+
     
     
     # Add assistant response to session state
