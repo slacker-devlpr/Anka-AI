@@ -24,8 +24,6 @@ st.set_page_config(
     page_icon=r"shaped-logo.png"
 )
 
-genai.configure(api_key='AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU')
-
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
