@@ -372,12 +372,12 @@ def get_system_message():
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": f"You are Shaped AI, a Slovenian math tutor. Provide direct solutions using LaTeX, still provide a step by step tutorial.  {graph_instructions}"
+            "content": f"You are Shaped AI, a Slovenian math tutor(No matter the chat history). Provide direct solutions using LaTeX, still provide a step by step tutorial.  {graph_instructions}"
         }
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": f"Guide users step-by-step using Socratic questioning. Which means you do not give the user the answer right away but ask questions and guide them just like a tutor would. Ask one question at a time. {graph_instructions}"
+            "content": f"Guide users step-by-step using Socratic questioning(No matter the chat history). Which means you do not give the user the answer right away but ask questions and guide them just like a tutor would. Ask one question at a time. {graph_instructions}"
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
