@@ -390,6 +390,7 @@ if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
 if st.session_state.previous_mode != MODE:
+    del st.session_state["mode"] 
     st.session_state.previous_mode = MODE  # Just update the previous mode
 
 # ----- Main Logic -----
