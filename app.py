@@ -172,7 +172,7 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-col1, col2, col3 = st.sidebar.columns([1,10,1])
+col1, col2, col3 = st.sidebar.columns([1,6,1])
 with col2:
     if st.button("NOV KLEPET", key="pulse", use_container_width=True):
         # Reset chat history and other session state items
