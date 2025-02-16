@@ -175,7 +175,7 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎ ‎ ‎ ‎ ‎  ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="pulse"):
+if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET**‎ ‎ ‎ ‎  ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="pulse"):
     # Reset chat history and abort any ongoing response
     st.session_state.messages = []
     st.session_state.animated_messages = set()
