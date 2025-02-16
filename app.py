@@ -15,7 +15,8 @@ import datetime
 import pytz
 from urllib.parse import quote
 import json
-from google import generativeai as genai
+from google import genai
+from google.genai import types
 
 # Page config:
 st.set_page_config(
