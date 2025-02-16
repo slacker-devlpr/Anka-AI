@@ -175,7 +175,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # Center the 'NOV KLEPET' button using columns
 col1, col2, col3 = st.sidebar.columns([1, 4, 1])
 with col2:
-    if st.button("NOV KLEPET", key="pulser"):
+    if st.button("NOV KLEPET", key="pulse"):
         # Reset chat history and other session state items
         st.session_state.messages = []
         st.session_state.animated_messages = set()
