@@ -403,10 +403,6 @@ if st.session_state.get("generate_response"):
 
     # Check for the special token that triggers the camera dialog
     if "()open()" in response:
-        # Remove the token from the response
-        response = response.replace("()open()", "")
-        # Append the modified assistant message to the conversation
-        st.session_state.messages.append({"role": "assistant", "content": response})
         
         @st.dialog("Take a photo of your math problem!")
         def photo_dialog():
