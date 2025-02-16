@@ -169,7 +169,6 @@ MODE = st.sidebar.radio(
     index=0,
     key="mode",
     help="Izberi način inštrukcije, ki ti najbolj ustreza",
-    use_container_width=True
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
