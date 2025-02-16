@@ -168,13 +168,14 @@ MODE = st.sidebar.radio(
     ],
     index=0,
     key="mode",
-    help="Izberi način inštrukcije, ki ti najbolj ustreza"
+    help="Izberi način inštrukcije, ki ti najbolj ustreza",
+    use_container_width=True
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
 col1, col2, col3 = st.sidebar.columns([1,10,1])
 with col2:
-    if st.button("NOV KLEPET", key="pulse"):
+    if st.button("NOV KLEPET", key="pulse", use_container_width=True):
         # Reset chat history and other session state items
         st.session_state.messages = []
         st.session_state.animated_messages = set()
