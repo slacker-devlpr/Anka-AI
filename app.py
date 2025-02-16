@@ -15,8 +15,6 @@ import datetime
 import pytz
 from urllib.parse import quote
 import json
-from google import genai
-from google.genai import types
 
 # Page config:
 st.set_page_config(
@@ -177,7 +175,7 @@ MODE = st.sidebar.radio(
 )
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎**NOV KLEPET** ‎ ‎  ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="pulse"):
+if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎**NOV KLEPET** ‎ ‎ ‎ ‎ ‎  ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="pulse"):
     # Reset chat history and abort any ongoing response
     st.session_state.messages = []
     st.session_state.animated_messages = set()
@@ -185,41 +183,6 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎**NOV KLEPET*
     if "generate_response" in st.session_state:
         del st.session_state.generate_response
     st.rerun()
-
-# Add new camera button to sidebar
-if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎📸 POSNETI MATEMATIČNI PROBLEM ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="camera_btn"):
-    st.session_state.show_camera = True
-
-# Camera dialog handler
-if st.session_state.get('show_camera'):
-    @st.dialog("📸 Posnetek matematičnega problema")
-    def camera_dialog():
-        img_file = st.camera_input("Usmeri kamero na matematični problem", key="math_cam")
-        
-        if img_file:
-    
-                # Convert to PIL Image
-            img = Image.open(img_file)
-                
-                # EXACT Gemini pattern from example
-            client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
-            response = client.models.generate_content(
-                model="gemini-1.5-flash",
-                contents=["Preberi matematični problem s slike v slovenščini in ga zapiši v izvirni obliki. Ne rešuj problema, samo ga prepiši. Odgovori samo s problemom.", img]
-            )
-                
-            # Add extracted problem to chat
-            if response.text:
-                st.session_state.messages.append({"role": "user", "content": response.text})
-                st.session_state.generate_response = True
-                st.rerun()
-                
-                # Close dialog
-            st.session_state.show_camera = False
-            return
-    
-    camera_dialog()
-
 
 st.sidebar.markdown(
     """
