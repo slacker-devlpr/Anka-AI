@@ -218,8 +218,8 @@ if st.session_state.get('show_camera'):
             st.session_state.show_camera = False
             return
                 
-        except Exception as e:
-            st.error(f"Napaka pri obdelavi slike: {str(e)}")
+            except Exception as e:
+                st.error(f"Napaka pri obdelavi slike: {str(e)}")
     
     camera_dialog()
 
