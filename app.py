@@ -15,12 +15,15 @@ import datetime
 import pytz
 from urllib.parse import quote
 import json
+from google import generativeai as genai
 
 # Page config:
 st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
     page_icon=r"shaped-logo.png"
 )
+
+genai.configure(api_key='AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU')
 
 # Load css from assets
 def load_css(file_path):
@@ -183,6 +186,43 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ 
     if "generate_response" in st.session_state:
         del st.session_state.generate_response
     st.rerun()
+
+# Add new camera button to sidebar
+if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎📸 POSNETI MATEMATIČNI PROBLEM ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎", key="camera_btn"):
+    st.session_state.show_camera = True
+
+# Camera dialog handler
+if st.session_state.get('show_camera'):
+    @st.dialog("📸 Posnetek matematičnega problema")
+    def camera_dialog():
+        img_file = st.camera_input("Usmeri kamero na matematični problem", key="math_cam")
+        
+        if img_file:
+            try:
+                # Convert to PIL Image
+                img = Image.open(img_file)
+                
+                # Use Gemini to extract text
+                client = genai.GenerativeModel('gemini-pro-vision')
+                response = client.generate_content(["Preberi matematični problem s slike in ga zapiši v izvirni obliki. Ne rešuj problema, samo ga prepiši. Odgovori samo s problemom v slovenščini.", img], 
+                                                  stream=False)
+                
+                # Add extracted problem to chat
+                if response.text:
+                    st.session_state.messages.append({"role": "user", "content": response.text})
+                    st.session_state.generate_response = True
+                    st.rerun()
+                
+                # Close dialog
+                st.session_state.show_camera = False
+                time.sleep(0.5)
+                return
+                
+            except Exception as e:
+                st.error(f"Napaka pri obdelavi slike: {str(e)}")
+    
+    camera_dialog()
+
 
 st.sidebar.markdown(
     """
