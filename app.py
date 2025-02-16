@@ -175,7 +175,7 @@ st.sidebar.markdown(
 
 # Center the label and radio button group
 MODE = st.sidebar.radio(
-    "‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎**Način Inštrukcije**",
+    "‎**Način Inštrukcije**",
     options=[
         "**📚 Filozofski način**",
         "**⚡ Takojšnji odgovor**",
