@@ -191,7 +191,7 @@ MODE = st.sidebar.radio(
     help="Izberi način inštrukcije, ki ti najbolj ustreza",
 )
 
-st.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 col1, col2, col3 = st.sidebar.columns([1,6,1])
 with col2:
     if st.button("NOV KLEPET", key="pulse", use_container_width=True):
