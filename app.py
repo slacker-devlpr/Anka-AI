@@ -154,8 +154,6 @@ st.markdown("""
 # Add image to sidebar with tight divider
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-
-# Add mode selection radio buttons to sidebar with working header
 MODE = st.sidebar.radio(
     "‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ **Način Inštrukcije**",
     options=[
@@ -177,7 +175,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # Center the 'NOV KLEPET' button using columns
 col1, col2, col3 = st.sidebar.columns([1, 4, 1])
 with col2:
-    if st.button("NOV KLEPET", key="pulse"):
+    if st.button("NOV KLEPET", key="pulser"):
         # Reset chat history and other session state items
         st.session_state.messages = []
         st.session_state.animated_messages = set()
