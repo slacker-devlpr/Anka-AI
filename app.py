@@ -183,8 +183,7 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ 
     if "generate_response" in st.session_state:
         del st.session_state.generate_response
     st.rerun()
-with st.sidebar:
-    st.markdown("<p style='text-align: center;'><button>st.button("hello")</button></p>", unsafe_allow_html=True)
+
     
 st.sidebar.markdown(
     """
