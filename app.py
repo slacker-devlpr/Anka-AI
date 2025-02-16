@@ -203,10 +203,12 @@ if st.session_state.get('show_camera'):
                 # Convert to PIL Image
                 img = Image.open(img_file)
                 
-                # Use Gemini to extract text
-                client = genai.GenerativeModel('gemini-pro-vision')
-                response = client.generate_content(["Preberi matematični problem s slike in ga zapiši v izvirni obliki. Ne rešuj problema, samo ga prepiši. Odgovori samo s problemom v slovenščini.", img], 
-                                                  stream=False)
+                # EXACT Gemini pattern from example
+                client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
+                response = client.models.generate_content(
+                    model="gemini-1.5-flash",
+                    contents=["Preberi matematični problem s slike v slovenščini in ga zapiši v izvirni obliki. Ne rešuj problema, samo ga prepiši. Odgovori samo s problemom.", img]
+                )
                 
                 # Add extracted problem to chat
                 if response.text:
@@ -216,7 +218,6 @@ if st.session_state.get('show_camera'):
                 
                 # Close dialog
                 st.session_state.show_camera = False
-                time.sleep(0.5)
                 return
                 
             except Exception as e:
