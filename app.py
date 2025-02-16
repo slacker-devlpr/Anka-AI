@@ -383,7 +383,6 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.generate_response = True
     st.rerun()
 
-# Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         try:
@@ -401,39 +400,43 @@ if st.session_state.get("generate_response"):
             del st.session_state.generate_response
             st.stop()
 
-    # Check for the special token that triggers the camera dialog
+    # Check for special token that triggers the photo dialog
     if "()open()" in response:
-        
-        @st.dialog("Take a photo of your math problem!")
-        def photo_dialog():
-            st.write("Prosimo, posnemi fotografijo svojega matematičnega problema:")
-            picture = st.camera_input("Take a picture")
-            if picture:
-                st.image(picture)
-                # Use Gemini AI to extract text from the image
-                from google import genai
-                from google.genai import types
-                from PIL import Image
-                import io
-                image = Image.open(picture)
-                gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
-                gemini_response = gemini_client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=["What is this image?", image]
-                )
-                extracted_text = gemini_response.text
-                st.write("Extracted text:", extracted_text)
-                # Append the extracted text as a new user message
-                st.session_state.messages.append({"role": "user", "content": extracted_text})
-                st.rerun()
-        photo_dialog()
+        response = response.replace("()open()", "")
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        # Set a flag to show the camera dialog
+        st.session_state.show_photo_dialog = True
     else:
         st.session_state.messages.append({"role": "assistant", "content": response})
-
-    del st.session_state.generate_response
-    st.rerun()
-
     
+    del st.session_state.generate_response
+    st.experimental_rerun()
+
+# --- Handle the camera dialog ---
+if st.session_state.get("show_photo_dialog", False):
+    @st.dialog("Take a photo of your math problem!")
+    def photo_dialog():
+        st.write("Prosimo, posnemi fotografijo svojega matematičnega problema:")
+        picture = st.camera_input("Take a picture")
+        if picture is not None:
+            st.image(picture)
+            from google import genai
+            from google.genai import types
+            from PIL import Image
+            # Convert the uploaded file into an Image object
+            image = Image.open(picture)
+            gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
+            gemini_response = gemini_client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=["What is this image?", image]
+            )
+            extracted_text = gemini_response.text
+            st.write("Extracted text:", extracted_text)
+            # Append the extracted text as a new user message
+            st.session_state.messages.append({"role": "user", "content": extracted_text})
+            st.session_state.show_photo_dialog = False
+            st.experimental_rerun()
+    photo_dialog()
     
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
