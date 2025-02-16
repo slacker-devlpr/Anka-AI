@@ -154,24 +154,47 @@ st.markdown("""
 # Add image to sidebar with tight divider
 st.sidebar.image("shaped-ai.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-MODE = st.sidebar.radio(
-    "‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ **Način Inštrukcije**",
-    options=[
-        "**📚 Filozofski način**",
-        "**⚡ Takojšnji odgovor**",
-        "**😎 Gen Alpha način**"
-    ],
-    captions=[
-        "Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
-        "Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
-        "Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."
-    ],
-    index=0,
-    key="mode",
-    help="Izberi način inštrukcije, ki ti najbolj ustreza",
+st.sidebar.markdown(
+    """
+    <style>
+    /* Center the radio group container */
+    div[data-baseweb="radio"] {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    /* Center each radio option label */
+    div[data-baseweb="radio"] label {
+        text-align: center;
+        width: 100%;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
-st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
+# Center the label and radio button group
+with st.sidebar:
+    st.markdown("<div style='text-align: center; font-weight: bold; font-size: 16px;'>**Način Inštrukcije**</div>", unsafe_allow_html=True)
+
+    MODE = st.radio(
+        " ",  # Empty label since we're adding a custom title above
+        options=[
+            "**📚 Filozofski način**",
+            "**⚡ Takojšnji odgovor**",
+            "**😎 Gen Alpha način**"
+        ],
+        captions=[
+            "Tvoj AI inštruktor te bo vodil skozi probleme z izzivalnimi vprašanji. Ta pristop spodbuja kritično mišljenje in globlje razumevanje konceptov.",
+            "Tvoj AI inštruktor bo dal neposredne odgovore na tvoje vprašanje. Ta pristop se osredotoča na zagotavljanje natančnih rešitev z minimalnimi koraki razlage.",
+            "Fr fr, matematika razložena s strani tvojega giga možganov chad inštruktorja, ki ti dviguje matematično auro, no cap."
+        ],
+        index=0,
+        key="mode",
+        help="Izberi način inštrukcije, ki ti najbolj ustreza",
+    )
+
+    st.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 col1, col2, col3 = st.sidebar.columns([1,6,1])
 with col2:
     if st.button("NOV KLEPET", key="pulse", use_container_width=True):
