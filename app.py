@@ -219,54 +219,6 @@ div[data-testid="stDialog"] div[role="dialog"]:has(.big-dialog) {
     unsafe_allow_html=True,
 )
 
-# Inject custom CSS to position a camera button in the top right corner
-st.markdown(
-    """
-    <style>
-    .top-right-button {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 1000;
-    }
-    </style>
-    <div class="top-right-button">
-    """,
-    unsafe_allow_html=True
-)
-
-if st.button("📸 Take a photo of your math problem!", key="open_camera"):
-    st.session_state["show_camera_dialog"] = True
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# When the button is clicked, show a dialog with a camera input
-if st.session_state.get("show_camera_dialog", False):
-    @st.dialog("Take a photo of your math problem!")
-    def camera_dialog():
-        picture = st.camera_input("Capture your math problem")
-        if picture is not None:
-            # Process the image with Gemini AI to extract text
-            from google import genai
-            from google.genai import types
-            import PIL.Image
-
-            image = PIL.Image.open(picture)
-            gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
-            response = gemini_client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=["What is this image?", image]
-            )
-            extracted_text = response.text
-
-            # Append the extracted text to the chat as a new user message
-            st.session_state.messages.append({"role": "user", "content": extracted_text})
-            st.session_state["show_camera_dialog"] = False
-            st.rerun()
-
-    camera_dialog()
-
-
 # Set up the session state
 if "openai_model" not in st.session_state:
     st.toast("You are currently running Shaped AI 2.1", icon="⚙️")
