@@ -347,7 +347,7 @@ def display_messages(messages):
 def get_system_message():
     graph_instructions = (
        "You are ShapedAI. You are a slovenian ai instructor mainly for math, but you can also help on topics of chemistry and physics. If you get asked the same question twice reply diffrently(like diffrently structured do not change the information) You should speak slovenian unless asked otherwise. If you want to generate a graph, use a command enclosed in double @ symbols (@@) To graph multiple functions separate them by using ; example: @@sin(x); x^2 @@ IMPORTANT: DO NOT REPLY WITH A GRAPH IF THE USER HASNT EXPLICITLY ASKED FOR IT!!!! Encase every number, variable, equation, latex, coordinates and any symbols related with math in $$ Example: Pomnožimo števec in imenovalec s konjugirano vrednostjo imenovalca: $$[ \frac{8 - i}{3 - 2i} \cdot \frac{3 + 2i}{3 + 2i} = \frac{(8 - i)(3 + 2i)}{(3 - 2i)(3 + 2i)} ] $$ When you give them the graph do not provide the geogebra link!"
-       "For example @@x^2@@ or for a circle @@x^2 + y^2 = 1@@ Do not put latex inside the @@; you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the @@} The @@ command will be replaced with the graph so the user should not be aware of its existence." "!DO NOT FORGET!: Make sure every number, variable, equation, latex, coordinates and any symbols related with math are wrapped in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORTANT: You can't create a smiley face or other shapes; only circles and graphs. PUT ALL LATEX COMMANDS INTO $$. For example: Therefore we got: $$\boxed{41%}$$ Always box up answers. To open the camera(so the user can take a picture of their math problem say: ()open() say only this nothing else.)" 
+       "For example @@x^2@@ or for a circle @@x^2 + y^2 = 1@@ Do not put latex inside the @@; you can only place numbers, letters, =, +, -, sin(),* etc. As it will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the @@} The @@ command will be replaced with the graph so the user should not be aware of its existence." "!DO NOT FORGET!: Make sure every number, variable, equation, latex, coordinates and any symbols related with math are wrapped in $$ For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$ IMPORTANT: You can't create a smiley face or other shapes; only circles and graphs. PUT ALL LATEX COMMANDS INTO $$. For example: Therefore we got: $$\boxed{41%}$$ Always box up answers." 
     )
     mode = st.session_state.mode
     if mode == "**⚡ Takojšnji odgovor**":
@@ -383,60 +383,36 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.generate_response = True
     st.rerun()
 
+# Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         try:
+            #@st.dialog("⚠️🚧 OPOZORILO: Težave s strežniki🚧⚠️")
+            def vote1():
+                st.write("Zaradi hitrega povečanja priljubljenosti platforme DeepSeek se trenutno soočajo z velikimi težavami s strežniki. Posledično ima tudi Shaped AI matematični inštruktor, ki deluje s pomočjo DeepSeeka, tehnične težave.") 
+                st.write("🔧 Ekipa intenzivno dela na odpravi težav, vendar to lahko začasno vpliva na hitrost odzivanja in delovanje storitve. Hvala za vaše razumevanje in potrpežljivost! 🔧")
+            #vote1()
+            # Use the DeepSeek API to generate the chat completion
             response = client.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[get_system_message()] + st.session_state.messages,
                 stream=False  # Change stream as needed
             ).choices[0].message.content
         except json.decoder.JSONDecodeError as jde:
+            # Handle error when the response isn't valid JSON
             st.error("Napaka: API ni posredoval pravilnega JSON odziva. Poskusite znova kasneje.")
+            # Optionally log the error details or perform other cleanup
             del st.session_state.generate_response
             st.stop()
         except Exception as e:
+            # Handle any other exceptions (e.g., network issues)
             st.error("Prišlo je do težave pri povezavi z API. Poskusite kasneje.")
+            # Optionally log e for debugging:
+            # st.error(f"Podrobnosti: {e}")
             del st.session_state.generate_response
             st.stop()
-
-    # Check for special token that triggers the photo dialog
-    if "()open()" in response:
-        response = response.replace("()open()", "")
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        # Set a flag to show the camera dialog
-        st.session_state.show_photo_dialog = True
-    else:
-        st.session_state.messages.append({"role": "assistant", "content": response})
     
-    del st.session_state.generate_response
-    st.experimental_rerun()
-
-# --- Handle the camera dialog ---
-if st.session_state.get("show_photo_dialog", False):
-    @st.dialog("Take a photo of your math problem!")
-    def photo_dialog():
-        st.write("Prosimo, posnemi fotografijo svojega matematičnega problema:")
-        picture = st.camera_input("Take a picture")
-        if picture is not None:
-            st.image(picture)
-            from google import genai
-            from google.genai import types
-            from PIL import Image
-            # Convert the uploaded file into an Image object
-            image = Image.open(picture)
-            gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
-            gemini_response = gemini_client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=["What is this image?", image]
-            )
-            extracted_text = gemini_response.text
-            st.write("Extracted text:", extracted_text)
-            # Append the extracted text as a new user message
-            st.session_state.messages.append({"role": "user", "content": extracted_text})
-            st.session_state.show_photo_dialog = False
-            st.experimental_rerun()
-    photo_dialog()
+    
     
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
