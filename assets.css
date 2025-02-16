@@ -2,10 +2,11 @@
   background-color: transparent;
   display: flex;
   justify-content: center;
+  text-align: center;
   #margin-left: 45px;
   #margin-right: 45px;
-  margin-bottom: 20px;
-  margin-top: 9px;
+  #margin-bottom: 20px;
+  #margin-top: 9px;
 }
 .st-key-camera-btn button{
   background-color: transparent;
