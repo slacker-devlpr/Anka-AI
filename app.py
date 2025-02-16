@@ -184,7 +184,7 @@ if st.sidebar.button(" ‎ ‎ ‎ ‎ ‎ ‎ ‎  ‎ ‎ ‎ ‎ ‎ ‎ ‎ 
         del st.session_state.generate_response
     st.rerun()
 with st.sidebar:
-    st.markdown("<p style='text-align: center;'><button>pulse</button></p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'><button>st.button("hello")</button></p>", unsafe_allow_html=True)
     
 st.sidebar.markdown(
     """
