@@ -16,6 +16,10 @@ import pytz
 from urllib.parse import quote
 import json
 
+# New imports for Gemini AI:
+from google import genai
+from google.genai import types
+
 # Page config:
 st.set_page_config(
     page_title="Shaped AI, Osebni Inštruktor Matematike",
@@ -204,7 +208,7 @@ BOT_AVATAR = "top-logo.png"
 
 # IMPORTANT: Change the client initialization to use DeepSeek v3.
 client = OpenAI(
-    api_key='sk-3cd7bfe189d74b9fa65cc3360460dc93',         # Replace with your DeepSeek API key
+    api_key='sk-3cd7bfe189d74b9fa65cc3360460dc93',         # Your DeepSeek API key
     base_url="https://api.deepseek.com"        # Set the DeepSeek base URL
 )
 st.markdown(
@@ -238,9 +242,24 @@ if "openai_model" not in st.session_state:
         st.image("MADE USING.png")
     vote()
 
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# ----- New Dialog for Camera Input -----
+@st.dialog("Take a photo of your math problem!")
+def take_photo_dialog():
+    image_file = st.camera_input("Posnemite sliko svoje matematične naloge")
+    if image_file is not None:
+        # Convert the captured image to a PIL image
+        img = Image.open(image_file)
+        # Use Gemini AI to extract text from the image
+        gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
+        response = gemini_client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=["What is this image?", img]
+        )
+        extracted_text = response.text  # Extracted text from the image
+        # Append the extracted text as a user message and trigger response generation
+        st.session_state.messages.append({"role": "user", "content": extracted_text})
+        st.session_state.generate_response = True
+        st.experimental_rerun()
 
 # ----- Greeting Functions -----
 def get_slovene_greeting():
@@ -376,7 +395,11 @@ if st.session_state.previous_mode != MODE:
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
 
-# Process new user input
+# ----- NEW BUTTON FOR CAMERA INPUT -----
+if st.button("Take a photo of your math problem!"):
+    take_photo_dialog()
+
+# Process new user text input
 if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -387,11 +410,6 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
         try:
-            #@st.dialog("⚠️🚧 OPOZORILO: Težave s strežniki🚧⚠️")
-            def vote1():
-                st.write("Zaradi hitrega povečanja priljubljenosti platforme DeepSeek se trenutno soočajo z velikimi težavami s strežniki. Posledično ima tudi Shaped AI matematični inštruktor, ki deluje s pomočjo DeepSeeka, tehnične težave.") 
-                st.write("🔧 Ekipa intenzivno dela na odpravi težav, vendar to lahko začasno vpliva na hitrost odzivanja in delovanje storitve. Hvala za vaše razumevanje in potrpežljivost! 🔧")
-            #vote1()
             # Use the DeepSeek API to generate the chat completion
             response = client.chat.completions.create(
                 model=st.session_state["openai_model"],
@@ -401,18 +419,12 @@ if st.session_state.get("generate_response"):
         except json.decoder.JSONDecodeError as jde:
             # Handle error when the response isn't valid JSON
             st.error("Napaka: API ni posredoval pravilnega JSON odziva. Poskusite znova kasneje.")
-            # Optionally log the error details or perform other cleanup
             del st.session_state.generate_response
             st.stop()
         except Exception as e:
-            # Handle any other exceptions (e.g., network issues)
             st.error("Prišlo je do težave pri povezavi z API. Poskusite kasneje.")
-            # Optionally log e for debugging:
-            # st.error(f"Podrobnosti: {e}")
             del st.session_state.generate_response
             st.stop()
-    
-    
     
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
