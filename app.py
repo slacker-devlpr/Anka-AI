@@ -427,7 +427,7 @@ if st.session_state.get("generate_response"):
             st.stop()
         except Exception as e:
             # Handle any other exceptions (e.g., network issues)
-            st.error("Prišlo je do težave pri povezavi z API. Poskusite kasneje.")
+            st.error("Prišlo je do težave pri povezavi z API. ")
             # Optionally log e for debugging:
             # st.error(f"Podrobnosti: {e}")
             del st.session_state.generate_response
