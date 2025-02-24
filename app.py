@@ -216,10 +216,10 @@ if st.session_state.get("show_camera_dialog", False):
         
         if picture is not None:
             # Store image and trigger processing
-            st.rerun()
             st.session_state.image_to_process = picture.getvalue()
             st.session_state.show_camera_dialog = False
             st.session_state.processing_image = True
+            st.rerun()
 
     handle_camera_dialog()
 
