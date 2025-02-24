@@ -225,7 +225,7 @@ if st.session_state.get("processing_image", False):
             response = gemini_client.models.generate_content(
                 model="gemini-1.5-flash-latest",
                 contents=[
-                    "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part). If its not a picture of any problem describe what you see.",
+                    "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in slovene). If its not a picture of any problem describe what you see in slovene.",
                     types.Part.from_bytes(data=st.session_state.image_to_process, mime_type="image/jpeg")
                 ]
             )
