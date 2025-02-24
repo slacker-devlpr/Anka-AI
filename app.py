@@ -196,7 +196,7 @@ col1, col2, col3 = st.sidebar.columns([1,6,1])
 with col2:
     if st.button("POSLJI SLIKO 📸", key="camera_btn", use_container_width=True):
         st.session_state.show_camera_dialog = True
-
+st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)     
 # ----- Image Processing Flow -----
 if st.session_state.get("show_camera_dialog", False):
     @st.dialog("Slikaj matematični problem:")
@@ -240,8 +240,7 @@ if st.session_state.get("processing_image", False):
             del st.session_state.processing_image
             del st.session_state.image_to_process
             
-            
-st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)            
+                   
 with col2:
     if st.button("NOV KLEPET", key="pulse", use_container_width=True):
         # Reset chat history and other session state items
