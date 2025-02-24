@@ -196,9 +196,8 @@ MODE = st.sidebar.radio(
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 col1, col2, col3 = st.sidebar.columns([1,6,1])
 with col2:
-    if st.button("POSLJI SLIKO 📸", key="camera_btn", use_container_width=True):
-        st.session_state.show_camera_dialog = True
-st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)     
+    if st.button("NALOŽI SLIKO", key="camera_btn", use_container_width=True):
+        st.session_state.show_camera_dialog = True 
 # ----- Image Processing Flow -----
 if st.session_state.get("show_camera_dialog", False):
     @st.dialog("Slikaj matematični problem:")
