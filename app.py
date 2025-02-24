@@ -225,7 +225,6 @@ if st.session_state.get("show_camera_dialog", False):
 
 # Process image after dialog closes
 if st.session_state.get("processing_image", False):
-    st.rerun()
     with st.spinner("Procesiram sliko..."):
         try:
             # Initialize Gemini client
