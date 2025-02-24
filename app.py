@@ -15,6 +15,8 @@ import datetime
 import pytz
 from urllib.parse import quote
 import json
+from google import genai
+from google.genai import types
 
 # Page config:
 st.set_page_config(
@@ -202,108 +204,48 @@ with col2:
         if "generate_response" in st.session_state:
             del st.session_state.generate_response
         st.rerun()
+with col2:
+    if st.button("POSLJI SLIKO 📸", key="camera_btn", use_container_width=True):
+        st.session_state.show_camera_dialog = True
 
-if st.button("📸", key="camera", use_container_width=True, help="Samostojna analiza matematičnih problemov iz slike"):
-    st.session_state.show_camera = True
+# ----- Image Processing Dialog -----
+if st.session_state.get("show_camera_dialog", False):
+    @st.dialog("Slikaj matematični problem:")
+    def handle_camera_dialog():
+        picture = st.camera_input("Slikajte matematični problem")
 
-# Independent image processing system using raw requests
-if st.session_state.get('show_camera'):
-    @st.dialog("Samostojna Slikovna Analiza 📸")
-    def image_analysis_system():
-        st.markdown("### Samostojna analiza matematičnih problemov")
-        st.markdown("Ta sistem deluje popolnoma ločeno od glavnega klepeta!")
-        
-        # Step 1: Image capture
-        picture = st.camera_input("Usmeri kamero na matematično nalogo")
-        
-        if picture:
-            with st.spinner("⏳ Procesiram sliko..."):
+        if picture is not None:
+            with st.spinner("Procesiram sliko..."):
                 try:
-                    # Convert image to base64
-                    img_base64 = base64.b64encode(picture.getvalue()).decode("utf-8")
-                    
-                    # Step 2: Direct Gemini API call
-                    GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent"
-                    headers = {"Content-Type": "application/json"}
-                    params = {"key": "AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU"}
-                    
-                    payload = {
-                        "contents": [{
-                            "parts": [
-                                {"text": "Extract ONLY the mathematical problem. Return raw text in Slovenian. Format: PROBLEM:[text]"},
-                                {
-                                    "inline_data": {
-                                        "mime_type": "image/jpeg",
-                                        "data": img_base64
-                                    }
-                                }
-                            ]
-                        }]
-                    }
-                    
-                    # Make API request
-                    response = requests.post(
-                        GEMINI_URL,
-                        headers=headers,
-                        params=params,
-                        json=payload
-                    )
-                    
-                    # Handle response
-                    if response.status_code != 200:
-                        st.error(f"Napaka API: {response.status_code} - {response.text}")
-                        return
-                        
-                    response_text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
-                    
-                    # Step 3: Problem extraction
-                    if "PROBLEM:" in response_text:
-                        extracted_problem = response_text.split("PROBLEM:")[1].strip()
-                        st.success("✅ Naloga uspešno prebrana:")
-                        st.code(extracted_problem, language="text")
-                        
-                        # Step 4: Independent DeepSeek processing
-                        with st.spinner("🔍 Rešujem problem..."):
-                            # Create new independent DeepSeek client
-                            ds_client = OpenAI(
-                                api_key='sk-3cd7bfe189d74b9fa65cc3360460dc93',
-                                base_url="https://api.deepseek.com"
-                            )
-                            
-                            # Special system prompt for image analysis
-                            image_system_prompt = """
-                            Rešuj matematični problem iz slike. Navodila:
-                            1. Odgovarjaj samo v slovenščini
-                            2. Uprabljaj LaTeX za enačbe: $$...$$
-                            3. Štej korake (1., 2., 3.)
-                            4. Končni odgovor v okvirju: $$\\boxed{...}$$
-                            5. Za grafe uporabi @@sintaksa@@
-                            """
-                            
-                            # Get DeepSeek response
-                            ds_response = ds_client.chat.completions.create(
-                                model="deepseek-chat",
-                                messages=[
-                                    {"role": "system", "content": image_system_prompt},
-                                    {"role": "user", "content": extracted_problem}
-                                ],
-                                stream=False
-                            ).choices[0].message.content
-                            
-                            # Display independent solution
-                            st.markdown("### Rešitev:")
-                            display_response_with_geogebra(ds_response, animate=False)
-                            
-                    else:
-                        st.error("❌ Ni matematične naloge v sliki")
-                    
-                except Exception as e:
-                    st.error(f"⚠️ Napaka pri obdelavi: {str(e)}")
-                
-            # Reset camera state
-            st.session_state.show_camera = False
+                    # Convert image to bytes
+                    image_bytes = picture.getvalue()
 
-    image_analysis_system()
+                    # Initialize Gemini client
+                    gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")  # Replace with your API key
+
+                    # Get response from Gemini
+                    response = gemini_client.models.generate_content(
+                        model="gemini-1.5-flash-latest",
+                        contents=[
+                            "Extract the math problem from this image. Return only the raw problem text in Slovenian without any additional explanation.",
+                            types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
+                        ]
+                    )
+
+                    # Add extracted problem to chat
+                    extracted_problem = response.text
+                    st.session_state.messages.append({"role": "user", "content": extracted_problem})
+                    st.session_state.generate_response = True
+
+                except Exception as e:
+                    st.error(f"Napaka pri obdelavi slike: {str(e)}")
+                finally:
+                    st.session_state.show_camera_dialog = False
+                    st.rerun()
+
+    handle_camera_dialog()
+
+
 st.sidebar.markdown(
     """
     <style>
