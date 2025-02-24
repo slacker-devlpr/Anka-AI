@@ -423,7 +423,7 @@ def get_system_message():
     if mode == "**⚡ Takojšnji odgovor**":
         return {
             "role": "system",
-            "content": f"You are Shaped AI, a Slovenian math tutor(No matter the chat history). Provide direct solutions using LaTeX, still provide a step by step tutorial.  {graph_instructions}"
+            "content": f"You are Shaped AI, a Slovenian math tutor(No matter the chat history). If you are presented with diffrent problems, ask the user which one they want you to solve first. Provide direct solutions using LaTeX, still provide a step by step tutorial.  {graph_instructions}"
         }
     elif mode == "**📚 Filozofski način**":
         return {
