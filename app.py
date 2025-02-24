@@ -202,43 +202,7 @@ with col2:
         if "generate_response" in st.session_state:
             del st.session_state.generate_response
         st.rerun()
-if st.sidebar.button("📸", key="camera", use_container_width=True, help="Posnetek matematičnega problema"):
-    st.session_state.show_camera = True
-
-# Camera dialog handler
-if st.session_state.get('show_camera'):
-    @st.dialog("Posnetek matematične naloge 📸")
-    def handle_camera():
-        picture = st.camera_input("Usmeri kamero na matematično nalogo")
         
-        if picture:
-            with st.spinner("Procesiram sliko..."):
-                try:
-                    # Call Gemini API
-                    client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
-                    response = client.models.generate_content(
-                        model="gemini-2.0-flash-exp",
-                        contents=["Extract the mathematical problem from this image. Return only the raw text of the problem in Slovenian. If no math problem found, return 'Ni matematične naloge v sliki'.", 
-                                 types.Part.from_bytes(data=picture.getvalue(), mime_type="image/jpeg")]
-                    )
-                    
-                    if response.text.lower() != 'ni matematične naloge v sliki':
-                        # Add extracted problem to chat
-                        st.session_state.messages.append({"role": "user", "content": response.text})
-                        st.session_state.generate_response = True
-                        st.toast("Naloga uspešno prebrana iz slike! 🎉")
-                    else:
-                        st.error("Ni matematične naloge v sliki. Poskusite znova.")
-                    
-                except Exception as e:
-                    st.error(f"Napaka pri obdelavi slike: {str(e)}")
-                
-            st.session_state.show_camera = False
-            st.rerun()
-    
-    handle_camera()
-
-
 st.sidebar.markdown(
     """
     <style>
@@ -434,18 +398,13 @@ if st.session_state.previous_mode != MODE:
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
 
+# Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?"):
     # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
     st.rerun()
 
-# Add loading animation for image processing
-if st.session_state.get('processing_image'):
-    with st.spinner("Analiziram sliko..."):
-        time.sleep(1)
-        st.session_state.processing_image = False
-        
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
