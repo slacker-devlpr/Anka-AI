@@ -446,7 +446,6 @@ if st.session_state.previous_mode != MODE:
     st.session_state.last_animated_index = -1
     if "generate_response" in st.session_state:
         del st.session_state.generate_response
-    st.rerun()
 
 
 # ----- Main Logic -----
