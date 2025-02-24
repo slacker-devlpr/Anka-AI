@@ -202,6 +202,87 @@ with col2:
         if "generate_response" in st.session_state:
             del st.session_state.generate_response
         st.rerun()
+
+if st.button("📸", key="camera", use_container_width=True, help="Samostojna analiza matematičnih problemov iz slike"):
+    st.session_state.show_camera = True
+
+# Independent image processing system
+if st.session_state.get('show_camera'):
+    @st.dialog("Samostojna Slikovna Analiza 📸")
+    def image_analysis_system():
+        st.markdown("### Samostojna analiza matematičnih problemov")
+        st.markdown("Ta sistem deluje popolnoma ločeno od glavnega klepeta!")
+        
+        # Step 1: Image capture
+        picture = st.camera_input("Usmeri kamero na matematično nalogo")
+        
+        if picture:
+            with st.spinner("⏳ Procesiram sliko..."):
+                try:
+                    # Step 2: Image analysis with Gemini
+                    gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
+                    gemini_response = gemini_client.models.generate_content(
+                        model="gemini-2.0-flash-exp",
+                        contents=["Extract ONLY the mathematical problem from this image. Return raw text in Slovenian. Format: PROBLEM:[problem text]",
+                                 types.Part.from_bytes(data=picture.getvalue(), mime_type="image/jpeg")]
+                    )
+                    
+                    # Step 3: Problem extraction
+                    if "PROBLEM:" in gemini_response.text:
+                        extracted_problem = gemini_response.text.split("PROBLEM:")[1].strip()
+                        st.success("✅ Naloga uspešno prebrana:")
+                        st.code(extracted_problem, language="text")
+                        
+                        # Step 4: Independent DeepSeek processing
+                        with st.spinner("🔍 Rešujem problem..."):
+                            # Create independent client instance
+                            ds_client = OpenAI(
+                                api_key='sk-3cd7bfe189d74b9fa65cc3360460dc93',
+                                base_url="https://api.deepseek.com"
+                            )
+                            
+                            # Special system prompt for image analysis
+                            image_system_prompt = """
+                            You are a math problem solver. Solve this problem extracted from an image.
+                            - Present solution in Slovenian
+                            - Use LaTeX formatting for equations
+                            - Number steps clearly
+                            - Include final answer boxed in LaTeX
+                            - Assume problem is stated correctly
+                            - If graph needed, use @@command@@ syntax
+                            """
+                            
+                            # Create new independent chat thread
+                            ds_response = ds_client.chat.completions.create(
+                                model="deepseek-chat",
+                                messages=[
+                                    {"role": "system", "content": image_system_prompt},
+                                    {"role": "user", "content": extracted_problem}
+                                ],
+                                stream=False
+                            ).choices[0].message.content
+                            
+                            # Display independent solution
+                            st.markdown("### Rešitev:")
+                            display_response_with_geogebra(ds_response, animate=False)
+                            
+                            # Add download button for solution
+                            st.download_button(
+                                label="⬇️ Prenesi rešitev",
+                                data=ds_response,
+                                file_name="matematicna_resitev.txt",
+                                mime="text/plain"
+                            )
+                    else:
+                        st.error("❌ Ni matematične naloge v sliki ali format ni prepoznan.")
+                    
+                except Exception as e:
+                    st.error(f"⚠️ Napaka pri obdelavi: {str(e)}")
+                
+            # Reset camera state
+            st.session_state.show_camera = False
+
+    image_analysis_system()
         
 st.sidebar.markdown(
     """
