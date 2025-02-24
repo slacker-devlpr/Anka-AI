@@ -441,9 +441,13 @@ if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
 if st.session_state.previous_mode != MODE:
-    del st.session_state["mode"] 
     st.session_state.messages = []
-    st.session_state.previous_mode = MODE  # Just update the previous mode
+    st.session_state.animated_messages = set()
+    st.session_state.last_animated_index = -1
+    if "generate_response" in st.session_state:
+        del st.session_state.generate_response
+    st.rerun()
+
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
