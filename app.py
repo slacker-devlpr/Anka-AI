@@ -230,7 +230,10 @@ if st.session_state.get("processing_image", False):
                 ]
             )
 
-            # Add extracted problem to chat
+            # Display the image to the user
+            st.image(st.session_state.image_to_process, caption="Vaša slika", use_column_width=True)
+
+            # Add extracted problem to chat (hidden from user)
             extracted_problem = response.text
             st.session_state.messages.append({"role": "user", "content": extracted_problem})
             st.session_state.generate_response = True
