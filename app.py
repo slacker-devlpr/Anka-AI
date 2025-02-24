@@ -441,6 +441,7 @@ if "previous_mode" not in st.session_state:
 
 if st.session_state.previous_mode != MODE:
     del st.session_state["mode"] 
+    st.session_state.messages = []
     st.session_state.previous_mode = MODE  # Just update the previous mode
 
 # ----- Main Logic -----
