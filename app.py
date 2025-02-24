@@ -203,7 +203,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 if st.session_state.get("show_camera_dialog", False):
     @st.dialog("Slikaj matematični problem:")
     def handle_camera_dialog():
-        picture = st.camera_input("Zajemi celotno nalogo.")
+        picture = st.camera_input("Slikajte matematični problem")
         
         if picture is not None:
             # Store image and trigger processing
@@ -441,12 +441,9 @@ if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
 if st.session_state.previous_mode != MODE:
+    del st.session_state["mode"] 
     st.session_state.messages = []
-    st.session_state.animated_messages = set()
-    st.session_state.last_animated_index = -1
-    if "generate_response" in st.session_state:
-        del st.session_state.generate_response
-
+    st.session_state.previous_mode = MODE  # Just update the previous mode
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
