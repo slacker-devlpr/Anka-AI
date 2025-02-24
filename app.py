@@ -208,42 +208,48 @@ with col2:
     if st.button("POSLJI SLIKO 📸", key="camera_btn", use_container_width=True):
         st.session_state.show_camera_dialog = True
 
-# ----- Image Processing Dialog -----
+# ----- Image Processing Flow -----
 if st.session_state.get("show_camera_dialog", False):
     @st.dialog("Slikaj matematični problem:")
     def handle_camera_dialog():
         picture = st.camera_input("Slikajte matematični problem")
-
+        
         if picture is not None:
-            with st.spinner("Procesiram sliko..."):
-                try:
-                    # Convert image to bytes
-                    image_bytes = picture.getvalue()
-
-                    # Initialize Gemini client
-                    gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")  # Replace with your API key
-
-                    # Get response from Gemini
-                    response = gemini_client.models.generate_content(
-                        model="gemini-1.5-flash-latest",
-                        contents=[
-                            "Extract the math problem from this image. Return only the raw problem text in Slovenian without any additional explanation.",
-                            types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
-                        ]
-                    )
-
-                    # Add extracted problem to chat
-                    extracted_problem = response.text
-                    st.session_state.messages.append({"role": "user", "content": extracted_problem})
-                    st.session_state.generate_response = True
-
-                except Exception as e:
-                    st.error(f"Napaka pri obdelavi slike: {str(e)}")
-                finally:
-                    st.session_state.show_camera_dialog = False
-                    st.rerun()
+            # Store image and trigger processing
+            st.session_state.image_to_process = picture.getvalue()
+            st.session_state.show_camera_dialog = False
+            st.session_state.processing_image = True
+            st.rerun()
 
     handle_camera_dialog()
+
+# Process image after dialog closes
+if st.session_state.get("processing_image", False):
+    with st.spinner("Procesiram sliko..."):
+        try:
+            # Initialize Gemini client
+            gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")  # Replace with your API key
+
+            # Get response from Gemini
+            response = gemini_client.models.generate_content(
+                model="gemini-1.5-flash-latest",
+                contents=[
+                    "Extract the math problem from this image. Return only the raw problem text in Slovenian without any additional explanation.",
+                    types.Part.from_bytes(data=st.session_state.image_to_process, mime_type="image/jpeg")
+                ]
+            )
+
+            # Add extracted problem to chat
+            extracted_problem = response.text
+            st.session_state.messages.append({"role": "user", "content": extracted_problem})
+            st.session_state.generate_response = True
+
+        except Exception as e:
+            st.error(f"Napaka pri obdelavi slike: {str(e)}")
+        finally:
+            # Clean up processing state
+            del st.session_state.processing_image
+            del st.session_state.image_to_process
 
 
 st.sidebar.markdown(
