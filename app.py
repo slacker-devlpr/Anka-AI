@@ -437,13 +437,17 @@ def get_system_message():
         }
 
 # Replace with this simplified version:
+if "animated_messages" not in st.session_state:
+    st.session_state.animated_messages = set()
+
 if "previous_mode" not in st.session_state:
     st.session_state.previous_mode = MODE
 
+# Reset animated_messages when the mode changes
 if st.session_state.previous_mode != MODE:
-    del st.session_state["mode"] 
-    st.session_state.messages = []
-    st.session_state.previous_mode = MODE  # Just update the previous mode
+    st.session_state.animated_messages = set()  # Reset the animated messages
+    st.session_state.messages = []  # Clear the chat history
+    st.session_state.previous_mode = MODE  # Update the previous mode
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
