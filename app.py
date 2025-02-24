@@ -203,7 +203,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 if st.session_state.get("show_camera_dialog", False):
     @st.dialog("Slikaj matematični problem:")
     def handle_camera_dialog():
-        picture = st.camera_input("Slikajte matematični problem")
+        picture = st.camera_input("Zajemi celotno nalogo.")
         
         if picture is not None:
             # Store image and trigger processing
