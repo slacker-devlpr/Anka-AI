@@ -202,9 +202,8 @@ with col2:
         if "generate_response" in st.session_state:
             del st.session_state.generate_response
         st.rerun()
-with col2:
-    if st.button("📸", key="camera", use_container_width=True, help="Posnetek matematičnega problema"):
-        st.session_state.show_camera = True
+if st.sidebar.button("📸", key="camera", use_container_width=True, help="Posnetek matematičnega problema"):
+    st.session_state.show_camera = True
 
 # Camera dialog handler
 if st.session_state.get('show_camera'):
