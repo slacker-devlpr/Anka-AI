@@ -214,6 +214,33 @@ if st.session_state.get("show_camera_dialog", False):
 
     handle_camera_dialog()
 
+# Process image after dialog closes
+if st.session_state.get("processing_image", False):
+    with st.spinner("Procesiram sliko..."):
+        try:
+            # Initialize Gemini client
+            gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")  # Replace with your API key
+
+            # Get response from Gemini
+            response = gemini_client.models.generate_content(
+                model="gemini-1.5-flash-latest",
+                contents=[
+                    "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in slovene). If its not a picture of any problem respond with something along the lines of that you couldnt extract the text in slovene. Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.). Reply like: Reši 2 + 2, like your a person asking to solve that problem in slovene. If the imae+ge doesnt incude a problem say: ERROR 412: user hasn't provided a problem.",
+                    types.Part.from_bytes(data=st.session_state.image_to_process, mime_type="image/jpeg")
+                ]
+            )
+
+            # Add extracted problem to chat
+            extracted_problem = response.text
+            st.session_state.messages.append({"role": "user", "content": extracted_problem})
+            st.session_state.generate_response = True
+
+        except Exception as e:
+            st.error(f"Napaka pri obdelavi slike: {str(e)}")
+        finally:
+            # Clean up processing state
+            del st.session_state.processing_image
+            del st.session_state.image_to_process
             
 scol1, scol2, scol3 = st.sidebar.columns([1,6,1])                  
 with scol2:
@@ -431,35 +458,7 @@ if prompt := st.chat_input("Kako lahko pomagam?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
     st.rerun()
-    
-# Process image after dialog closes
-if st.session_state.get("processing_image", False):
-    with st.spinner("Procesiram sliko..."):
-        try:
-            # Initialize Gemini client
-            gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")  # Replace with your API key
 
-            # Get response from Gemini
-            response = gemini_client.models.generate_content(
-                model="gemini-1.5-flash-latest",
-                contents=[
-                    "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in slovene). If its not a picture of any problem respond with something along the lines of that you couldnt extract the text in slovene. Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.). Reply like: Reši 2 + 2, like your a person asking to solve that problem in slovene. If the imae+ge doesnt incude a problem say: ERROR 412: uporabnik ni podal naloge",
-                    types.Part.from_bytes(data=st.session_state.image_to_process, mime_type="image/jpeg")
-                ]
-            )
-
-            # Add extracted problem to chat
-            extracted_problem = response.text
-            st.session_state.messages.append({"role": "user", "content": extracted_problem})
-            st.session_state.generate_response = True
-
-        except Exception as e:
-            st.error(f"Napaka pri obdelavi slike: {str(e)}")
-        finally:
-            # Clean up processing state
-            del st.session_state.processing_image
-            del st.session_state.image_to_process
-            
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..."):
