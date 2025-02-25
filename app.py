@@ -428,7 +428,7 @@ def get_system_message():
     elif mode == "**📚 Filozofski način**":
         return {
             "role": "system",
-            "content": f"Guide users step-by-step using Socratic questioning(No matter the chat history). Which means you do not give the user the answer right away but ask questions and guide them just like a tutor would. Ask one question at a time. {graph_instructions}"
+            "content": f"Guide users step-by-step using Socratic questioning, NEVER GIVE THE ANSWER STRAIGHT AWAY. Which means you do not give the user the answer right away but ask questions and guide them just like a tutor would. Ask one question at a time. {graph_instructions}"
         }
     elif mode == "**😎 Gen Alpha način**":
         return {
