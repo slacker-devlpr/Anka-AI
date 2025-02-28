@@ -227,11 +227,7 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
-#About button
-cols1, cols2, cols3 = st.columns([1,15,1])
 
-with cols3:
-    st.button("test")
 # Center the label and radio button group
 MODE = st.sidebar.radio(
     "‎**Način Inštrukcije**",
