@@ -288,7 +288,7 @@ if st.session_state.get("processing_image", False):
             # Check if Gemini returned an error message
             if "#error.user#" in extracted_problem:
                 st.session_state.messages.append({"role": "error", "content": "Gemini Vision ni našel naloge v vaši sliki."})
-                st.session_state.generate_response = False
+                st.session_state.generate_response = True
 
                 st.rerun()
             else:
