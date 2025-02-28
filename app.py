@@ -283,10 +283,15 @@ if st.session_state.get("processing_image", False):
                 ]
             )
 
-            # Add extracted problem to chat
             extracted_problem = response.text
-            st.session_state.messages.append({"role": "user", "content": extracted_problem})
-            st.session_state.generate_response = True
+
+            # Check if Gemini returned an error message
+            if "#error.user#" in extracted_problem:
+                st.error("Gemini Vision ni našel naloge v vaši sliki.")
+            else:
+                # Add extracted problem to chat only if there is no error indicator
+                st.session_state.messages.append({"role": "user", "content": extracted_problem})
+                st.session_state.generate_response = True
 
         except Exception as e:
             st.error(f"Napaka pri obdelavi slike: {str(e)}")
@@ -294,7 +299,7 @@ if st.session_state.get("processing_image", False):
             # Clean up processing state
             del st.session_state.processing_image
             del st.session_state.image_to_process
-            
+
 scol1, scol2, scol3 = st.sidebar.columns([1,6,1])                  
 with scol2:
     if st.button("NOV KLEPET", key="pulse", use_container_width=True):
