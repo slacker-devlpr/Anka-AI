@@ -535,13 +535,13 @@ if st.session_state.get("generate_response"):
             ).choices[0].message.content
         except json.decoder.JSONDecodeError as jde:
             # Handle error when the response isn't valid JSON
-            st.error("Napaka: API ni posredoval pravilnega JSON odziva. Poskusite znova kasneje.")
+            st.session_state.messages.append({"role": "error", "content": "Deepseek ni posredoval pravilnega JSON odziva! "})
             # Optionally log the error details or perform other cleanup
             del st.session_state.generate_response
             st.stop()
         except Exception as e:
             # Handle any other exceptions (e.g., network issues)
-            st.error("Prišlo je do težave pri povezavi z API. ")
+            st.session_state.messages.append({"role": "error", "content": "Napaka pri povezavi z API! "})
             # Optionally log e for debugging:
             # st.error(f"Podrobnosti: {e}")
             del st.session_state.generate_response
