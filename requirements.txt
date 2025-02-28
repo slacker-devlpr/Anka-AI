@@ -10,3 +10,4 @@ torchvision
 markdown
 deep-translator
 google-genai
+captcha
