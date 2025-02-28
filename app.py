@@ -253,7 +253,7 @@ with col2:
         st.session_state.show_camera_dialog = True 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # ----- Image Processing Flow -----
-if st.session_state.get("show_camera_dialog", True):
+if st.session_state.get("show_camera_dialog", False):
     @st.dialog("Slikaj matematični problem:")
     def handle_camera_dialog():
         picture = st.camera_input("Zajemi celotni problem.")
@@ -261,7 +261,7 @@ if st.session_state.get("show_camera_dialog", True):
         if picture is not None:
             # Store image and trigger processing
             st.session_state.image_to_process = picture.getvalue()
-            st.session_state.show_camera_dialog = False
+            st.session_state.show_camera_dialog = True
             st.session_state.processing_image = True
             st.rerun()
 
