@@ -97,7 +97,7 @@ height = 150
 # Define the function for CAPTCHA control
 def captcha_control():
     if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
-        st.title("Captcha Control on Streamlit🤗")
+        st.write("Zaradi velikega števila botov, ki preplavljajo našo spletno stran, morate izpolniti to CAPTCHA, da dokažete, da ste človek.")
         
         # Define the session state for control if the CAPTCHA is correct
         st.session_state['controllo'] = False
