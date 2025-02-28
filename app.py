@@ -113,7 +113,7 @@ def captcha_control():
         image = ImageCaptcha(width=width, height=height)
         data = image.generate(st.session_state['Captcha'])
         col1.image(data)
-        capta2_text = col2.text_area('Enter CAPTCHA text')
+        capta2_text = col2.text_area('Vpišite črke, ki jih vidite na sliki:')
         
         if st.button("Verify the code"):
             print(capta2_text, st.session_state['Captcha'])
