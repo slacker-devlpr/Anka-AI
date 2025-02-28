@@ -46,7 +46,7 @@ if not st.session_state.verified:
 
     # Display the captcha
     with st.form("captcha_form"):
-        components.html(captcha_html, height=300)
+        st.components.v1.html(captcha_html, height=300)  # Fixed: Use st.components.v1.html
         submitted = st.form_submit_button("Submit Verification")
     
     # Handle verification
