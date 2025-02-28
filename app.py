@@ -259,6 +259,7 @@ if st.session_state.get("show_camera_dialog", False):
         picture = st.camera_input("Zajemi celotni problem.")
         
         if picture is not None:
+            # Store image and trigger processing
             st.session_state.image_to_process = picture.getvalue()
             st.session_state.show_camera_dialog = False
             st.session_state.processing_image = True
@@ -270,41 +271,29 @@ if st.session_state.get("show_camera_dialog", False):
 if st.session_state.get("processing_image", False):
     with st.spinner("Procesiram sliko..."):
         try:
-            gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")
-            
+            # Initialize Gemini client
+            gemini_client = genai.Client(api_key="AIzaSyCZjjUwuGfi8sE6m8fzyK---s2kmK36ezU")  # Replace with your API key
+
+            # Get response from Gemini
             response = gemini_client.models.generate_content(
                 model="gemini-1.5-flash-latest",
                 contents=[
-                    "Extract the problem from this image...",  # Ohrani originalno vprašanje
+                    "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in slovene). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.). Reply like: Reši 2 + 2, like your a person asking to solve that problem in slovene. If the image doesnt incude a problem say: ERROR 412: user hasn't provided a problem. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters). If there is more than one problem pick the one that covers most of the screen.",
                     types.Part.from_bytes(data=st.session_state.image_to_process, mime_type="image/jpeg")
                 ]
             )
 
-            # Shrani SAMO ekstrahiran tekst za DeepSeek
-            extracted_text = response.text
-            
-            # Dodaj SLIKO v zgodovino za prikaz uporabniku
-            st.session_state.messages.append({
-                "role": "user",
-                "type": "image",
-                "content": "",  # Prazno za DeepSeek
-                "image_data": st.session_state.image_to_process
-            })
-            
-            # Dodaj TEKSTOVNO verzijo za DeepSeek processing
-            st.session_state.messages.append({
-                "role": "user",
-                "content": extracted_text
-            })
-            
+            # Add extracted problem to chat
+            extracted_problem = response.text
+            st.session_state.messages.append({"role": "user", "content": extracted_problem})
             st.session_state.generate_response = True
 
         except Exception as e:
             st.error(f"Napaka pri obdelavi slike: {str(e)}")
         finally:
+            # Clean up processing state
             del st.session_state.processing_image
             del st.session_state.image_to_process
-
             
 scol1, scol2, scol3 = st.sidebar.columns([1,6,1])                  
 with scol2:
@@ -463,16 +452,14 @@ def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
-            if message.get("type") == "image":
-                # Display the actual image
-                st.image(message["image_data"])
-                # Optional: Show extracted text as caption
-                # st.caption(f"Prebrano iz slike: {message['content']}")
-            elif message["role"] == "assistant":
+            if message["role"] == "assistant":
+                # Check if this message hasn't been animated yet
                 if index not in st.session_state.animated_messages:
+                    # Animate new response
                     display_response_with_geogebra(message["content"], animate=True)
                     st.session_state.animated_messages.add(index)
                 else:
+                    # Show static version for previously animated messages
                     display_response_with_geogebra(message["content"], animate=False)
             else:
                 st.markdown(message["content"])
@@ -513,17 +500,6 @@ if st.session_state.previous_mode != MODE:
     st.session_state.animated_messages = set()  # Reset the animated messages
     st.session_state.messages = []  # Clear the chat history
     st.session_state.previous_mode = MODE  # Update the previous mode
-
-def prepare_api_messages():
-    api_messages = [get_system_message()]
-    for msg in st.session_state.messages:
-        # FILTRIRAJ VEN vse slike in druge ne-tekstovne elemente
-        if msg.get("type") != "image" and "content" in msg:
-            api_messages.append({
-                "role": msg["role"],
-                "content": msg["content"]
-            })
-    return api_messages
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
