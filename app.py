@@ -127,7 +127,7 @@ def captcha_control():
                 st.rerun()  # Automatically redirect to the main app
             else:
                 # If the CAPTCHA is wrong, the controllo session state is set to False and the CAPTCHA is regenerated
-                st.error("🚨 Il codice CAPTCHA è errato, riprova")
+                st.error("Poskusite še enkrat.")
                 del st.session_state['Captcha']
                 del st.session_state['controllo']
                 st.rerun()
