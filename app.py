@@ -113,7 +113,7 @@ def captcha_control():
         image = ImageCaptcha(width=width, height=height)
         data = image.generate(st.session_state['Captcha'])
         col1.image(data)
-        capta2_text = col2.text_area('Vpišite črke, ki jih vidite na sliki:', height=68, max_chars=4)
+        capta2_text = col2.text_area('Vpišite simbole, ki jih vidite na sliki:', height=68, max_chars=4)
         
         if col2.button("Potrdi"):
             print(capta2_text, st.session_state['Captcha'])
