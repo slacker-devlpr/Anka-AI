@@ -39,13 +39,13 @@ def captcha_control():
                 col1.empty()
                 col2.empty()
                 st.session_state['controllo'] = True
-                st.experimental_rerun() 
+                st.rerun() 
             else:
                 # if the captcha is wrong, the controllo session state is set to False and the captcha is regenerated
                 st.error("🚨 Il codice captcha è errato, riprova")
                 del st.session_state['Captcha']
                 del st.session_state['controllo']
-                st.experimental_rerun()
+                st.rerun()
         else:
             #wait for the button click
             st.stop()
@@ -60,7 +60,7 @@ def your_main():
     
     if st.button("Go back to the main app"):
         del st.session_state['controllo']
-        st.experimental_rerun()
+        st.rerun()
        
        
 # WORK LIKE MULTIPAGE APP         
