@@ -356,7 +356,6 @@ if "openai_model" not in st.session_state:
         st.write(" ")
         st.write("📍 Živite v Ljubljani? Pokličite 031 577 600 in si zagotovite ena na ena inštrukcije v živo! 📞✨")
         st.write("")
-        st.image("graph.png")
         st.image("MADE USING.jpg")
     vote()
 
