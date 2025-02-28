@@ -326,6 +326,7 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 # ----- Define Avatars and DeepSeek Client -----
+ERROR = "⚠️"
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
 
@@ -455,7 +456,7 @@ def display_response_with_geogebra(response_text, animate=True):
             
 def display_messages(messages):
     for index, message in enumerate(messages):
-        avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
+        avatar = USER_AVATAR if message["role"] == "user" elif message["role"] == "assistant" BOT_AVATAR else ERROR
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
                 # Check if this message hasn't been animated yet
