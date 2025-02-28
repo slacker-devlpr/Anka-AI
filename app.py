@@ -115,7 +115,7 @@ def captcha_control():
         col1.image(data)
         capta2_text = col2.text_area('Vpišite črke, ki jih vidite na sliki:')
         
-        if st.button("Verify the code"):
+        if st.button("Potrdi"):
             print(capta2_text, st.session_state['Captcha'])
             capta2_text = capta2_text.replace(" ", "")
             # If the CAPTCHA is correct, the controllo session state is set to True
