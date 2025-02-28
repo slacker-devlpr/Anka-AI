@@ -286,7 +286,7 @@ if st.session_state.get("processing_image", False):
             # Add extracted problem to chat
             extracted_problem = response.text
             st.session_state.generate_response = False
-            st.session_state.messages.append({"role": "user", "content": st.session_state.messages.append({"role": "user", "content": extracted_problem})})
+            st.session_state.messages.append({"role": "user", "content": st.session_state.image_to_process })
             st.session_state.messages.append({"role": "assistant", "content": extracted_problem})
             st.session_state.generate_response = True
 
