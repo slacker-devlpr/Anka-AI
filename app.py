@@ -253,7 +253,7 @@ with col2:
         st.session_state.show_camera_dialog = True 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # ----- Image Processing Flow -----
-if st.session_state.get("show_camera_dialog", False):
+if st.session_state.get("show_camera_dialog", True):
     @st.dialog("Slikaj matematični problem:")
     def handle_camera_dialog():
         picture = st.camera_input("Zajemi celotni problem.")
