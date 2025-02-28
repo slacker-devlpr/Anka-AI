@@ -287,7 +287,7 @@ if st.session_state.get("processing_image", False):
 
             # Check if Gemini returned an error message
             if "#error.user#" in extracted_problem:
-                st.error("Gemini Vision ni našel naloge v vaši sliki.")
+                st.session_state.messages.append({"role": "error", "content": "Gemini Vision ni našel naloge v vaši sliki."})
             else:
                 # Add extracted problem to chat only if there is no error indicator
                 st.session_state.messages.append({"role": "user", "content": extracted_problem})
@@ -456,7 +456,8 @@ def display_response_with_geogebra(response_text, animate=True):
             
 def display_messages(messages):
     for index, message in enumerate(messages):
-        avatar = USER_AVATAR if message["role"] == "user" elif message["role"] == "assistant" BOT_AVATAR else ERROR
+        avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
+        avatar = ERROR if message["role"] == "error" else avatar
         with st.chat_message(message["role"], avatar=avatar):
             if message["role"] == "assistant":
                 # Check if this message hasn't been animated yet
