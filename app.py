@@ -569,4 +569,4 @@ if st.session_state.get("generate_response"):
     # Add assistant response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
     del st.session_state.generate_response
-    st.rerun(
+    st.rerun()
