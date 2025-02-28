@@ -283,9 +283,13 @@ if st.session_state.get("processing_image", False):
                 ]
             )
 
-            # Add extracted problem to chat
-            extracted_problem = response.text
-            st.session_state.messages.append({"role": "user", "content": extracted_problem})
+            # Store both image and extracted text in session state
+            st.session_state.messages.append({
+                "role": "user",
+                "type": "image",
+                "content": response.text,  # Extracted text for AI processing
+                "image_data": st.session_state.image_to_process  # Actual image bytes for display
+            })
             st.session_state.generate_response = True
 
         except Exception as e:
@@ -452,14 +456,16 @@ def display_messages(messages):
     for index, message in enumerate(messages):
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
-            if message["role"] == "assistant":
-                # Check if this message hasn't been animated yet
+            if message.get("type") == "image":
+                # Display the actual image
+                st.image(message["image_data"])
+                # Optional: Show extracted text as caption
+                # st.caption(f"Prebrano iz slike: {message['content']}")
+            elif message["role"] == "assistant":
                 if index not in st.session_state.animated_messages:
-                    # Animate new response
                     display_response_with_geogebra(message["content"], animate=True)
                     st.session_state.animated_messages.add(index)
                 else:
-                    # Show static version for previously animated messages
                     display_response_with_geogebra(message["content"], animate=False)
             else:
                 st.markdown(message["content"])
@@ -546,4 +552,3 @@ if st.session_state.get("generate_response"):
     st.session_state.messages.append({"role": "assistant", "content": response})
     del st.session_state.generate_response
     st.rerun()
-    your_main()
