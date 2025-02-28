@@ -20,6 +20,12 @@ from captcha.image import ImageCaptcha
 import random
 import string
 
+# ---------------- Page Config ----------------
+st.set_page_config(
+    page_title=lang["page_title"],
+    page_icon=r"shaped-logo.png"
+)
+
 # ---------------- Language Selection Dialog ----------------
 if "language" not in st.session_state:
     @st.dialog("Language / Jezik:")
@@ -135,11 +141,7 @@ else:
                                   "If there is more than one problem pick the one that covers most of the screen. Vedno Ilustriraj tabele ne opisi!")
     }
 
-# ---------------- Page Config ----------------
-st.set_page_config(
-    page_title=lang["page_title"],
-    page_icon=r"shaped-logo.png"
-)
+
 
 # Load css from assets
 def load_css(file_path):
