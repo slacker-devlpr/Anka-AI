@@ -505,7 +505,7 @@ if "previous_mode" not in st.session_state:
 # Reset animated_messages when the mode changes
 if st.session_state.previous_mode != MODE:
     st.session_state.animated_messages = set()  # Reset the animated messages
-    #st.session_state.messages = []  # Clear the chat history
+    st.session_state.messages = []  # Clear the chat history
     st.session_state.previous_mode = MODE  # Update the previous mode
 
 # ----- Main Logic -----
