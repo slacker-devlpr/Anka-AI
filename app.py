@@ -96,8 +96,10 @@ height = 150
 
 # Language selection dialog
 if 'language' not in st.session_state:
-    @st.dialog("Select Language / Izberite Jezik")
+    @st.dialog(" ")
     def language_dialog():
+        st.image("shaped-ai.png")
+        st.write("Which ShapedAI version would you like to use?/Katero verzijo ShapedAI bi rad uporabljav?")
         col1, col2 = st.columns(2)
         if col1.button("English", key="english" ):
             st.session_state.language = "English"
