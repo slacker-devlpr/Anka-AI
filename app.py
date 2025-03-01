@@ -643,34 +643,28 @@ if prompt := st.chat_input("Kako lahko pomagam?" if st.session_state.language ==
     st.session_state.generate_response = True
     st.rerun()
 
+
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..." if st.session_state.language == "Slovene" else "Thinking..."):
         try:
-            #@st.dialog("⚠️🚧 OPOZORILO: Težave s strežniki🚧⚠️")
-            def vote1():
-                st.write("Zaradi hitrega povečanja priljubljenosti platforme DeepSeek se trenutno soočajo z velikimi težavami s strežniki. Posledično ima tudi Shaped AI matematični inštruktor, ki deluje s pomočjo DeepSeeka, tehnične težave." if st.session_state.language == "Slovene" else "Due to the rapid increase in popularity of the DeepSeek platform, they are currently experiencing major server issues. Consequently, the Shaped AI math tutor, which operates using DeepSeek, is also experiencing technical difficulties.") 
-                st.write("🔧 Ekipa intenzivno dela na odpravi težav, vendar to lahko začasno vpliva na hitrost odzivanja in delovanje storitve. Hvala za vaše razumevanje in potrpežljivost! 🔧" if st.session_state.language == "Slovene" else "🔧 The team is working intensively to resolve the issues, but this may temporarily affect the response speed and operation of the service. Thank you for your understanding and patience! 🔧")
-            #vote1()
             # Use the DeepSeek API to generate the chat completion
             response = client.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[get_system_message()] + st.session_state.messages,
                 stream=False  # Change stream as needed
             ).choices[0].message.content
-        except json.decoder.JSONDecodeError as jde:
-            # Handle error when the response isn't valid JSON
-            st.session_state.messages.append({"role": "error", "content": "Deepseek ni posredoval pravilnega JSON odziva! " if st.session_state.language == "Slovene" else "Deepseek did not provide a valid JSON response! "})
-            # Optionally log the error details or perform other cleanup
-            del st.session_state.generate_response
-            st.stop()
+
+            # Add assistant response to session state
+            st.session_state.messages.append({"role": "assistant", "content": response})
+
         except Exception as e:
-            # Handle any other exceptions (e.g., network issues)
             st.session_state.messages.append({"role": "error", "content": "Napaka pri povezavi z API! " if st.session_state.language == "Slovene" else "Error connecting to API! "})
-            # Optionally log e for debugging:
-            # st.error(f"Podrobnosti: {e}")
-            del st.session_state.generate_response
-            st.stop()
+        finally:
+            # Reset the generate_response flag
+            if "generate_response" in st.session_state:
+                del st.session_state.generate_response
+            st.rerun()
     
     
     
