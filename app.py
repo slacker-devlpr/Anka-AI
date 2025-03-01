@@ -631,7 +631,6 @@ if st.session_state.previous_mode != MODE:
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
-st.session_state.generate_response = True
 
 # Process new user input
 if prompt := st.chat_input("Kako lahko pomagam?" if st.session_state.language == "Slovene" else "How can I help?"):
