@@ -634,7 +634,7 @@ if st.session_state.get("generate_response"):
     st.rerun()
     del st.session_state.generate_response
     if 'lan' not in st.session_state:   
-        @st.dialog
+        @st.dialog("Kako bi ocenili ShapedAI?" if st.session_state.language = "Slovene" else "How would you rate the experience?")
         def d():
             st.feedback(options="stars")
         d()
