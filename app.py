@@ -391,7 +391,6 @@ div[data-testid="stDialog"] div[role="dialog"]:has(.big-dialog) {
 
 # Set up the session state
 if "openai_model" not in st.session_state:
-    st.toast("You are currently running Shaped AI 2.1", icon="⚙️")
     # Change the model name to DeepSeek's model
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog("Dobrodošli👋" if st.session_state.language == "Slovene" else "Welcome👋")
