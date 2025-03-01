@@ -139,7 +139,7 @@ def captcha_control():
             capta2_text = col2.text_area(' ', height=68, max_chars=4, placeholder="enter the symbols you see in the image", help="The image may contain letters and/or numbers.")
 
         
-        if col2.button("Potrdi" if st.session_state.language == "Slovene" else "Confirm"):
+        if col2.button("Potrdi" if st.session_state.language == "Slovene" else "Confirm", use_container_width=True):
             print(capta2_text, st.session_state['Captcha'])
             capta2_text = capta2_text.replace(" ", "")
             # If the CAPTCHA is correct, the controllo session state is set to True
