@@ -104,7 +104,7 @@ if 'language' not in st.session_state:
         if col1.button("English", key="english" ):
             st.session_state.language = "English"
             st.rerun()
-        if col2.button("Slovene", key="english"):
+        if col2.button("Slovene", key="slovene"):
             st.session_state.language = "Slovene"
             st.rerun()
     language_dialog()
