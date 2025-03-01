@@ -20,6 +20,7 @@ from google.genai import types
 from captcha.image import ImageCaptcha
 import random
 import string
+from streamlit_cropper import st_cropper
 
 # Page config:
 st.set_page_config(
@@ -303,11 +304,14 @@ if st.session_state.get("show_camera_dialog", False):
         picture = st.camera_input("Zajemi celotni problem." if st.session_state.language == "Slovene" else "Capture the entire problem.")
         
         if picture is not None:
-            # Store image and trigger processing
-            st.session_state.image_to_process = picture.getvalue()
-            st.session_state.show_camera_dialog = False
-            st.session_state.processing_image = True
-            st.rerun()
+            cropped_image = st_cropper(picture, realtime_update=True, box_color='#FF0000',  # Red cropper boxaspect_ratio=None  # Free aspect ratio)
+            if st.button("Test"):
+                
+                # Store image and trigger processing
+                st.session_state.image_to_process = cropped_image.getvalue()
+                st.session_state.show_camera_dialog = False
+                st.session_state.processing_image = True
+                st.rerun()
 
     handle_camera_dialog()
 
