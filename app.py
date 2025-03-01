@@ -155,20 +155,6 @@ def captcha_control():
         else:
             # Wait for the button click
             st.stop()
-# Language selection dialog
-if 'language' not in st.session_state:
-    @st.dialog("Select Language / Izberite Jezik")
-    def language_dialog():
-        st.write("Please select your language / Prosimo, izberite svoj jezik")
-        col1, col2 = st.columns(2)
-        if col1.button("English"):
-            st.session_state.language = "English"
-            st.rerun()
-        if col2.button("Slovene"):
-            st.session_state.language = "Slovene"
-            st.rerun()
-    language_dialog()
-    st.stop()  # Stop execution until language is selected
 
 # Main logic
 if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
