@@ -636,7 +636,7 @@ if st.session_state.get("generate_response"):
     if 'lan' not in st.session_state:   
         @st.dialog
         def d():
-            st.feedback(options="stars)"
+            st.feedback(options="stars")
         d()
 
     st.rerun()
