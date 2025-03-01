@@ -305,7 +305,7 @@ if st.session_state.get("show_camera_dialog", False):
         
         if picture is not None:
             cropped_image = st_cropper(picture, realtime_update=True, box_color='#FF0000', aspect_ratio=None)
-            if st.button("Test"):
+            if cropped_image:
                 picture = cropped_image
                 # Store image and trigger processing
                 st.session_state.image_to_process = picture.getvalue()
