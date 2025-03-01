@@ -304,7 +304,7 @@ if st.session_state.get("show_camera_dialog", False):
         picture = st.camera_input("Zajemi celotni problem." if st.session_state.language == "Slovene" else "Capture the entire problem.")
         
         if picture is not None:
-            cropped_image = st_cropper(picture, realtime_update=True, box_color='#FF0000')
+            cropped_image = st_cropper(picture, realtime_update=True, box_color='#FF0000', aspect_ratio=None)
             if st.button("Test"):
                 picture = cropped_image
                 # Store image and trigger processing
