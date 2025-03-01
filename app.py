@@ -339,10 +339,7 @@ if st.session_state.show_camera_dialog:
             image = Image.open(st.session_state.captured_image)  # Convert to PIL Image
             cropped_image = st_cropper(image, realtime_update=True, box_color="#FF0000", aspect_ratio=None)
 
-            # Display cropped image and confirm button
-            st.image(cropped_image, caption="Cropped Image", use_column_width=True)
-            
-            if st.button("Use this cropped image"):
+            if st.button("Nadaljuj" if st.session_state.get("language", "English") == "Slovene" else "Countinue"):
                 # Convert to bytes
                 img_byte_arr = io.BytesIO()
                 cropped_image.save(img_byte_arr, format="PNG")
