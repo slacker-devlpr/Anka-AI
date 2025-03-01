@@ -123,20 +123,18 @@ def captcha_control():
         else:
             capta2_text = col2.text_area(' ', height=68, max_chars=4, placeholder="enter the symbols you see in the image", help="The image may contain letters and/or numbers.")
 
-        # Language selection dialog
-        if 'language' not in st.session_state:
-            @st.dialog("Select Language / Izberite Jezik")
-            def language_dialog():
-                st.write("Please select your language / Prosimo, izberite svoj jezik")
-                col1, col2 = st.columns(2)
-                if col1.button("English"):
-                    st.session_state.language = "English"
-                    st.rerun()
-                if col2.button("Slovene"):
-                    st.session_state.language = "Slovene"
-                    st.rerun()
-            language_dialog()
-            st.stop()  # Stop execution until language is selected
+        
+        @st.dialog("Select Language / Izberite Jezik")
+        def language_dialog():
+            st.write("Please select your language / Prosimo, izberite svoj jezik")
+            col1, col2 = st.columns(2)
+            if col1.button("English"):
+                st.session_state.language = "English"
+                st.rerun()
+            if col2.button("Slovene"):
+                st.session_state.language = "Slovene"
+                st.rerun()
+        language_dialog()
         
         if col2.button("Potrdi" if st.session_state.language == "Slovene" else "Confirm"):
             print(capta2_text, st.session_state['Captcha'])
