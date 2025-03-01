@@ -300,6 +300,7 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # ----- Image Processing Flow -----
 @st.dialog("Slikaj matematični problem:" if st.session_state.language == "Slovene" else "Capture Math Problem:")
 def handle_camera_dialog():
+    @st.dialog("Slikaj matematični problem:" if st.session_state.language == "Slovene" else "Capture Math Problem:")
     # Step 1: Capture the image
     picture = st.camera_input(
         "Zajemi celotni problem." if st.session_state.language == "Slovene" else "Capture the entire problem."
@@ -332,7 +333,6 @@ def handle_camera_dialog():
             st.session_state.processing_image = True
             st.rerun()
 
-handle_camera_dialog()
 # Process image after dialog closes
 if st.session_state.get("processing_image", False):
     with st.spinner("Procesiram sliko..." if st.session_state.language == "Slovene" else "Processing image..."):
