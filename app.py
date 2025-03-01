@@ -298,9 +298,12 @@ if "show_camera_dialog" not in st.session_state:
     st.session_state.show_camera_dialog = False
 if "processing_image" not in st.session_state:
     st.session_state.processing_image = False
+if "captured_image" not in st.session_state:
+    st.session_state.captured_image = None  # Store the captured image
 if "layout" not in st.session_state:
     st.session_state.layout = True
 
+# Sidebar button to open the camera dialog
 col1, col2, col3 = st.sidebar.columns([1, 6, 1])
 with col2:
     if st.button(
@@ -319,24 +322,24 @@ if st.session_state.show_camera_dialog:
         "Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:"
     )
     def camera_dialog():
-        picture = None  # Ensure 'picture' is always defined
-
-        if st.session_state.layout:
+        # Step 1: Show camera input only if no image is captured
+        if st.session_state.captured_image is None:
             picture = st.camera_input(
                 "Zajemi celotni problem." if st.session_state.get("language", "English") == "Slovene" else "Capture the entire problem."
             )
 
-        if picture is not None:  # Ensure 'picture' is checked properly
-            st.session_state.layout = False  # Prevent re-triggering the camera input
-            
-            # Convert to PIL Image
-            image = Image.open(picture)
+            if picture is not None:
+                st.session_state.captured_image = picture
+                st.session_state.layout = False  # Hide camera input
+                st.rerun()  # Rerun to refresh UI
 
-            # Cropping Interface
+        # Step 2: Show cropping tool if an image is captured
+        if st.session_state.captured_image is not None:
             st.write("Please crop the image as needed:")
+            image = Image.open(st.session_state.captured_image)  # Convert to PIL Image
             cropped_image = st_cropper(image, realtime_update=True, box_color="#FF0000", aspect_ratio=None)
 
-            # Show cropped image and confirmation button
+            # Display cropped image and confirm button
             st.image(cropped_image, caption="Cropped Image", use_column_width=True)
             
             if st.button("Use this cropped image"):
@@ -345,13 +348,14 @@ if st.session_state.show_camera_dialog:
                 cropped_image.save(img_byte_arr, format="PNG")
                 st.session_state.image_to_process = img_byte_arr.getvalue()
 
-                # Close the dialog
+                # Reset state and close dialog
                 st.session_state.show_camera_dialog = False
+                st.session_state.captured_image = None  # Clear stored image
                 st.session_state.processing_image = True
                 st.rerun()
 
     camera_dialog()
-    
+
 # Process image after dialog closes
 if st.session_state.get("processing_image", False):
     with st.spinner("Procesiram sliko..." if st.session_state.language == "Slovene" else "Processing image..."):
