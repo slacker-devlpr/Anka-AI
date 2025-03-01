@@ -312,9 +312,6 @@ if st.session_state.show_camera_dialog:
             # Cropping Interface
             st.write("Please crop the image as needed:")
             cropped_image = st_cropper(image, realtime_update=True, box_color='#FF0000', aspect_ratio=None)
-
-            # Show cropped image and confirmation button
-            st.image(cropped_image, caption="Cropped Image", use_column_width=True)
             if st.button("Use this cropped image"):
                 # Convert to bytes
                 img_byte_arr = io.BytesIO()
