@@ -325,8 +325,7 @@ if st.session_state.show_camera_dialog:
         # Step 1: Show camera input only if no image is captured
         if st.session_state.captured_image is None:
             picture = st.camera_input(
-                "Zajemi celotni problem." if st.session_state.get("language", "English") == "Slovene" else "Capture the entire problem."
-            )
+                " ")
 
             if picture is not None:
                 st.session_state.captured_image = picture
