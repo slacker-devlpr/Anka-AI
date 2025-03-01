@@ -104,6 +104,8 @@ def captcha_control():
         st.session_state.language = "Slovene"
         # Language selection dialog
         st.title("Dobrodošli!/Welcome!")
+        st.write("  ")
+        st.write("  ")
         options = ["Slovenščina", "English"]
         selection = st.segmented_control(
         "Please select your language / Prosimo, izberite svoj jezik.", options, selection_mode="single"
@@ -112,8 +114,6 @@ def captcha_control():
             st.session_state.language = "Slovene"
         if selection == "English":
             st.session_state.language = "English"
-        st.write("  ")
-        st.write("  ")
         st.write("  ")
         st.write("  ")
         if st.session_state.language == "Slovene":
