@@ -109,11 +109,10 @@ def captcha_control():
             st.session_state.language = "English"
         if col2.button("Slovene"):
             st.session_state.language = "Slovene"
-        
+        st.session_state.language == "Slovene"
         if st.session_state.language == "Slovene":
             st.write("Zaradi velikega števila botov, ki preplavljajo našo spletno stran, morate izpolniti to CAPTCHA, da dokažete, da ste človek.")
         else:
-            st.title("Welcome!")
             st.write("Due to a large number of bots flooding our website, you need to complete this CAPTCHA to prove you are human.")
         st.write(" ")
         # Define the session state for control if the CAPTCHA is correct
