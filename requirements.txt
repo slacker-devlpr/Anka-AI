@@ -11,3 +11,4 @@ markdown
 deep-translator
 google-genai
 captcha
+streamlit-cropper
