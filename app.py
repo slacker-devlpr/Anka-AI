@@ -372,11 +372,7 @@ if st.session_state.get("processing_image", False):
 
             # Check if Gemini returned an error message
             if "#error.user#" in extracted_problem:
-                
                 st.session_state.messages.append({"role": "error", "content": "Gemini Vision ni našel naloge v vaši sliki." if st.session_state.language == "Slovene" else "Gemini Vision did not find a problem in your image."})
-                st.session_state.processing_image = False
-                st.session_state.image_to_process = None
-                st.rerun()
             else:
                 # Add extracted problem to chat only if there is no error indicator
                 st.session_state.messages.append({"role": "user", "content": extracted_problem})
@@ -384,10 +380,14 @@ if st.session_state.get("processing_image", False):
 
         except Exception as e:
             st.error(f"Napaka pri obdelavi slike: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing image: {str(e)}")
+            st.session_state.messages.append({"role": "error", "content": f"Napaka pri obdelavi slike: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing image: {str(e)}"})
         finally:
             # Clean up processing state
-            del st.session_state.processing_image
-            del st.session_state.image_to_process
+            st.session_state.processing_image = False
+            if "image_to_process" in st.session_state:
+                del st.session_state.image_to_process
+            st.rerun()
+
 
 scol1, scol2, scol3 = st.sidebar.columns([1,6,1])                  
 with scol2:
