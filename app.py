@@ -304,12 +304,20 @@ if st.session_state.get("show_camera_dialog", False):
         picture = st.camera_input("Zajemi celotni problem." if st.session_state.language == "Slovene" else "Capture the entire problem.")
         
         if picture is not None:
+            # Convert UploadedFile to PIL Image
             picture = Image.open(picture)
+
+            # Crop the image
             cropped_image = st_cropper(picture, realtime_update=True, box_color='#FF0000', aspect_ratio=None)
+
             if cropped_image:
-                picture = cropped_image
+                # Convert cropped image to bytes
+                img_byte_arr = io.BytesIO()
+                cropped_image.save(img_byte_arr, format="PNG")
+                img_byte_arr = img_byte_arr.getvalue()
+
                 # Store image and trigger processing
-                st.session_state.image_to_process = picture.getvalue()
+                st.session_state.image_to_process = img_byte_arr
                 st.session_state.show_camera_dialog = False
                 st.session_state.processing_image = True
                 st.rerun()
