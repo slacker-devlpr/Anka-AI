@@ -293,35 +293,52 @@ else:
 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
+# Ensure session state variables are initialized
 if "show_camera_dialog" not in st.session_state:
     st.session_state.show_camera_dialog = False
 if "processing_image" not in st.session_state:
     st.session_state.processing_image = False
 if "layout" not in st.session_state:
     st.session_state.layout = True
-    
-col1, col2, col3 = st.sidebar.columns([1,6,1])
+
+col1, col2, col3 = st.sidebar.columns([1, 6, 1])
 with col2:
-    if st.button("NALOŽI SLIKO" if st.session_state.language == "Slovene" else "UPLOAD IMAGE", key="camera_btn", use_container_width=True):
-        st.session_state.show_camera_dialog = True 
+    if st.button(
+        "NALOŽI SLIKO" if st.session_state.get("language", "English") == "Slovene" else "UPLOAD IMAGE",
+        key="camera_btn",
+        use_container_width=True,
+    ):
+        st.session_state.show_camera_dialog = True
+        st.rerun()  # Ensure UI updates
+
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-# ----- Image Processing Flow -----
 
 # Handle Camera Dialog
 if st.session_state.show_camera_dialog:
-    @st.dialog("Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:")
+    @st.dialog(
+        "Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:"
+    )
     def camera_dialog():
-        if st.session_state.layout:
-            picture = st.camera_input("Zajemi celotni problem." if st.session_state.get("language", "English") == "Slovene" else "Capture the entire problem.")
+        picture = None  # Ensure 'picture' is always defined
 
-        if picture:
-            st.session_state.layout = False
+        if st.session_state.layout:
+            picture = st.camera_input(
+                "Zajemi celotni problem." if st.session_state.get("language", "English") == "Slovene" else "Capture the entire problem."
+            )
+
+        if picture is not None:  # Ensure 'picture' is checked properly
+            st.session_state.layout = False  # Prevent re-triggering the camera input
+            
             # Convert to PIL Image
             image = Image.open(picture)
 
             # Cropping Interface
             st.write("Please crop the image as needed:")
-            cropped_image = st_cropper(image, realtime_update=True, box_color='#FF0000', aspect_ratio=None)
+            cropped_image = st_cropper(image, realtime_update=True, box_color="#FF0000", aspect_ratio=None)
+
+            # Show cropped image and confirmation button
+            st.image(cropped_image, caption="Cropped Image", use_column_width=True)
+            
             if st.button("Use this cropped image"):
                 # Convert to bytes
                 img_byte_arr = io.BytesIO()
@@ -334,7 +351,7 @@ if st.session_state.show_camera_dialog:
                 st.rerun()
 
     camera_dialog()
-
+    
 # Process image after dialog closes
 if st.session_state.get("processing_image", False):
     with st.spinner("Procesiram sliko..." if st.session_state.language == "Slovene" else "Processing image..."):
