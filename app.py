@@ -96,13 +96,13 @@ height = 150
 
 
 st.write("Please select your language / Prosimo, izberite svoj jezik")
-    col1, col2 = st.columns(2)
-        if col1.button("English"):
-            st.session_state.language = "English"
-            st.rerun()
-        if col2.button("Slovene"):
-            st.session_state.language = "Slovene"
-            st.rerun()
+col1, col2 = st.columns(2)
+if col1.button("English"):
+    st.session_state.language = "English"
+    st.rerun()
+if col2.button("Slovene"):
+    st.session_state.language = "Slovene"
+    st.rerun()
        
 # Define the function for CAPTCHA control
 def captcha_control():
