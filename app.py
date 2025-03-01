@@ -633,4 +633,7 @@ if st.session_state.get("generate_response"):
     del st.session_state.generate_response
     st.rerun()
     del st.session_state.generate_response
+    if rate not in st.session_state:
+        st.feedback(options="stars")
+        st.session_state.rate = True
     st.rerun()
