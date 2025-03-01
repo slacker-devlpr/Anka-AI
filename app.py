@@ -106,11 +106,11 @@ def captcha_control():
             st.title("Dobrodošli!/Welcome!")
             st.write("Please select your language / Prosimo, izberite svoj jezik")
             col1, col2 = st.columns(2)
-        if col1.button("English"):
-            st.session_state.language = "English"
-        if col2.button("Slovene"):
-            st.session_state.language = "Slovene"
-        st.stop()
+            if col1.button("English"):
+                st.session_state.language = "English"
+            if col2.button("Slovene"):
+                st.session_state.language = "Slovene"
+            st.stop()
         if st.session_state.language == "Slovene":
             st.write("Zaradi velikega števila botov, ki preplavljajo našo spletno stran, morate izpolniti to CAPTCHA, da dokažete, da ste človek.")
         else:
