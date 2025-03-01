@@ -440,7 +440,11 @@ if st.session_state.language == "Slovene":
     greeting = get_slovene_greeting()
 else:
     greeting = get_english_greeting()
-
+if 'lan' not in st.session_state:   
+        @st.dialog("Kako bi ocenili ShapedAI?" if st.session_state.language == "Slovene" else "How would you rate the experience?")
+        def d():
+            st.feedback(options="stars")
+        d()
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
@@ -633,10 +637,5 @@ if st.session_state.get("generate_response"):
     del st.session_state.generate_response
     st.rerun()
     del st.session_state.generate_response
-    if 'lan' not in st.session_state:   
-        @st.dialog("Kako bi ocenili ShapedAI?" if st.session_state.language == "Slovene" else "How would you rate the experience?")
-        def d():
-            st.feedback(options="stars")
-        d()
 
     st.rerun()
