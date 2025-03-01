@@ -298,31 +298,38 @@ with col2:
         st.session_state.show_camera_dialog = True 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 # ----- Image Processing Flow -----
-if st.session_state.get("show_camera_dialog", False):
-    @st.dialog("Slikaj matematični problem:" if st.session_state.language == "Slovene" else "Capture Math Problem:")
-    def handle_camera_dialog():
-        picture = st.camera_input("Zajemi celotni problem." if st.session_state.language == "Slovene" else "Capture the entire problem.")
-        
-        if picture is not None:
-            # Convert UploadedFile to PIL Image
-            picture = Image.open(picture)
+def handle_camera_dialog():
+    # Step 1: Capture the image
+    picture = st.camera_input(
+        "Zajemi celotni problem." if st.session_state.language == "Slovene" else "Capture the entire problem."
+    )
+    
+    if picture:
+        # Step 2: Convert the UploadedFile to a PIL Image
+        image = Image.open(picture)
 
-            # Crop the image
-            cropped_image = st_cropper(picture, realtime_update=True, box_color='#FF0000', aspect_ratio=None)
+        # Step 3: Display the cropping interface
+        st.write("Please crop the image as needed:")
+        cropped_image = st_cropper(
+            image,
+            realtime_update=True,
+            box_color='#FF0000',
+            aspect_ratio=None
+        )
 
-            if cropped_image:
-                # Convert cropped image to bytes
-                img_byte_arr = io.BytesIO()
-                cropped_image.save(img_byte_arr, format="PNG")
-                img_byte_arr = img_byte_arr.getvalue()
+        # Step 4: Display the cropped image and provide a button to confirm
+        st.image(cropped_image, caption="Cropped Image", use_column_width=True)
+        if st.button("Use this cropped image"):
+            # Convert the cropped image to bytes
+            img_byte_arr = io.BytesIO()
+            cropped_image.save(img_byte_arr, format='PNG')
+            img_byte_arr = img_byte_arr.getvalue()
 
-                # Store image and trigger processing
-                st.session_state.image_to_process = img_byte_arr
-                st.session_state.show_camera_dialog = False
-                st.session_state.processing_image = True
-                st.rerun()
-
-    handle_camera_dialog()
+            # Store the image in session state and trigger processing
+            st.session_state.image_to_process = img_byte_arr
+            st.session_state.show_camera_dialog = False
+            st.session_state.processing_image = True
+            st.rerun()
 
 # Process image after dialog closes
 if st.session_state.get("processing_image", False):
