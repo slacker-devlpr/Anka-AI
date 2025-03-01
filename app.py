@@ -298,7 +298,7 @@ if "show_camera_dialog" not in st.session_state:
 if "processing_image" not in st.session_state:
     st.session_state.processing_image = False
 if "layout" not in st.session_state:
-    st.session_state.processing_image = True
+    st.session_state.layout = True
     
 col1, col2, col3 = st.sidebar.columns([1,6,1])
 with col2:
@@ -311,11 +311,11 @@ st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 if st.session_state.show_camera_dialog:
     @st.dialog("Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:")
     def camera_dialog():
-        if st.session_state.processing_image:
+        if st.session_state.layout:
             picture = st.camera_input("Zajemi celotni problem." if st.session_state.get("language", "English") == "Slovene" else "Capture the entire problem.")
 
         if picture:
-            st.session_state.processing_image = False
+            st.session_state.layout = False
             # Convert to PIL Image
             image = Image.open(picture)
 
