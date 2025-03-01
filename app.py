@@ -97,7 +97,7 @@ height = 150
 
 # Language selection dialog
 if 'language' not in st.session_state:
-    st.title("Welcome / Dobrodošli")
+    st.title("Dobrodošli!/Welcome!")
     st.write("Please select your language / Prosimo, izberite svoj jezik")
     col1, col2 = st.columns(2)
     if col1.button("English"):
@@ -111,7 +111,6 @@ if 'language' not in st.session_state:
 def captcha_control():
     if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
         if st.session_state.language == "Slovene":
-            st.title("Dobrodošli!")
             st.write("Zaradi velikega števila botov, ki preplavljajo našo spletno stran, morate izpolniti to CAPTCHA, da dokažete, da ste človek.")
         else:
             st.title("Welcome!")
