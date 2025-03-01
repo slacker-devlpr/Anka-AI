@@ -292,6 +292,12 @@ else:
     )
 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+
+if "show_camera_dialog" not in st.session_state:
+    st.session_state.show_camera_dialog = False
+if "processing_image" not in st.session_state:
+    st.session_state.processing_image = False
+    
 col1, col2, col3 = st.sidebar.columns([1,6,1])
 with col2:
     if st.button("NALOŽI SLIKO" if st.session_state.language == "Slovene" else "UPLOAD IMAGE", key="camera_btn", use_container_width=True):
