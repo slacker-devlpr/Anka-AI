@@ -335,7 +335,7 @@ if st.session_state.show_camera_dialog:
 
         # Step 2: Show cropping tool if an image is captured
         if st.session_state.captured_image is not None:
-            st.write("Obreži sliko po potrebi:" if st.session_state.get("language", "English") == "Slovene" else "Crop the picture as needed:")
+            st.write("Označi samo eno nalogo:" if st.session_state.get("language", "English") == "Slovene" else "Select only one problem:")
             image = Image.open(st.session_state.captured_image)  # Convert to PIL Image
             cropped_image = st_cropper(image, realtime_update=True, box_color="#FF0000", aspect_ratio=None)
             if st.button("Prekliči" if st.session_state.get("language", "English") == "Slovene" else "Cancel", use_container_width=True):
