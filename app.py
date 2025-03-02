@@ -109,8 +109,7 @@ def captcha_control():
         st.image("Screenshot 2025-03-01 123153.png")
         options = ["Slovenščina", "English"]
         selection = st.selectbox(
-        "Please select your language / Prosimo, izberite svoj jezik.", options, use_container_width=True
-        )
+        "Please select your language / Prosimo, izberite svoj jezik.", options)
         if selection == "Slovenščina":
             st.session_state.language = "Slovene"
         if selection == "English":
