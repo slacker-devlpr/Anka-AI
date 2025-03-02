@@ -669,8 +669,8 @@ if st.session_state.get("generate_response"):
             # Add assistant response to session state
             st.session_state.messages.append({"role": "assistant", "content": response})
 
-        except Exception as e:
-            st.session_state.messages.append({"role": "error", "content": "Napaka pri povezavi z API! " if st.session_state.language == "Slovene" else "Error connecting to API! "})
+        #except Exception as e:
+            #st.session_state.messages.append({"role": "error", "content": "Napaka pri povezavi z API! " if st.session_state.language == "Slovene" else "Error connecting to API! "})
         finally:
             # Reset the generate_response flag
             if "generate_response" in st.session_state:
