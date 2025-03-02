@@ -339,6 +339,11 @@ if st.session_state.show_camera_dialog:
             st.write("Obreži sliko po potrebi:" if st.session_state.get("language", "English") == "Slovene" else "Crop the picture as needed:")
             image = Image.open(st.session_state.captured_image)  # Convert to PIL Image
             cropped_image = st_cropper(image, realtime_update=True, box_color="#FF0000", aspect_ratio=None)
+            if st.button("Prekliči" if st.session_state.get("language", "English") == "Slovene" else "Cancel", use_container_width=True):
+                st.session_state.show_camera_dialog = False
+                st.session_state.captured_image = None
+                st.rerun()
+                
            
             if st.button("Nadaljuj" if st.session_state.get("language", "English") == "Slovene" else "Countinue", use_container_width=True):
                 # Convert to bytes
