@@ -380,7 +380,9 @@ if st.session_state.get("processing_image", False):
             # Check if Gemini returned an error message
             if "#error.user#" in extracted_problem:
                 st.session_state.messages.append({"role": "error", "content": "Gemini Vision ni našel naloge v vaši sliki. Kliknite nov klepet." if st.session_state.language == "Slovene" else "Gemini Vision did not find a problem in your image. Click new chat."})
-                st.session_state.append("processing_image", True)
+                st.session_state.show_camera_dialog = False
+                st.session_state.captured_image = None  # Clear stored image
+                st.session_state.processing_image = True
                 st.rerun()
             else:
                 # Add extracted problem to chat only if there is no error indicator
