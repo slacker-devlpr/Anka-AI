@@ -641,15 +641,11 @@ if "previous_mode" not in st.session_state:
 
 # Reset animated_messages when the mode changes
 if st.session_state.previous_mode != MODE:
-    @st.dialog("Menjava načina bo ponastavila klepet. Ste prepričani?" if st.session_state.language == "Slovene" else "Switching modes will reset the chat. Are you sure?")
-    def test():
-        if st.button("Prekliči" if st.session_state.language == "Slovene" else "Cancel", use_container_width=True):
-            st.session_state.previous_mode = MODE
-        if st.button("Nadaljuj" if st.session_state.language == "Slovene" else "Continue",use_container_width=True):
-            st.session_state.animated_messages = set()  # Reset the animated messages
-            st.session_state.messages = []  # Clear the chat history
-            st.session_state.previous_mode = MODE  # Update the previous mode
-    test()
+    
+    #st.session_state.animated_messages = set()  # Reset the animated messages
+    #st.session_state.messages = []  # Clear the chat history
+    st.session_state.previous_mode = MODE  # Update the previous mode
+ 
 
 # ----- Main Logic -----
 display_messages(st.session_state.messages)
