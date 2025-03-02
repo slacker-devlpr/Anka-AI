@@ -385,7 +385,7 @@ if st.session_state.get("processing_image", False):
                 st.session_state.processing_image = False
                 if "image_to_process" in st.session_state:
                     del st.session_state.image_to_process
-                st.session_state.messages.append({"role": "error", "content": "Gemini Vision ni našel naloge v vaši sliki. Kliknite nov klepet." if st.session_state.language == "Slovene" else "Gemini Vision did not find a problem in your image. Click new chat."})
+                st.error("test")
                 st.rerun()
             else:
                 # Add extracted problem to chat only if there is no error indicator
