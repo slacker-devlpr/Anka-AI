@@ -646,8 +646,8 @@ if st.session_state.previous_mode != MODE:
     if st.button("Prekliči" if st.session_state.language == "Slovene" else "Cancel", use_container_width=True):
         st.session_state.previous_mode = MODE
     if st.button("Nadaljuj" if st.session_state.language == "Slovene" else "Continue",use_container_width=True):
-        #st.session_state.animated_messages = set()  # Reset the animated messages
-        #st.session_state.messages = []  # Clear the chat history
+        st.session_state.animated_messages = set()  # Reset the animated messages
+        st.session_state.messages = []  # Clear the chat history
         st.session_state.previous_mode = MODE  # Update the previous mode
 
 # ----- Main Logic -----
