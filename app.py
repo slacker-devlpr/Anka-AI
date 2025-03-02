@@ -429,7 +429,7 @@ BOT_AVATAR = "top-logo.png"
 
 # IMPORTANT: Change the client initialization to use DeepSeek v3.
 client = OpenAI(
-    api_key=str(st.secrets[deepseek_api]),         # Replace with your DeepSeek API key
+    api_key=str(st.secrets["deepseek_api"]),         # Replace with your DeepSeek API key
     base_url="https://api.deepseek.com"        # Set the DeepSeek base URL
 )
 st.markdown(
