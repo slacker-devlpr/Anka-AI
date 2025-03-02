@@ -363,7 +363,7 @@ if st.session_state.get("processing_image", False):
     with st.spinner("Procesiram sliko..." if st.session_state.language == "Slovene" else "Processing image..."):
         try:
             # Initialize Gemini client
-            gemini_client = genai.Client(api_key=str(st.secrets("gemini_api"))  # Replace with your API key
+            gemini_client = genai.Client(api_key=str(st.secrets("gemini_api")) ) # Replace with your API key
 
             # Get response from Gemini
             response = gemini_client.models.generate_content(
