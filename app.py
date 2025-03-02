@@ -385,7 +385,6 @@ if st.session_state.get("processing_image", False):
                 st.session_state.processing_image = False
                 if "image_to_process" in st.session_state:
                     del st.session_state.image_to_process
-                st.error("test")
                 st.rerun()
             else:
                 # Add extracted problem to chat only if there is no error indicator
