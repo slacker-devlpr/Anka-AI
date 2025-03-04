@@ -407,6 +407,21 @@ with scol2:
         if "generate_response" in st.session_state:
             del st.session_state.generate_response
         st.rerun()
+
+st.sidebar.markdown(
+    """
+    <style>
+    .subtle-text {
+        color: rgba(255, 255, 255, 0.3); /* White text with 30% opacity */
+        font-size: 12px;
+        text-align: center;
+        margin-top: 6px; /* Adjust spacing as needed */
+    }
+    </style>
+    <div class="subtle-text">Version 3.0</div>
+    """,
+    unsafe_allow_html=True
+)
         
 st.sidebar.markdown(
     """
