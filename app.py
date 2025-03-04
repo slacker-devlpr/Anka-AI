@@ -668,20 +668,33 @@ if prompt := st.chat_input("Kako lahko pomagam?" if st.session_state.language ==
     st.session_state.generate_response = True
     st.rerun()
 
-
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..." if st.session_state.language == "Slovene" else "Thinking..."):
         try:
-            # Use the DeepSeek API to generate the chat completion
-            response = client.chat.completions.create(
+            # Use the DeepSeek API to generate the chat completion with streaming
+            response_stream = client.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[get_system_message()] + st.session_state.messages,
-                stream=False  # Change stream as needed
-            ).choices[0].message.content
+                stream=True  # Enable streaming
+            )
+
+            # Initialize an empty response to accumulate tokens
+            full_response = ""
+            message_placeholder = st.empty()
+
+            # Stream the response and update the UI dynamically
+            for chunk in response_stream:
+                if chunk.choices and chunk.choices[0].delta and "content" in chunk.choices[0].delta:
+                    token = chunk.choices[0].delta["content"]
+                    full_response += token
+                    message_placeholder.markdown(full_response + "▌")  # Display partial response with cursor effect
+
+            # Final update to remove the cursor effect
+            message_placeholder.markdown(full_response)
 
             # Add assistant response to session state
-            st.session_state.messages.append({"role": "assistant", "content": response})
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
 
         except Exception as e:
             st.session_state.messages.append({"role": "error", "content": "Napaka pri povezavi z API! " if st.session_state.language == "Slovene" else "Error connecting to API! "})
@@ -690,13 +703,3 @@ if st.session_state.get("generate_response"):
             if "generate_response" in st.session_state:
                 del st.session_state.generate_response
             st.rerun()
-    
-    
-    
-    # Add assistant response to session state
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    del st.session_state.generate_response
-    st.rerun()
-    del st.session_state.generate_response
-
-    st.rerun()
