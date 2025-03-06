@@ -378,7 +378,6 @@ if st.session_state.get("processing_image", False):
 
             # Check if Gemini returned an error message
             if "#error.user#" in extracted_problem:
-                st.error("test")
                 st.rerun()
                 
             else:
