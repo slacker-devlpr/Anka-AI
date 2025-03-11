@@ -358,6 +358,8 @@ if st.session_state.show_camera_dialog:
 
     camera_dialog()
 
+st.session_state.show_camera_dialog = False
+
 # Process image after dialog closes
 if st.session_state.get("processing_image", False):
     with st.spinner("Procesiram sliko..." if st.session_state.language == "Slovene" else "Processing image..."):
