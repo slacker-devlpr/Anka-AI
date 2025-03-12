@@ -99,6 +99,7 @@ height = 150
 
 # Set up the session state
 if "openai_model" not in st.session_state:
+    st.session_state.language == "Sloven"
     # Change the model name to DeepSeek's model
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog("Dobrodošli👋" if st.session_state.language == "Slovene" else "Welcome👋")
