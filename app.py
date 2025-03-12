@@ -28,7 +28,6 @@ st.set_page_config(
     page_icon=r"shaped-logo.png"
 )
 
-
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
@@ -98,29 +97,29 @@ length_captcha = 4
 width = 200
 height = 150
 
-if st.session_state.dialog == False:
-
-    @st.dialog("Welcome👋")
+# Set up the session state
+if "openai_model" not in st.session_state:
+    # Change the model name to DeepSeek's model
+    st.session_state["openai_model"] = "deepseek-chat"
+    @st.dialog("Dobrodošli👋" if st.session_state.language == "Slovene" else "Welcome👋")
     def vote():
-        st.write("Shaped AI Tutor is one of the first free Math AI tutors operating as a non-profit initiative! 🎓🚀") 
+        st.write("Shaped AI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀" if st.session_state.language == "Slovene" else "Shaped AI Tutor is one of the first free Math AI tutors operating as a non-profit initiative! 🎓🚀") 
         st.write(" ")
-        st.write("We believe that math tutoring should be accessible to everyone – completely free! 🧮💡")
+        st.write("Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡" if st.session_state.language == "Slovene" else "We believe that math tutoring should be accessible to everyone – completely free! 🧮💡")
         st.write(" ")
-        st.write("Although our services are free, their operation is not – servers, materials, and time require resources. If you wish to support our mission, we would be extremely grateful for BTC donations via the BTC network to 1KB31MXN19KNMwFFsvwGyjkMdSku3NGgu9🙏💙")
+        st.write("A čeprav so naše storitve brezplačne, njihovo delovanje ni – strežniki, materiali in čas zahtevajo sredstva. Če želite podpreti našo misijo, bomo izjemno hvaležni za BTC donacije čez BTC network na 1KB31MXN19KNMwFFsvwGyjkMdSku3NGgu9🙏💙" if st.session_state.language == "Slovene" else "Although our services are free, their operation is not – servers, materials, and time require resources. If you wish to support our mission, we would be extremely grateful for BTC donations via the BTC network to 1KB31MXN19KNMwFFsvwGyjkMdSku3NGgu9🙏💙")
         st.write(" ")
-        st.write("📍 Living in Ljubljana? Call 031 577 600 and secure one-on-one live tutoring! 📞✨")
+        st.write("📍 Živite v Ljubljani? Pokličite 031 577 600 in si zagotovite ena na ena inštrukcije v živo! 📞✨" if st.session_state.language == "Slovene" else "📍 Living in Ljubljana? Call 031 577 600 and secure one-on-one live tutoring! 📞✨")
         st.write("")
         st.image("MADE USING.jpg")
     vote()
-    st.session_state.dialog = True
-    
+
 
 
        
 # Define the function for CAPTCHA control
 def captcha_control():
     if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
-        st.session_state.dialog = False
         st.session_state.language = "Slovene"
         # Language selection dialog
         st.image("Screenshot 2025-03-01 123153.png")
@@ -477,10 +476,6 @@ div[data-testid="stDialog"] div[role="dialog"]:has(.big-dialog) {
     unsafe_allow_html=True,
 )
 
-# Set up the session state
-if "openai_model" not in st.session_state:
-    # Change the model name to DeepSeek's model
-    st.session_state["openai_model"] = "deepseek-chat"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
