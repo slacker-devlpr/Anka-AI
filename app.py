@@ -379,7 +379,7 @@ if st.session_state.show_camera_dialog:
 
     camera_dialog()
 
-st.session_state.show_camera_dialog = False
+#st.session_state.show_camera_dialog = False
 
 # Process image after dialog closes
 if st.session_state.get("processing_image", False):
