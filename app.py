@@ -97,20 +97,22 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 length_captcha = 4
 width = 200
 height = 150
+st.session_state.dialog = False
+if st.session_state.dialog == False:
 
-
-@st.dialog("Welcome👋")
-def vote():
-    st.write("Shaped AI Tutor is one of the first free Math AI tutors operating as a non-profit initiative! 🎓🚀") 
-    st.write(" ")
-    st.write("We believe that math tutoring should be accessible to everyone – completely free! 🧮💡")
-    st.write(" ")
-    st.write("Although our services are free, their operation is not – servers, materials, and time require resources. If you wish to support our mission, we would be extremely grateful for BTC donations via the BTC network to 1KB31MXN19KNMwFFsvwGyjkMdSku3NGgu9🙏💙")
-    st.write(" ")
-    st.write("📍 Living in Ljubljana? Call 031 577 600 and secure one-on-one live tutoring! 📞✨")
-    st.write("")
-    st.image("MADE USING.jpg")
-vote()
+    @st.dialog("Welcome👋")
+    def vote():
+        st.write("Shaped AI Tutor is one of the first free Math AI tutors operating as a non-profit initiative! 🎓🚀") 
+        st.write(" ")
+        st.write("We believe that math tutoring should be accessible to everyone – completely free! 🧮💡")
+        st.write(" ")
+        st.write("Although our services are free, their operation is not – servers, materials, and time require resources. If you wish to support our mission, we would be extremely grateful for BTC donations via the BTC network to 1KB31MXN19KNMwFFsvwGyjkMdSku3NGgu9🙏💙")
+        st.write(" ")
+        st.write("📍 Living in Ljubljana? Call 031 577 600 and secure one-on-one live tutoring! 📞✨")
+        st.write("")
+        st.image("MADE USING.jpg")
+    vote()
+    st.session_state.dialog = True
 
 
        
