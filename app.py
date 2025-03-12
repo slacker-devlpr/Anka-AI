@@ -28,7 +28,7 @@ st.set_page_config(
     page_icon=r"shaped-logo.png"
 )
 
-st.markdown(<meta name="google-site-verification" content="HhVBA6H2LDsstYgjPmDMh99HdGQAgVRpQ84U9Nv4GFw" />)
+st.markdown("<meta name="google-site-verification" content="HhVBA6H2LDsstYgjPmDMh99HdGQAgVRpQ84U9Nv4GFw" />")
 # Load css from assets
 def load_css(file_path):
     with open(file_path) as f:
