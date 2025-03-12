@@ -28,12 +28,6 @@ st.set_page_config(
     page_icon=r"shaped-logo.png"
 )
 
-import streamlit as st
-
-# Your HTML meta tag from Google Search Console
-meta_tag = """<meta name="google-site-verification" content="HhVBA6H2LDsstYgjPmDMh99HdGQAgVRpQ84U9Nv4GFw" />"""
-st.markdown(meta_tag, unsafe_allow_html=True)
-
 
 # Load css from assets
 def load_css(file_path):
