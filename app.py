@@ -97,7 +97,7 @@ st.markdown(enable_scroll, unsafe_allow_html=True)
 length_captcha = 4
 width = 200
 height = 150
-st.session_state.dialog = False
+
 if st.session_state.dialog == False:
 
     @st.dialog("Welcome👋")
@@ -113,12 +113,14 @@ if st.session_state.dialog == False:
         st.image("MADE USING.jpg")
     vote()
     st.session_state.dialog = True
+    
 
 
        
 # Define the function for CAPTCHA control
 def captcha_control():
     if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
+        st.session_state.dialog = False
         st.session_state.language = "Slovene"
         # Language selection dialog
         st.image("Screenshot 2025-03-01 123153.png")
