@@ -169,7 +169,7 @@ if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog("Dobrodošli👋" if st.session_state.language == "Slovene" else "Welcome👋")
     def vote():
-        st.write("AnkaAI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀" if st.session_state.language == "Slovene" else "Anka AI Tutor is one of the first free Math AI tutors operating as a non-profit initiative! 🎓🚀") 
+        st.write("AnkaAI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀" if st.session_state.language == "Slovene" else "AnkaAI Tutor is one of the first free Math AI tutors operating as a non-profit initiative! 🎓🚀") 
         st.write(" ")
         st.write("Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡" if st.session_state.language == "Slovene" else "We believe that math tutoring should be accessible to everyone – completely free! 🧮💡")
         st.write(" ")
