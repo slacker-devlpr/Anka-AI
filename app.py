@@ -21,6 +21,7 @@ from captcha.image import ImageCaptcha
 import random
 import string
 from streamlit_cropper import st_cropper
+import streamlit.components.v1 as components
 
 # Page config:
 st.set_page_config(
