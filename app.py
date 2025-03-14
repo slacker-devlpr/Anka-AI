@@ -348,8 +348,7 @@ if  st.session_state.showed == True:
 
 # Handle Camera Dialog
 if st.session_state.show_camera_dialog:
-    if "showed" not in st.session_state:
-        st.session_state.showed = True
+    st.session_state.showed = True
     @st.dialog(
         "Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:"
     )
