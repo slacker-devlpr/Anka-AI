@@ -338,48 +338,63 @@ with col2:
 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-# Handle Camera Dialog
 if st.session_state.show_camera_dialog:
-    @st.dialog(
-        "Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:"
-    )
+    dialog_title = "Slikaj ali naloži matematični problem:" if st.session_state.language == "Slovene" else "Capture or Upload Math Problem:"
+    
+    @st.dialog(dialog_title)
     def camera_dialog():
-        # Step 1: Show camera input only if no image is captured
-        if st.session_state.captured_image is None:
-            picture = st.camera_input(
-                " ")
-
-            if picture is not None:
+        st.write("Izberite možnost:" if st.session_state.language == "Slovene" else "Choose an option:")
+        
+        # Step 1: Camera input or file upload
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write("📷 " + ("Slikaj" if st.session_state.language == "Slovene" else "Capture"))
+            picture = st.camera_input(" ")
+            if picture:
                 st.session_state.captured_image = picture
-                st.session_state.layout = False  # Hide camera input
-                st.rerun()  # Rerun to refresh UI
-
-        # Step 2: Show cropping tool if an image is captured
-        if st.session_state.captured_image is not None:
-            st.write("Označi samo eno nalogo:" if st.session_state.get("language", "English") == "Slovene" else "Select only one problem:")
-            image = Image.open(st.session_state.captured_image)  # Convert to PIL Image
-            cropped_image = st_cropper(image, realtime_update=True, box_color="#FF0000", aspect_ratio=None)
-            if st.button("Prekliči" if st.session_state.get("language", "English") == "Slovene" else "Cancel", use_container_width=True):
-                st.session_state.show_camera_dialog = False
+                st.session_state.uploaded_image = None
+                st.session_state.layout = False
+                st.rerun()
+        
+        with col2:
+            st.write("📂 " + ("Naloži sliko" if st.session_state.language == "Slovene" else "Upload Image"))
+            uploaded_file = st.file_uploader(" ", type=["png", "jpg", "jpeg"])
+            if uploaded_file:
+                st.session_state.uploaded_image = uploaded_file
                 st.session_state.captured_image = None
-                st.rerun()
-                
-           
-            if st.button("Nadaljuj" if st.session_state.get("language", "English") == "Slovene" else "Countinue", use_container_width=True):
-                # Convert to bytes
-                img_byte_arr = io.BytesIO()
-                cropped_image.save(img_byte_arr, format="PNG")
-                st.session_state.image_to_process = img_byte_arr.getvalue()
-
-                # Reset state and close dialog
-                st.session_state.show_camera_dialog = False
-                st.session_state.captured_image = None  # Clear stored image
-                st.session_state.processing_image = True
+                st.session_state.layout = False
                 st.rerun()
 
+        # Step 2: Process the selected image
+        if st.session_state.captured_image or st.session_state.uploaded_image:
+            st.write("Označi samo eno nalogo:" if st.session_state.language == "Slovene" else "Select only one problem:")
+            
+            image_source = st.session_state.captured_image or st.session_state.uploaded_image
+            image = Image.open(image_source)
+            cropped_image = st_cropper(image, realtime_update=True, box_color="#FF0000", aspect_ratio=None)
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Prekliči" if st.session_state.language == "Slovene" else "Cancel", use_container_width=True):
+                    st.session_state.show_camera_dialog = False
+                    st.session_state.captured_image = None
+                    st.session_state.uploaded_image = None
+                    st.rerun()
+                    
+            with col2:
+                if st.button("Nadaljuj" if st.session_state.language == "Slovene" else "Continue", use_container_width=True):
+                    img_byte_arr = io.BytesIO()
+                    cropped_image.save(img_byte_arr, format="PNG")
+                    st.session_state.image_to_process = img_byte_arr.getvalue()
+
+                    # Reset state and close dialog
+                    st.session_state.show_camera_dialog = False
+                    st.session_state.captured_image = None
+                    st.session_state.uploaded_image = None
+                    st.session_state.processing_image = True
+                    st.rerun()
+    
     camera_dialog()
-
-#st.session_state.show_camera_dialog = False
 
 # Process image after dialog closes
 if st.session_state.get("processing_image", False):
