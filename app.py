@@ -450,7 +450,7 @@ st.sidebar.markdown(
         margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
-    <div class="subtle-text">Version 3.0</div>
+    <div class="subtle-text">Version 3.2</div>
     """,
     unsafe_allow_html=True
 )
@@ -465,7 +465,7 @@ st.sidebar.markdown(
         margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
-    <div class="subtle-text">Copyright © 2024 Anka AI. All rights reserved.</div>
+    <div class="subtle-text">Copyright © 2024 AnkaAI. All rights reserved.</div>
     """,
     unsafe_allow_html=True
 )
