@@ -361,6 +361,7 @@ if st.session_state.show_camera_dialog:
             if picture is not None:
                 st.session_state.captured_image = picture
                 st.session_state.layout = False  # Hide camera input
+                st.session_state.showed=False
                 st.rerun()  # Rerun to refresh UI
 
         # Step 2: Show cropping tool if an image is captured
