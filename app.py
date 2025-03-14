@@ -324,6 +324,11 @@ if "captured_image" not in st.session_state:
     st.session_state.captured_image = None  # Store the captured image
 if "layout" not in st.session_state:
     st.session_state.layout = True
+# Initialize session state variables
+for key in ["show_camera_dialog", "captured_image", "uploaded_image", "image_to_process", "processing_image", "language"]:
+    if key not in st.session_state:
+        st.session_state[key] = None if key in ["captured_image", "uploaded_image", "image_to_process"] else False
+
 
 # Sidebar button to open the camera dialog
 col1, col2, col3 = st.sidebar.columns([1, 6, 1])
