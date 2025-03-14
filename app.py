@@ -337,6 +337,8 @@ with col2:
         st.rerun()  # Ensure UI updates
 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+
+st.session_state.showed == False
 if  st.session_state.showed == True:
     st.session_state.show_camera_dialog = False
     st.session_state.showed = False
