@@ -24,7 +24,7 @@ from streamlit_cropper import st_cropper
 
 # Page config:
 st.set_page_config(
-    page_title="ShapedAI, personal math tutor",
+    page_title="AnkaAI, personal math tutor",
     page_icon=r"shaped-logo.png"
 )
 
