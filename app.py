@@ -256,7 +256,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_container_width=True)
+st.sidebar.image("anka-sidebar.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 st.sidebar.markdown(
     """
