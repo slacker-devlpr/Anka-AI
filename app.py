@@ -337,9 +337,15 @@ with col2:
         st.rerun()  # Ensure UI updates
 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+if  st.session_state.showed == True:
+    st.session_state.show_camera_dialog = False
+    st.session_state.showed = False
+    
 
 # Handle Camera Dialog
 if st.session_state.show_camera_dialog:
+    if "showed" not in st.session_state:
+        st.session_state.showed = True
     @st.dialog(
         "Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:"
     )
