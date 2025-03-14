@@ -338,7 +338,9 @@ with col2:
 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
-st.session_state.showed == False
+if "showed" not in st.session_state:
+    st.session_state.showed=False
+    
 if  st.session_state.showed == True:
     st.session_state.show_camera_dialog = False
     st.session_state.showed = False
