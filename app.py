@@ -21,7 +21,6 @@ from captcha.image import ImageCaptcha
 import random
 import string
 from streamlit_cropper import st_cropper
-import streamlit.components.v1 as components
 
 # Page config:
 st.set_page_config(
@@ -98,17 +97,7 @@ length_captcha = 4
 width = 200
 height = 150
 
-# Google Site Verification meta tag
-meta_tag = """
-<meta name="google-site-verification" content="HhVBA6H2LDsstYgjPmDMh99HdGQAgVRpQ84U9Nv4GFw" />
-"""
 
-# Injecting the meta tag into the page
-components.html(f"""
-    <head>
-        {meta_tag}
-    </head>
-""", height=0)
 
        
 # Define the function for CAPTCHA control
@@ -174,7 +163,7 @@ def captcha_control():
             st.stop()
 
 # Set up the session state
-if "openai_model" in st.session_state:
+if "openai_model" not in st.session_state:
     # Change the model name to DeepSeek's model
     st.session_state.language = "English"
     st.session_state["openai_model"] = "deepseek-chat"
