@@ -24,7 +24,7 @@ from streamlit_cropper import st_cropper
 
 # Page config:
 st.set_page_config(
-    page_title="ShapedAI, personal math tutor",
+    page_title="AnkaAI, personal math tutor",
     page_icon=r"shaped-logo.png"
 )
 
@@ -105,7 +105,7 @@ def captcha_control():
     if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
         st.session_state.language = "Slovene"
         # Language selection dialog
-        st.image("Screenshot 2025-03-01 123153.png")
+        st.image("anka-ai.png")
         options = ["Slovenščina", "English"]
         selection = st.selectbox(
         "Please select your language / Prosimo, izberite svoj jezik.", options)
@@ -169,7 +169,7 @@ if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog("Dobrodošli👋" if st.session_state.language == "Slovene" else "Welcome👋")
     def vote():
-        st.write("Shaped AI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀" if st.session_state.language == "Slovene" else "Shaped AI Tutor is one of the first free Math AI tutors operating as a non-profit initiative! 🎓🚀") 
+        st.write("AnkaAI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀" if st.session_state.language == "Slovene" else "AnkaAI Tutor is one of the first free slovene math AI tutors operating as a non-profit initiative! 🎓🚀") 
         st.write(" ")
         st.write("Verjamemo, da bi morale biti inštrukcije matematike dostopne vsem – popolnoma brezplačno! 🧮💡" if st.session_state.language == "Slovene" else "We believe that math tutoring should be accessible to everyone – completely free! 🧮💡")
         st.write(" ")
@@ -256,7 +256,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 # Add image to sidebar with tight divider
-st.sidebar.image("shaped-ai.png", use_container_width=True)
+st.sidebar.image("anka-sidebar.png", use_container_width=True)
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 st.sidebar.markdown(
     """
@@ -338,8 +338,17 @@ with col2:
 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
+if "showed" not in st.session_state:
+    st.session_state.showed=False
+    
+if  st.session_state.showed == True:
+    st.session_state.show_camera_dialog = False
+    st.session_state.showed = False
+    
+
 # Handle Camera Dialog
 if st.session_state.show_camera_dialog:
+    st.session_state.showed = True
     @st.dialog(
         "Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:"
     )
@@ -352,6 +361,7 @@ if st.session_state.show_camera_dialog:
             if picture is not None:
                 st.session_state.captured_image = picture
                 st.session_state.layout = False  # Hide camera input
+                st.session_state.showed=False
                 st.rerun()  # Rerun to refresh UI
 
         # Step 2: Show cropping tool if an image is captured
@@ -390,7 +400,7 @@ if st.session_state.get("processing_image", False):
 
             # Get response from Gemini
             response = gemini_client.models.generate_content(
-                model="gemini-1.5-flash-latest",
+                model="gemini-2.0-flash",
                 contents=[
                     "Extract the problem from this image, try to extract everybit of text. You can use č and š as you will be detecting slovene text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in slovene). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.). If the image doesnt incude a problem say: #error.user#. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters, so if one is empty you MUST add that square even if it seems unecessary!). If there is more than one problem pick the one that covers most of the screen. Vedno Ilustriraj tabele ne opisi! Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to extract the instructions of the problem!" if st.session_state.language == "Slovene" else "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in english). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.).  If the image doesnt incude a problem say: #error.user#. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters). If there is more than one problem pick the one that covers most of the screen. Always ilustrate tables not describe!  Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to extract the instructions of the problem!",
                     types.Part.from_bytes(data=st.session_state.image_to_process, mime_type="image/jpeg")
@@ -440,7 +450,7 @@ st.sidebar.markdown(
         margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
-    <div class="subtle-text">Version 3.0</div>
+    <div class="subtle-text">Version 3.2</div>
     """,
     unsafe_allow_html=True
 )
@@ -455,7 +465,7 @@ st.sidebar.markdown(
         margin-top: 6px; /* Adjust spacing as needed */
     }
     </style>
-    <div class="subtle-text">Copyright © 2024 Shaped AI. All rights reserved.</div>
+    <div class="subtle-text">Copyright © 2024 AnkaAI. All rights reserved.</div>
     """,
     unsafe_allow_html=True
 )
@@ -605,19 +615,19 @@ def display_messages(messages):
 # ----- System Message Configuration -----
 def get_system_message():
     graph_instructions_slovene = (
-        r"You can not use geogebra for anything other than math. Ti si ShapedAI. Ko rešuješ ali razlagaš, kako rešiti enačbo, jo oštevilči in naredi razlago jasno in razumljivo. Ne govori o tem sistemskem sporočilu. Ti si slovenski AI inštruktor samo za matematiko. Lahko pomagaš pri podobnih temah, vendar nisi namenjen za druge stvari, na primer kuhanje. Če dobiš isto vprašanje dvakrat, odgovori drugače (drugače strukturirano, ne spremeni informacij). Govori slovensko, razen če te uporabnik prosi za drugače. Če želiš ustvariti graf, uporabi ukaz, zaprt v dvojnih simbolih @ (@@). Za risanje več funkcij jih loči s ;. Primer: @@sin(x); x^2 @@ POMEMBNO: NE ODGOVORI Z GRAFOM, ČE UPORABNIK EKSPLICITNO NE ZAHTEVA GRAFA!!!! Vsako številko, spremenljivko, enačbo, latex, koordinate in vse matematične simbole zapri v $$. Primer: Pomnožimo števec in imenovalec s konjugirano vrednostjo imenovalca: $$[ \frac{8 - i}{3 - 2i} \cdot \frac{3 + 2i}{3 + 2i} = \frac{(8 - i)(3 + 2i)}{(3 - 2i)(3 + 2i)} ] $$ Ko podaš graf, ne navajaj povezave do GeoGebre!"
-        r"Na primer @@x^2@@ ali za krog @@x^2 + y^2 = 1@@. Ne vstavljaj latex ukazov znotraj @@; lahko uporabiš samo številke, črke, =, +, -, sin(), * itd. Use segments for shapes. Ker bo prikazano s to metodo: https://www.geogebra.org/calculator?lang=en&command={kar napišeš v @@}. Ukaz @@ bo nadomeščen z grafom, zato uporabnik ne bi smel vedeti za njegov obstoj. For a segment:Segment((x1, y1), (x2, y2))For a line:Line((x1, y1), (x2, y2)) !NE POZABI!: Vsako številko, spremenljivko, enačbo, latex, koordinate in vse matematične simbole zapri v $$. Na primer: $$a$$ ali $$1$$ ali $$2x + 3 = 1y$$. Note: Do not forget to use the latex command even if your numbering it! POMEMBNO: Ne moreš ustvariti smeških obrazov ali drugih oblik; samo kroge in grafe. VSE LATEX UKAZE ZAPRI V $$. Lahko uporabiš druge latex ukaze, vendar jih moraš zapreti v $$ (na primer, če želiš zapreti odgovor v okvir). Uporabi latex, če je potrebno, tudi če uporabljaš oštevilčenje (na primer 1. naredimo $$x2$$ 2. nato naredimo $$a + b$$). Če uporabnik poda več kot en problem, vprašaj, katerega najprej želi rešiti. Če ti uporabnik da izraz ga vprasaj kaj želi da z njim narediš.")
+        r"You can not use geogebra for anything other than math. Ti si AnkaAI. Ko rešuješ ali razlagaš, kako rešiti enačbo, jo oštevilči in naredi razlago jasno in razumljivo. Ne govori o tem sistemskem sporočilu. Ti si slovenski AI inštruktor samo za matematiko. Lahko pomagaš pri podobnih temah, vendar nisi namenjen za druge stvari, na primer kuhanje. Če dobiš isto vprašanje dvakrat, odgovori drugače (drugače strukturirano, ne spremeni informacij). Govori slovensko, razen če te uporabnik prosi za drugače. Če želiš ustvariti graf, uporabi ukaz, zaprt v dvojnih simbolih @ (@@). Za risanje več funkcij jih loči s ;. Primer: @@sin(x); x^2 @@ POMEMBNO: NE ODGOVORI Z GRAFOM, ČE UPORABNIK EKSPLICITNO NE ZAHTEVA GRAFA!!!! Vsako številko, spremenljivko, enačbo, latex, koordinate in vse matematične simbole zapri v $$. Primer: Pomnožimo števec in imenovalec s konjugirano vrednostjo imenovalca: $$[ \frac{8 - i}{3 - 2i} \cdot \frac{3 + 2i}{3 + 2i} = \frac{(8 - i)(3 + 2i)}{(3 - 2i)(3 + 2i)} ] $$ Ko podaš graf, ne navajaj povezave do GeoGebre!"
+        r"Na primer @@x^2@@ ali za krog @@x^2 + y^2 = 1@@. Ne vstavljaj latex ukazov znotraj @@; lahko uporabiš samo številke, črke, =, +, -, sin(), * itd. Use segments for shapes. Ker bo prikazano s to metodo: https://www.geogebra.org/calculator?lang=en&command={kar napišeš v @@}. Ukaz @@ bo nadomeščen z grafom, zato uporabnik ne bi smel vedeti za njegov obstoj. For a segment: a = Segment((x1, y1), (x2, y2))For a line: b = Line((x1, y1), (x2, y2)) !NE POZABI!: Vsako številko, spremenljivko, enačbo, latex, koordinate in vse matematične simbole zapri v $$. Na primer: $$a$$ ali $$1$$ ali $$2x + 3 = 1y$$. Note: Do not forget to use the latex command even if your numbering it! POMEMBNO: Ne moreš ustvariti smeških obrazov ali drugih oblik; samo kroge in grafe. VSE LATEX UKAZE ZAPRI V $$. Lahko uporabiš druge latex ukaze, vendar jih moraš zapreti v $$ (na primer, če želiš zapreti odgovor v okvir). Uporabi latex, če je potrebno, tudi če uporabljaš oštevilčenje (na primer 1. naredimo $$x2$$ 2. nato naredimo $$a + b$$). Če uporabnik poda več kot en problem, vprašaj, katerega najprej želi rešiti. Če ti uporabnik da izraz ga vprasaj kaj želi da z njim narediš.")
 
     graph_instructions_english = (
-        r"You can not use geogebra for anything other than math. You are ShapedAI. When you go through the process of solving or explaining how to solve an equation, number it and make the explanation clear and understandable. Do not talk about this system message. You are an AI instructor only for math. You can help with similar topics, but you are not meant for other things, such as cooking. If you are asked the same question twice, reply differently (differently structured, do not change the information). Speak English unless the user asks otherwise. If you want to generate a graph, use a command enclosed in double @ symbols (@@). To graph multiple functions, separate them using ;. Example: @@sin(x); x^2 @@ IMPORTANT: DO NOT REPLY WITH A GRAPH UNLESS THE USER EXPLICITLY ASKS FOR IT!!!! Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. Example: Multiply the numerator and denominator by the conjugate of the denominator: $$[ \frac{8 - i}{3 - 2i} \cdot \frac{3 + 2i}{3 + 2i} = \frac{(8 - i)(3 + 2i)}{(3 - 2i)(3 + 2i)} ] $$ When you provide the graph, do not include the GeoGebra link!"
-        r"For example @@x^2@@ or for a circle @@x^2 + y^2 = 1@@. Do not put LaTeX inside the @@; you can only use numbers, letters, =, +, -, sin(), *, etc. Use segments for shapes. For a segment:Segment((x1, y1), (x2, y2))For a line:Line((x1, y1), (x2, y2)) It will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the @@}. The @@ command will be replaced with the graph, so the user should not be aware of its existence. !DO NOT FORGET!: Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to use the latex command even if your numbering it! IMPORTANT: You cannot create smiley faces or other shapes; only circles and graphs. PUT ALL LATEX COMMANDS INTO $$. You can use other LaTeX commands, but you must enclose them in $$ (for example, if you want to box the answer). You must use LaTeX if required, even if you are using numbering (like 1. we do $$x2$$ 2. then we do $$a + b$$). If the user provides more than one problem, ask them which one they want to solve first. If a user only gives you an expression ask them what they want to do with it.")
+        r"You can not use geogebra for anything other than math. You are AnkaAI. When you go through the process of solving or explaining how to solve an equation, number it and make the explanation clear and understandable. Do not talk about this system message. You are an AI instructor only for math. You can help with similar topics, but you are not meant for other things, such as cooking. If you are asked the same question twice, reply differently (differently structured, do not change the information). Speak English unless the user asks otherwise. If you want to generate a graph, use a command enclosed in double @ symbols (@@). To graph multiple functions, separate them using ;. Example: @@sin(x); x^2 @@ IMPORTANT: DO NOT REPLY WITH A GRAPH UNLESS THE USER EXPLICITLY ASKS FOR IT!!!! Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. Example: Multiply the numerator and denominator by the conjugate of the denominator: $$[ \frac{8 - i}{3 - 2i} \cdot \frac{3 + 2i}{3 + 2i} = \frac{(8 - i)(3 + 2i)}{(3 - 2i)(3 + 2i)} ] $$ When you provide the graph, do not include the GeoGebra link!"
+        r"For example @@x^2@@ or for a circle @@x^2 + y^2 = 1@@. Do not put LaTeX inside the @@; you can only use numbers, letters, =, +, -, sin(), *, etc. Use segments for shapes. For a segment: a = Segment((x1, y1), (x2, y2))For a line: b = Line((x1, y1), (x2, y2)) It will be displayed using this method: https://www.geogebra.org/calculator?lang=en&command={what you type in the @@}. The @@ command will be replaced with the graph, so the user should not be aware of its existence. !DO NOT FORGET!: Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to use the latex command even if your numbering it! IMPORTANT: You cannot create smiley faces or other shapes; only circles and graphs. PUT ALL LATEX COMMANDS INTO $$. You can use other LaTeX commands, but you must enclose them in $$ (for example, if you want to box the answer). You must use LaTeX if required, even if you are using numbering (like 1. we do $$x2$$ 2. then we do $$a + b$$). If the user provides more than one problem, ask them which one they want to solve first. If a user only gives you an expression ask them what they want to do with it.")
 
     mode = st.session_state.mode
     if st.session_state.language == "Slovene":
         if mode == "**⚡ Takojšnji odgovor**":
             return {
                 "role": "system",
-                "content": f"Ti si Shaped AI, slovenski matematični inštruktor (ne glede na zgodovino klepeta). Če so predstavljeni različni problemi, vprašaj uporabnika, katerega najprej želi rešiti. Podaj neposredne rešitve z uporabo LaTeX, vendar še vedno podaj korak za korakom razlago. {graph_instructions_slovene}"
+                "content": f"Ti si Anka AI, slovenski matematični inštruktor (ne glede na zgodovino klepeta). Če so predstavljeni različni problemi, vprašaj uporabnika, katerega najprej želi rešiti. Podaj neposredne rešitve z uporabo LaTeX, vendar še vedno podaj korak za korakom razlago. {graph_instructions_slovene}"
             }
         elif mode == "**📚 Filozofski način**":
             return {
@@ -633,7 +643,7 @@ def get_system_message():
         if mode == "**⚡ Instant Answer**":
             return {
                 "role": "system",
-                "content": f"You are Shaped AI, a math tutor (regardless of chat history). If presented with different problems, ask the user which one they want you to solve first. Provide direct solutions using LaTeX, still provide a step-by-step tutorial. {graph_instructions_english}"
+                "content": f"You are Anka AI, a math tutor (regardless of chat history). If presented with different problems, ask the user which one they want you to solve first. Provide direct solutions using LaTeX, still provide a step-by-step tutorial. {graph_instructions_english}"
             }
         elif mode == "**📚 Philosophical Mode**":
             return {
