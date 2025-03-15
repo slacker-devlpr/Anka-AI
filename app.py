@@ -571,32 +571,28 @@ if prompt:
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..." if st.session_state.language == "Slovene" else "Thinking..."):
-        try:
-            # Prepare the input for Gemini
-            contents = []
-            
-            # Add the text prompt (if any)
-            if prompt.text:
-                contents.append(types.Part.from_text(prompt.text))
-            
-            # Add the image (if any)
-            if prompt.files:
-                contents.append(types.Part.from_bytes(data=prompt.files[0].read(), mime_type="image/jpeg"))
-            
-            # Get response from Gemini
-            gemini_client = genai.Client(api_key=str(st.secrets["gemini_api"]) )
-            response = gemini_client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=contents
-            )
+        # Prepare the input for Gemini
+        contents = []
+        
+        # Add the text prompt (if any)
+        if prompt.text:
+            contents.append(types.Part.from_text(prompt.text))
+        
+        # Add the image (if any)
+        if hasattr(prompt, 'files') and prompt.files:
+            contents.append(types.Part.from_bytes(data=prompt.files[0].read(), mime_type="image/jpeg"))
+        
+        # Get response from Gemini
+        gemini_client = genai.Client(api_key=str(st.secrets["gemini_api"]))
+        response = gemini_client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=contents
+        )
 
-            # Add Gemini's response to the chat history
-            st.session_state.messages.append({"role": "assistant", "content": response.text})
+        # Add Gemini's response to the chat history
+        st.session_state.messages.append({"role": "assistant", "content": response.text})
 
-        except Exception as e:
-            st.session_state.messages.append({"role": "error", "content": f"Napaka pri obdelavi: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing: {str(e)}"})
-        finally:
-            # Reset the generate_response flag
-            if "generate_response" in st.session_state:
-                del st.session_state.generate_response
-            st.rerun()
+        # Reset the generate_response flag
+        if "generate_response" in st.session_state:
+            del st.session_state.generate_response
+        st.rerun()
