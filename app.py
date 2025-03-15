@@ -676,7 +676,7 @@ if st.session_state.previous_mode != MODE:
 display_messages(st.session_state.messages)
 
 # Process new user input
-if prompt := st.chat_input("Kako lahko pomagam?" if st.session_state.language == "Slovene" else "How can I help?", accept_file=True):
+if prompt := st.chat_input("Kako lahko pomagam?" if st.session_state.language == "Slovene" else "How can I help?"):
     # Add user message and trigger immediate display
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.generate_response = True
