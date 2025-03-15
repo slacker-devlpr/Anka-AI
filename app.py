@@ -686,23 +686,15 @@ if prompt := st.chat_input("Kako lahko pomagam?" if st.session_state.language ==
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..." if st.session_state.language == "Slovene" else "Thinking..."):
         try:
-            # Initialize Gemini client
-            gemini_client = genai.Client(api_key=str(st.secrets["gemini_api"]))  # Replace with your API key
-
-            # Prepare the conversation history for Gemini
-            conversation_history = [get_system_message()] + st.session_state.messages
-
-            # Get response from Gemini
-            response = gemini_client.models.generate_content(
-                model="gemini-2.0-flash",  # Use the appropriate Gemini model
-                contents=conversation_history
-            )
-
-            # Extract the response text
-            response_text = response.text
+            # Use the DeepSeek API to generate the chat completion
+            response = client.chat.completions.create(
+                model=st.session_state["openai_model"],
+                messages=[get_system_message()] + st.session_state.messages,
+                stream=False  # Change stream as needed
+            ).choices[0].message.content
 
             # Add assistant response to session state
-            st.session_state.messages.append({"role": "assistant", "content": response_text})
+            st.session_state.messages.append({"role": "assistant", "content": response})
 
         except Exception as e:
             st.session_state.messages.append({"role": "error", "content": "Napaka pri povezavi z API! " if st.session_state.language == "Slovene" else "Error connecting to API! "})
@@ -711,4 +703,13 @@ if st.session_state.get("generate_response"):
             if "generate_response" in st.session_state:
                 del st.session_state.generate_response
             st.rerun()
+    
+    
+    
+    # Add assistant response to session state
+    st.session_state.messages.append({"role": "assistant", "content": response})
+    del st.session_state.generate_response
+    st.rerun()
+    del st.session_state.generate_response
 
+    st.rerun()
