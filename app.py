@@ -547,19 +547,21 @@ if st.session_state.previous_mode != MODE:
 display_messages(st.session_state.messages)
 
 # Process new user input
-if prompt := st.chat_input(
+prompt = st.chat_input(
     "Kako lahko pomagam?" if st.session_state.language == "Slovene" else "How can I help?",
     accept_file=True,
     file_type=["jpg", "jpeg", "png"],
-):
+)
+
+if prompt:
     # Add user message and trigger immediate display
-    if prompt.text or prompt.files:
+    if prompt.text or (hasattr(prompt, 'files') and prompt.files):
         # Append the user's text prompt to the chat history
         if prompt.text:
             st.session_state.messages.append({"role": "user", "content": prompt.text})
         
         # If an image is uploaded, append it to the chat history as well
-        if prompt.files:
+        if hasattr(prompt, 'files') and prompt.files:
             st.session_state.messages.append({"role": "user", "content": "Image uploaded for processing."})
         
         # Set flag to generate response
