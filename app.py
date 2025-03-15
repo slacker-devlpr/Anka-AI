@@ -90,16 +90,11 @@ enable_scroll = """
 """
 st.markdown(enable_scroll, unsafe_allow_html=True)
 
-
-
 # Define CAPTCHA constants
 length_captcha = 4
 width = 200
 height = 150
 
-
-
-       
 # Define the function for CAPTCHA control
 def captcha_control():
     if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
@@ -180,15 +175,10 @@ if "openai_model" not in st.session_state:
         st.image("MADE USING.jpg")
     vote()
 
-    
 # Main logic
 if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
     captcha_control()
 
-
-
-    
-# MAIN---------------------------------------------------------------------------------------------------------------------------:
 # ----- Sidebar Customization and Styling -----
 st.markdown("""
     <style>
@@ -314,120 +304,6 @@ else:
     )
 
 st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-
-# Ensure session state variables are initialized
-if "show_camera_dialog" not in st.session_state:
-    st.session_state.show_camera_dialog = False
-if "processing_image" not in st.session_state:
-    st.session_state.processing_image = False
-if "captured_image" not in st.session_state:
-    st.session_state.captured_image = None  # Store the captured image
-if "layout" not in st.session_state:
-    st.session_state.layout = True
-
-# Sidebar button to open the camera dialog
-col1, col2, col3 = st.sidebar.columns([1, 6, 1])
-with col2:
-    if st.button(
-        "NALOŽI SLIKO" if st.session_state.get("language", "English") == "Slovene" else "UPLOAD IMAGE",
-        key="camera_btn",
-        use_container_width=True,
-    ):
-        st.session_state.show_camera_dialog = True
-        st.rerun()  # Ensure UI updates
-
-st.sidebar.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-
-if "showed" not in st.session_state:
-    st.session_state.showed=False
-    
-if  st.session_state.showed == True:
-    st.session_state.show_camera_dialog = False
-    st.session_state.showed = False
-    
-
-# Handle Camera Dialog
-if st.session_state.show_camera_dialog:
-    st.session_state.showed = True
-    @st.dialog(
-        "Slikaj matematični problem:" if st.session_state.get("language", "English") == "Slovene" else "Capture Math Problem:"
-    )
-    def camera_dialog():
-        # Step 1: Show camera input only if no image is captured
-        if st.session_state.captured_image is None:
-            picture = st.camera_input(
-                " ")
-
-            if picture is not None:
-                st.session_state.captured_image = picture
-                st.session_state.layout = False  # Hide camera input
-                st.session_state.showed=False
-                st.rerun()  # Rerun to refresh UI
-
-        # Step 2: Show cropping tool if an image is captured
-        if st.session_state.captured_image is not None:
-            st.write("Označi samo eno nalogo:" if st.session_state.get("language", "English") == "Slovene" else "Select only one problem:")
-            image = Image.open(st.session_state.captured_image)  # Convert to PIL Image
-            cropped_image = st_cropper(image, realtime_update=True, box_color="#FF0000", aspect_ratio=None)
-            if st.button("Prekliči" if st.session_state.get("language", "English") == "Slovene" else "Cancel", use_container_width=True):
-                st.session_state.show_camera_dialog = False
-                st.session_state.captured_image = None
-                st.rerun()
-                
-           
-            if st.button("Nadaljuj" if st.session_state.get("language", "English") == "Slovene" else "Countinue", use_container_width=True):
-                # Convert to bytes
-                img_byte_arr = io.BytesIO()
-                cropped_image.save(img_byte_arr, format="PNG")
-                st.session_state.image_to_process = img_byte_arr.getvalue()
-
-                # Reset state and close dialog
-                st.session_state.show_camera_dialog = False
-                st.session_state.captured_image = None  # Clear stored image
-                st.session_state.processing_image = True
-                st.rerun()
-
-    camera_dialog()
-
-#st.session_state.show_camera_dialog = False
-
-# Process image after dialog closes
-if st.session_state.get("processing_image", False):
-    with st.spinner("Procesiram sliko..." if st.session_state.language == "Slovene" else "Processing image..."):
-        try:
-            # Initialize Gemini client
-            gemini_client = genai.Client(api_key=str(st.secrets["gemini_api"]) ) # Replace with your API key
-
-            # Get response from Gemini
-            response = gemini_client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=[
-                    "Extract the problem from this image, try to extract everybit of text. You can use č and š as you will be detecting slovene text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in slovene). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.). If the image doesnt incude a problem say: #error.user#. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters, so if one is empty you MUST add that square even if it seems unecessary!). If there is more than one problem pick the one that covers most of the screen. Vedno Ilustriraj tabele ne opisi! Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to extract the instructions of the problem!" if st.session_state.language == "Slovene" else "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in english). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.).  If the image doesnt incude a problem say: #error.user#. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters). If there is more than one problem pick the one that covers most of the screen. Always ilustrate tables not describe!  Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to extract the instructions of the problem!",
-                    types.Part.from_bytes(data=st.session_state.image_to_process, mime_type="image/jpeg")
-                ]
-            )
-
-            extracted_problem = response.text
-
-            # Check if Gemini returned an error message
-            if "#error.user#" in extracted_problem:
-                st.rerun()
-                
-            else:
-                # Add extracted problem to chat only if there is no error indicator
-                st.session_state.messages.append({"role": "user", "content": extracted_problem})
-                st.session_state.generate_response = True
-
-        except Exception as e:
-            st.error(f"Napaka pri obdelavi slike: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing image: {str(e)}")
-            st.session_state.messages.append({"role": "error", "content": f"Napaka pri obdelavi slike: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing image: {str(e)}"})
-        finally:
-            # Clean up processing state
-            st.session_state.processing_image = False
-            if "image_to_process" in st.session_state:
-                del st.session_state.image_to_process
-            st.rerun()
-
 
 scol1, scol2, scol3 = st.sidebar.columns([1,6,1])                  
 with scol2:
@@ -675,12 +551,51 @@ if st.session_state.previous_mode != MODE:
 display_messages(st.session_state.messages)
 
 # Process new user input
-if prompt := st.chat_input("Kako lahko pomagam?" if st.session_state.language == "Slovene" else "How can I help?"):
+if prompt := st.chat_input(
+    "Kako lahko pomagam?" if st.session_state.language == "Slovene" else "How can I help?",
+    accept_file=True,
+    file_type=["jpg", "jpeg", "png"],
+):
     # Add user message and trigger immediate display
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.session_state.generate_response = True
-    st.rerun()
+    if prompt.text:
+        st.session_state.messages.append({"role": "user", "content": prompt.text})
+    if prompt.files:
+        with st.spinner("Procesiram sliko..." if st.session_state.language == "Slovene" else "Processing image..."):
+            try:
+                # Initialize Gemini client
+                gemini_client = genai.Client(api_key=str(st.secrets["gemini_api"])) # Replace with your API key
 
+                # Get response from Gemini
+                response = gemini_client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[
+                        "Extract the problem from this image, try to extract everybit of text. You can use č and š as you will be detecting slovene text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in slovene). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.). If the image doesnt incude a problem say: #error.user#. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters, so if one is empty you MUST add that square even if it seems unecessary!). If there is more than one problem pick the one that covers most of the screen. Vedno Ilustriraj tabele ne opisi! Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to extract the instructions of the problem!" if st.session_state.language == "Slovene" else "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in english). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.).  If the image doesnt incude a problem say: #error.user#. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters). If there is more than one problem pick the one that covers most of the screen. Always ilustrate tables not describe!  Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to extract the instructions of the problem!",
+                        types.Part.from_bytes(data=prompt.files[0].read(), mime_type="image/jpeg")
+                    ]
+                )
+
+                extracted_problem = response.text
+
+                # Check if Gemini returned an error message
+                if "#error.user#" in extracted_problem:
+                    st.error("Napaka pri obdelavi slike: Slika ne vsebuje matematičnega problema." if st.session_state.language == "Slovene" else "Error processing image: The image does not contain a math problem.")
+                else:
+                    # Add extracted problem to chat only if there is no error indicator
+                    st.session_state.messages.append({"role": "user", "content": extracted_problem})
+                    st.session_state.generate_response = True
+
+            except Exception as e:
+                st.error(f"Napaka pri obdelavi slike: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing image: {str(e)}")
+                st.session_state.messages.append({"role": "error", "content": f"Napaka pri obdelavi slike: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing image: {str(e)}"})
+            finally:
+                # Clean up processing state
+                st.session_state.processing_image = False
+                if "image_to_process" in st.session_state:
+                    del st.session_state.image_to_process
+                st.rerun()
+    else:
+        st.session_state.generate_response = True
+        st.rerun()
 
 # Generate AI response after user message is displayed
 if st.session_state.get("generate_response"):
@@ -703,13 +618,4 @@ if st.session_state.get("generate_response"):
             if "generate_response" in st.session_state:
                 del st.session_state.generate_response
             st.rerun()
-    
-    
-    
-    # Add assistant response to session state
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    del st.session_state.generate_response
-    st.rerun()
-    del st.session_state.generate_response
 
-    st.rerun()
