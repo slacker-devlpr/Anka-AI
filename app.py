@@ -582,7 +582,7 @@ if st.session_state.get("generate_response"):
                 contents.append(types.Part.from_bytes(data=prompt.files[0].read(), mime_type="image/jpeg"))
             
             # Get response from Gemini
-            gemini_client
+            gemini_client = genai.Client(api_key=str(st.secrets["gemini_api"]) )
             response = gemini_client.models.generate_content(
                 model="gemini-2.0-flash",
                 contents=contents
