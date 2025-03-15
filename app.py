@@ -553,7 +553,7 @@ prompt = st.chat_input(
     file_type=["jpg", "jpeg", "png"],
 )
 
-if prompt:
+if prompt:  # Ensure prompt is not None
     # Add user message and trigger immediate display
     if prompt.text or (hasattr(prompt, 'files') and prompt.files):
         # Append the user's text prompt to the chat history
@@ -575,11 +575,11 @@ if st.session_state.get("generate_response"):
         contents = []
         
         # Add the text prompt (if any)
-        if prompt.text:
+        if prompt and prompt.text:  # Ensure prompt is not None
             contents.append(types.Part.from_text(prompt.text))
         
         # Add the image (if any)
-        if hasattr(prompt, 'files') and prompt.files:
+        if prompt and hasattr(prompt, 'files') and prompt.files:  # Ensure prompt is not None
             contents.append(types.Part.from_bytes(data=prompt.files[0].read(), mime_type="image/jpeg"))
         
         # Get response from Gemini
@@ -596,3 +596,4 @@ if st.session_state.get("generate_response"):
         if "generate_response" in st.session_state:
             del st.session_state.generate_response
         st.rerun()
+
