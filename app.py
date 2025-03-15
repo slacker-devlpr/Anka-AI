@@ -165,7 +165,7 @@ def captcha_control():
 # Set up the session state
 if "openai_model" not in st.session_state:
     # Change the model name to DeepSeek's model
-    st.session_state.language = "English"
+    st.session_state.language = "Slovene"
     st.session_state["openai_model"] = "deepseek-chat"
     @st.dialog("Dobrodošli👋" if st.session_state.language == "Slovene" else "Welcome👋")
     def vote():
