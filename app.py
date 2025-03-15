@@ -350,11 +350,7 @@ ERROR = "⚠️"
 USER_AVATAR = "👤"
 BOT_AVATAR = "top-logo.png"
 
-# IMPORTANT: Change the client initialization to use DeepSeek v3.
-client = OpenAI(
-    api_key=str(st.secrets["deepseek_api"]),        
-    base_url="https://api.deepseek.com"        # Set the DeepSeek base URL
-)
+
 st.markdown(
     """
 <style>
@@ -586,6 +582,7 @@ if st.session_state.get("generate_response"):
                 contents.append(types.Part.from_bytes(data=prompt.files[0].read(), mime_type="image/jpeg"))
             
             # Get response from Gemini
+            gemini_client
             response = gemini_client.models.generate_content(
                 model="gemini-2.0-flash",
                 contents=contents
