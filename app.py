@@ -557,43 +557,16 @@ if prompt := st.chat_input(
     file_type=["jpg", "jpeg", "png"],
 ):
     # Add user message and trigger immediate display
-    if prompt.text:
-        st.session_state.messages.append({"role": "user", "content": prompt.text})
-    if prompt.files:
-        with st.spinner("Procesiram sliko..." if st.session_state.language == "Slovene" else "Processing image..."):
-            try:
-                # Initialize Gemini client
-                gemini_client = genai.Client(api_key=str(st.secrets["gemini_api"])) # Replace with your API key
-
-                # Get response from Gemini
-                response = gemini_client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=[
-                        "Extract the problem from this image, try to extract everybit of text. You can use č and š as you will be detecting slovene text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in slovene). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.). If the image doesnt incude a problem say: #error.user#. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters, so if one is empty you MUST add that square even if it seems unecessary!). If there is more than one problem pick the one that covers most of the screen. Vedno Ilustriraj tabele ne opisi! Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to extract the instructions of the problem!" if st.session_state.language == "Slovene" else "Extract the problem from this image, try to extract everybit of text. Do not solve it though. Only reply with the extracted text/problem(if visual try to describe the visual part in english). Never add any other added response message to it, only the description/extracted text!. Provide extremly detailed descriptions of visual parts of the problem(like graphs ect.).  If the image doesnt incude a problem say: #error.user#. If theres a table DRAW IT NOT DESCRIBE IT(you have to be carefull with tables every empty/filled square matters). If there is more than one problem pick the one that covers most of the screen. Always ilustrate tables not describe!  Enclose every number, variable, equation, LaTeX, coordinates, and any math-related symbols in $$. For example: $$a$$ or $$1$$ or $$2x + 3 = 1y$$. Do not forget to extract the instructions of the problem!",
-                        types.Part.from_bytes(data=prompt.files[0].read(), mime_type="image/jpeg")
-                    ]
-                )
-
-                extracted_problem = response.text
-
-                # Check if Gemini returned an error message
-                if "#error.user#" in extracted_problem:
-                    st.error("Napaka pri obdelavi slike: Slika ne vsebuje matematičnega problema." if st.session_state.language == "Slovene" else "Error processing image: The image does not contain a math problem.")
-                else:
-                    # Add extracted problem to chat only if there is no error indicator
-                    st.session_state.messages.append({"role": "user", "content": extracted_problem})
-                    st.session_state.generate_response = True
-
-            except Exception as e:
-                st.error(f"Napaka pri obdelavi slike: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing image: {str(e)}")
-                st.session_state.messages.append({"role": "error", "content": f"Napaka pri obdelavi slike: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing image: {str(e)}"})
-            finally:
-                # Clean up processing state
-                st.session_state.processing_image = False
-                if "image_to_process" in st.session_state:
-                    del st.session_state.image_to_process
-                st.rerun()
-    else:
+    if prompt.text or prompt.files:
+        # Append the user's text prompt to the chat history
+        if prompt.text:
+            st.session_state.messages.append({"role": "user", "content": prompt.text})
+        
+        # If an image is uploaded, append it to the chat history as well
+        if prompt.files:
+            st.session_state.messages.append({"role": "user", "content": "Image uploaded for processing."})
+        
+        # Set flag to generate response
         st.session_state.generate_response = True
         st.rerun()
 
@@ -601,21 +574,30 @@ if prompt := st.chat_input(
 if st.session_state.get("generate_response"):
     with st.spinner("Razmišljam..." if st.session_state.language == "Slovene" else "Thinking..."):
         try:
-            # Use the DeepSeek API to generate the chat completion
-            response = client.chat.completions.create(
-                model=st.session_state["openai_model"],
-                messages=[get_system_message()] + st.session_state.messages,
-                stream=False  # Change stream as needed
-            ).choices[0].message.content
+            # Prepare the input for Gemini
+            contents = []
+            
+            # Add the text prompt (if any)
+            if prompt.text:
+                contents.append(types.Part.from_text(prompt.text))
+            
+            # Add the image (if any)
+            if prompt.files:
+                contents.append(types.Part.from_bytes(data=prompt.files[0].read(), mime_type="image/jpeg"))
+            
+            # Get response from Gemini
+            response = gemini_client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=contents
+            )
 
-            # Add assistant response to session state
-            st.session_state.messages.append({"role": "assistant", "content": response})
+            # Add Gemini's response to the chat history
+            st.session_state.messages.append({"role": "assistant", "content": response.text})
 
         except Exception as e:
-            st.session_state.messages.append({"role": "error", "content": "Napaka pri povezavi z API! " if st.session_state.language == "Slovene" else "Error connecting to API! "})
+            st.session_state.messages.append({"role": "error", "content": f"Napaka pri obdelavi: {str(e)}" if st.session_state.language == "Slovene" else f"Error processing: {str(e)}"})
         finally:
             # Reset the generate_response flag
             if "generate_response" in st.session_state:
                 del st.session_state.generate_response
             st.rerun()
-
