@@ -165,7 +165,7 @@ def captcha_control():
 # Set up the session state
 if "openai_model" not in st.session_state:
     # Change the model name to DeepSeek's model
-    st.session_state["openai_model"] = "deepseek-chat"
+    st.session_state["openai_model"] = "gemini-2.0-flash"
     @st.dialog("Dobrodošli👋" if st.session_state.language == "Slovene" else "Welcome👋")
     def vote():
         st.write("AnkaAI Inštruktor je eden prvih brezplačnih Matematičnih AI inštruktorjev, ki deluje kot neprofitna pobuda! 🎓🚀" if st.session_state.language == "Slovene" else "AnkaAI Tutor is one of the first free slovene math AI tutors operating as a non-profit initiative! 🎓🚀") 
@@ -475,8 +475,8 @@ BOT_AVATAR = "top-logo.png"
 
 # IMPORTANT: Change the client initialization to use DeepSeek v3.
 client = OpenAI(
-    api_key=str(st.secrets["deepseek_api"]),        
-    base_url="https://api.deepseek.com"        # Set the DeepSeek base URL
+    api_key=str(st.secrets["gemini_api"]),        
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"        # Set the DeepSeek base URL
 )
 st.markdown(
     """
